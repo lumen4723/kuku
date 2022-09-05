@@ -11,7 +11,11 @@
 </main>
 
 <footer class="footer">
+<<<<<<< HEAD
 	<p>kukur@뻐꾸기</p>
+=======
+	<p>kuku@뻐꾸기kjs</p>
+>>>>>>> 8265274f4aa6996cd3cce5d5a5a56fa885c44457
 </footer>
 
 <style>
