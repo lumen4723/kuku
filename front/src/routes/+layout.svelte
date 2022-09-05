@@ -11,7 +11,7 @@
 </main>
 
 <footer class="footer">
-	<p>kuku@뻐꾸기</p>
+	<p>kukur@뻐꾸기</p>
 </footer>
 
 <style>
