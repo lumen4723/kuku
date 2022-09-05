@@ -1,6 +1,7 @@
 <script>
-	import Header from '$lib/header/Header.svelte';
-	import '../app.css';
+	import Header from '../lib/header/Header.svelte';
+	import 'bulma/css/bulma.css';
+	import '@fortawesome/fontawesome-free/css/all.css';
 </script>
 
 <Header />
@@ -9,37 +10,20 @@
 	<slot />
 </main>
 
-<footer>
-	<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+<footer class="footer">
+	<p>kuku@뻐꾸기</p>
 </footer>
 
 <style>
 	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 1024px;
-		margin: 0 auto;
-		box-sizing: border-box;
+		min-height: calc(100vh - 100px - 20px);
 	}
-
 	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 40px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 40px 0;
-		}
+		width: 100%;
+		text-align: center;
+		font-size: small;
+		color: darkgray;
+		bottom: 0px;
+		height: 20px;
 	}
 </style>
