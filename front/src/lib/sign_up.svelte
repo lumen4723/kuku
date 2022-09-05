@@ -1,5 +1,11 @@
 <script>
-	let name, username, email, password, confirmpassword;
+	import { is_empty } from 'svelte/internal';
+
+	let name = '',
+		username,
+		email,
+		password,
+		confirmpassword;
 	let message = { success: null, display: '' };
 </script>
 
@@ -9,16 +15,26 @@
 		<div class="control has-icons-left has-icons-right">
 			<input
 				class="input"
+				class:is-danger={is_empty(name)}
+				class:is-success={!is_empty(name)}
 				name="name"
 				type="text"
 				placeholder="Your name"
 				bind:value={name}
 			/>
 			<span class="icon is-small is-left">
-				<i class="fa-regular fa-user" />
+				<i
+					class="fa-regular fa-user"
+					class:has-text-danger={is_empty(name)}
+					class:has-text-success={!is_empty(name)}
+				/>
 			</span>
 			<span class="icon is-small is-right">
-				<i class="fas fa-check" />
+				<i
+					class="fas fa-check"
+					class:has-text-danger={is_empty(name)}
+					class:has-text-success={!is_empty(name)}
+				/>
 			</span>
 		</div>
 		<p class="help">Write your name</p>
