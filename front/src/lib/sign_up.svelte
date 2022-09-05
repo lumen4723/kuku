@@ -96,9 +96,4 @@
 			<button class="button is-link is-light" type="submit">Cancel</button>
 		</div>
 	</div>
-	{#if message.success != null}
-		<div>
-			{message.display}
-		</div>
-	{/if}
 </form>
