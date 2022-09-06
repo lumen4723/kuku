@@ -4,8 +4,8 @@
 	let name = '',
 		username,
 		email,
-		password,
-		confirmpassword;
+		password = '',
+		confirmpassword = '';
 	let message = { success: null, display: '' };
 </script>
 
@@ -65,29 +65,64 @@
 		</div>
 		<p class="help">Write your email</p>
 	</div>
+
 	<div class="field">
 		<label class="label" for="password">Password</label>
-		<div class="control">
-			<input
-				class="input"
-				name="password"
-				type="password"
-				placeholder="Set your new password"
-				bind:value={password}
-			/>
+		<div class="control has-icons-left has-icons-right">
+			<div class="control">
+				<input
+					class="input"
+					class:is-danger={!is_empty(password)
+					&& password.length < 8
+					|| password.length > 128}
+					class:is-success={password.length > 7}
+					name="password"
+					type="password"
+					placeholder="Set your new password"
+					bind:value={password}
+				/>
+				<span class="icon is-small is-right">
+					<i
+						class="fas fa-check"
+						class:has-text-danger={!is_empty(password)
+							&& password.length < 8
+							|| password.length > 128}
+						class:has-text-success={password.length > 7}
+					/>
+				</span>
+			</div>
 		</div>
-		<p class="help">Should contail at least 8 characters</p>
+		<p class="help">
+			Should contail at least 8 ~ 128 characters
+		</p>
 	</div>
+
 	<div class="field">
 		<label class="label" for="confirmpassword">Confirm Password</label>
-		<input
+		<div class="control has-icons-left has-icons-right">
+			<input
 			class="input"
+			class:is-danger={!is_empty(confirmpassword)
+				&& password !== confirmpassword}
+			class:is-success={password === confirmpassword &&
+			password.length > 7}
 			name="confirmpassword"
 			type="password"
 			placeholder="Confirm your new password"
 			bind:value={confirmpassword}
-		/>
+			/>
+			<span class="icon is-small is-right">
+				<i
+					class="fas fa-check"
+					class:has-text-danger={!is_empty(confirmpassword)
+						&& password !== confirmpassword}
+					class:has-text-success={password === confirmpassword &&
+						password.length > 7}
+				/>
+			</span>
+		</div>
 	</div>
+
 	<div class="field is-grouped">
 		<div class="control">
 			<button class="button is-link" type="submit">Signup</button>
