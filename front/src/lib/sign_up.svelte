@@ -3,9 +3,9 @@
 
 	let name = '',
 		username,
-		email ='',
-		password,
-		confirmpassword;
+		email = '',
+		password = '',
+		confirmpassword = '';
 	let message = { success: null, display: '' };
 
 	let valid_email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -59,7 +59,7 @@
 		<div class="control has-icons-left has-icons-right">
 			<input
 				class="input"
-				class:is-danger={!email.match(valid_email)}
+				class:is-danger={!email.match(valid_email) && !is_empty(email)}
 				class:is-success={email.match(valid_email)}
 				name="email"
 				type="text"
@@ -69,14 +69,14 @@
 			<span class="icon is-small is-left">
 				<i
 					class="fa-regular fa-envelope"
-					class:has-text-danger={!email.match(valid_email)}
+					class:has-text-danger={!email.match(valid_email) && !is_empty(email)}
 					class:has-text-success={email.match(valid_email)}
 				/>
 			</span>
 			<span class="icon is-small is-right">
 				<i
 					class="fas fa-check"
-					class:has-text-danger={!email.match(valid_email)}
+					class:has-text-danger={!email.match(valid_email) && !is_empty(email)}
 					class:has-text-success={email.match(valid_email)}
 				/>
 			</span>
