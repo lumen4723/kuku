@@ -8,7 +8,15 @@
 		confirmpassword = '';
 	let message = { success: null, display: '' };
 
-	let valid_email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	let valid_email =
+		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+	let show_password = false;
+	function passwordShowHide() {
+		show_password = !show_password;
+	}
+
+	var show_eye = document.getElementsByClassName('fas fa-eye-slash');
 </script>
 
 <form>
@@ -69,14 +77,16 @@
 			<span class="icon is-small is-left">
 				<i
 					class="fa-regular fa-envelope"
-					class:has-text-danger={!email.match(valid_email) && !is_empty(email)}
+					class:has-text-danger={!email.match(valid_email) &&
+						!is_empty(email)}
 					class:has-text-success={email.match(valid_email)}
 				/>
 			</span>
 			<span class="icon is-small is-right">
 				<i
 					class="fas fa-check"
-					class:has-text-danger={!email.match(valid_email) && !is_empty(email)}
+					class:has-text-danger={!email.match(valid_email) &&
+						!is_empty(email)}
 					class:has-text-success={email.match(valid_email)}
 				/>
 			</span>
@@ -90,64 +100,53 @@
 			<div class="control">
 				<input
 					class="input"
-					class:is-danger={!is_empty(password)
-						&& password.length < 8
-						|| password.length > 128
-					}
-					class:is-success={password.length > 7
-						&& password.length < 129
-					}
+					class:is-danger={(!is_empty(password) && password.length < 8) ||
+						password.length > 128}
+					class:is-success={password.length > 7 && password.length < 129}
 					name="password"
-					type="password"
+					type={show_password ? 'text' : 'password'}
 					placeholder="Set your new password"
-					bind:value={password}
+					bind:this={password}
 				/>
 				<span class="icon is-small is-right">
 					<i
-						class="fas fa-check"
-						class:has-text-danger={!is_empty(password)
-							&& password.length < 8
-							|| password.length > 128
-						}
-						class:has-text-success={password.length > 7
-							&& password.length < 129
-						}
+						class="fas fa-eye-slash password_icon"
+						on:click={passwordShowHide}
+						class:has-text-danger={(!is_empty(password) &&
+							password.length < 8) ||
+							password.length > 128}
+						class:has-text-success={password.length > 7 &&
+							password.length < 129}
 					/>
 				</span>
 			</div>
 		</div>
-		<p class="help">
-			Should contail at least 8 ~ 128 characters
-		</p>
+		<p class="help">Should contail at least 8 ~ 128 characters</p>
 	</div>
 
 	<div class="field">
 		<label class="label" for="confirmpassword">Confirm Password</label>
 		<div class="control has-icons-left has-icons-right">
 			<input
-			class="input"
-			class:is-danger={!is_empty(confirmpassword)
-				&& password !== confirmpassword
-			}
-			class:is-success={password === confirmpassword
-				&& password.length > 7
-				&& password.length < 129
-			}
-			name="confirmpassword"
-			type="password"
-			placeholder="Confirm your new password"
-			bind:value={confirmpassword}
+				class="input"
+				class:is-danger={!is_empty(confirmpassword) &&
+					password !== confirmpassword}
+				class:is-success={password === confirmpassword &&
+					password.length > 7 &&
+					password.length < 129}
+				name="confirmpassword"
+				type="password"
+				placeholder="Confirm your new password"
+				bind:value={confirmpassword}
 			/>
 			<span class="icon is-small is-right">
 				<i
 					class="fas fa-check"
-					class:has-text-danger={!is_empty(confirmpassword)
-						&& password !== confirmpassword
-					}
-					class:has-text-success={password === confirmpassword
-						&& password.length > 7
-						&& password.length < 129
-					}
+					class:has-text-danger={!is_empty(confirmpassword) &&
+						password !== confirmpassword}
+					class:has-text-success={password === confirmpassword &&
+						password.length > 7 &&
+						password.length < 129}
 				/>
 			</span>
 		</div>
@@ -161,4 +160,14 @@
 			<button class="button is-link is-light" type="submit">Cancel</button>
 		</div>
 	</div>
+	<button type="button" on:click={passwordShowHide}
+		>{show_password ? 'Hide' : 'Show'}</button
+	>
 </form>
+
+<style>
+	.password_icon {
+		pointer-events: all;
+		cursor: pointer;
+	}
+</style>
