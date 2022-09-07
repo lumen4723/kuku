@@ -91,9 +91,12 @@
 				<input
 					class="input"
 					class:is-danger={!is_empty(password)
-					&& password.length < 8
-					|| password.length > 128}
-					class:is-success={password.length > 7}
+						&& password.length < 8
+						|| password.length > 128
+					}
+					class:is-success={password.length > 7
+						&& password.length < 129
+					}
 					name="password"
 					type="password"
 					placeholder="Set your new password"
@@ -104,8 +107,11 @@
 						class="fas fa-check"
 						class:has-text-danger={!is_empty(password)
 							&& password.length < 8
-							|| password.length > 128}
-						class:has-text-success={password.length > 7}
+							|| password.length > 128
+						}
+						class:has-text-success={password.length > 7
+							&& password.length < 129
+						}
 					/>
 				</span>
 			</div>
@@ -121,9 +127,12 @@
 			<input
 			class="input"
 			class:is-danger={!is_empty(confirmpassword)
-				&& password !== confirmpassword}
-			class:is-success={password === confirmpassword &&
-			password.length > 7}
+				&& password !== confirmpassword
+			}
+			class:is-success={password === confirmpassword
+				&& password.length > 7
+				&& password.length < 129
+			}
 			name="confirmpassword"
 			type="password"
 			placeholder="Confirm your new password"
@@ -133,9 +142,12 @@
 				<i
 					class="fas fa-check"
 					class:has-text-danger={!is_empty(confirmpassword)
-						&& password !== confirmpassword}
-					class:has-text-success={password === confirmpassword &&
-						password.length > 7}
+						&& password !== confirmpassword
+					}
+					class:has-text-success={password === confirmpassword
+						&& password.length > 7
+						&& password.length < 129
+					}
 				/>
 			</span>
 		</div>
