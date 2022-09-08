@@ -12,11 +12,15 @@
 		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	let show_password = false;
-	function passwordShowHide() {
+	let show_confirmpassword = false;
+	function passwordShow_button() {
 		show_password = !show_password;
 	}
-
-	var show_eye = document.getElementsByClassName('fas fa-eye-slash');
+	function confirmpasswordShow_button() {
+		show_confirmpassword = !show_confirmpassword;
+	}
+	let passwordThis;
+	let confirmpasswordThis;
 </script>
 
 <form>
@@ -104,14 +108,15 @@
 						password.length > 128}
 					class:is-success={password.length > 7 && password.length < 129}
 					name="password"
-					type={show_password ? 'text' : 'password'}
+					type={show_password ? "text" : "password"}
 					placeholder="Set your new password"
-					bind:this={password}
+					bind:this={passwordThis}
+					on:input={() => password = passwordThis.value}
 				/>
 				<span class="icon is-small is-right">
 					<i
 						class="fas fa-eye-slash password_icon"
-						on:click={passwordShowHide}
+						on:click={passwordShow_button}
 						class:has-text-danger={(!is_empty(password) &&
 							password.length < 8) ||
 							password.length > 128}
@@ -135,13 +140,15 @@
 					password.length > 7 &&
 					password.length < 129}
 				name="confirmpassword"
-				type="password"
+				type={show_confirmpassword ? "text" : "password"}
 				placeholder="Confirm your new password"
-				bind:value={confirmpassword}
+				bind:this={confirmpasswordThis}
+				on:input={() => confirmpassword = confirmpasswordThis.value}
 			/>
 			<span class="icon is-small is-right">
 				<i
-					class="fas fa-check"
+					class="fas fa-eye-slash confirmpassword_icon"
+					on:click={confirmpasswordShow_button}	
 					class:has-text-danger={!is_empty(confirmpassword) &&
 						password !== confirmpassword}
 					class:has-text-success={password === confirmpassword &&
@@ -160,13 +167,14 @@
 			<button class="button is-link is-light" type="submit">Cancel</button>
 		</div>
 	</div>
-	<button type="button" on:click={passwordShowHide}
-		>{show_password ? 'Hide' : 'Show'}</button
-	>
 </form>
 
 <style>
 	.password_icon {
+		pointer-events: all;
+		cursor: pointer;
+	}
+	.confirmpassword_icon {
 		pointer-events: all;
 		cursor: pointer;
 	}
