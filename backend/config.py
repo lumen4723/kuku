@@ -1,4 +1,5 @@
 import config_default
 
+
 class Config(config_default.Config):
-	pass
+    HTTP = {"port": 8090}
