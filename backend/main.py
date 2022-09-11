@@ -1,3 +1,4 @@
+from config import Config
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -5,7 +6,7 @@ app = FastAPI()
 
 @app.get("/")
 async def main():
-	return {"message": "Helloworld，FastAPI"}
+	return {"message": "Helloworld FastAPI"}
 
 
 if __name__ == '__main__':
