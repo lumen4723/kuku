@@ -1,7 +1,8 @@
 <script>
-	import Header from '../lib/header/Header.svelte';
 	import 'bulma/css/bulma.css';
 	import '@fortawesome/fontawesome-free/css/all.css';
+	import Header from '../lib/header/Header.svelte';
+	import Footer from '../lib/footer/Footer.svelte';
 </script>
 
 <Header />
@@ -10,12 +11,10 @@
 	<slot />
 </main>
 
-<footer class="footer">
-	<p>kukur@뻐꾸기</p>
-</footer>
+<Footer />
 
 <style>
-	main {
+	/* main {
 		min-height: calc(100vh - 100px - 20px);
 	}
 	footer {
@@ -25,5 +24,5 @@
 		color: darkgray;
 		bottom: 0px;
 		height: 20px;
-	}
+	} */
 </style>
