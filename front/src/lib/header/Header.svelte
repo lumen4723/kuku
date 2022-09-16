@@ -1,16 +1,37 @@
 <script>
 	import { page } from '$app/stores';
+	let navbarStatus = false;
 </script>
 
 <header>
 	<section class="hero is-primary">
 		<div class="hero-head">
 			<nav class="navbar">
-				<div class="container">
+				<div class="container is-fluid">
 					<div class="navbar-brand">
 						<a class="navbar-item" sveltekit:prefetch href="/">KUKU</a>
+
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<a
+							role="button"
+							class="navbar-burger"
+							class:is-active={navbarStatus}
+							aria-label="menu"
+							aria-expanded="false"
+							data-target="navbarMenuHeroA"
+							on:clickic={() => (navbarStatus = !navbarStatus)}
+							on:clickic={() => console.log('click')}
+						>
+							<span aria-hidden="true" />
+							<span aria-hidden="true" />
+							<span aria-hidden="true" />
+						</a>
 					</div>
-					<div class="navbar-menu">
+					<div
+						id="navbarMenuHeroA"
+						class="navbar-menu"
+						class:is-active={navbarStatus}
+					>
 						<div class="navbar-start">
 							<a
 								class="navbar-item"
@@ -30,14 +51,17 @@
 								sveltekit:prefetch
 								href="/study">문제</a
 							>
-							<div class="navbar-item has-dropdown is-active">
+							<div class="navbar-item has-dropdown is-hoverable">
 								<a class="navbar-link">뭐하지</a>
-								<div class="navbar-dropdown">
-									<a class="navbar-item">Overview</a>
-									<a class="navbar-item">Elements</a>
-									<a class="navbar-item">Components</a>
+								<div class="navbar-dropdown is-boxed">
+									<a class="navbar-item"> Overview </a>
+									<a class="navbar-item"> Modifiers </a>
+									<a class="navbar-item"> Columns </a>
+									<a class="navbar-item"> Layout </a>
+									<a class="navbar-item"> Form </a>
 									<hr class="navbar-divider" />
-									<div class="navbar-item">Version 0.9.4</div>
+									<a class="navbar-item"> Elements </a>
+									<a class="navbar-item is-active"> Components </a>
 								</div>
 							</div>
 						</div>
