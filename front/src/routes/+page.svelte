@@ -26,6 +26,7 @@
                 <div class="column">
                     <div style="padding-left: 30px; padding-top: 10px">
                         <img src="https://via.placeholder.com/560x500" alt="">
+                        <br>사진은 생각해놓음
                     </div>
                 </div>
             </div>
@@ -39,15 +40,15 @@
                 <h1 class="title" 
                 style="word-break: keep-all; 
                 padding-left: 15%;">
-                    다양한 알고리즘 트랙
+                    알고리즘 트랙을 골라 실력을 향상시켜보세요!
                 </h1>
             </div>
         </div>
         <div class="columns">
             <div class="column">
                 <div class="box" style="width: 80%; margin: 0 auto; height: 200px">
-                    I'm in a box.
-                  </div>
+                    누가 carousel 좀 알려줘
+                </div>
             </div>
         </div>
     </div>
