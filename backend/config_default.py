@@ -7,3 +7,5 @@ class Config:
     }
 
     HTTP = {"port": 8089}
+
+    salt = "eCkvD5gW8sqyxVCN24kzC7fEefteLEZDswSQ9wMFPjRPpXt2DRFLmwyQptvPMFFPShXN4UpCrQP6TRVjYWDcwvT6XRnwwRCrMUbaVPstMwbbEXDyWur4Gnc5"
