@@ -1,6 +1,8 @@
 ################# 프로젝트 #########################
-backend/config.py
+backend/config_custom.py
 
+*.pyc
+*/__pycache__/
 ################# VS Code ##########################
 
 .vscode
@@ -149,7 +151,7 @@ front/.pnp.*
 
 ################# Python ##########################
 # Byte-compiled / optimized / DLL files
-backend/__pycache__/
+backend/__pycache__
 backend/*.py[cod]
 backend/*$py.class
 
