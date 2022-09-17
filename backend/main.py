@@ -10,7 +10,7 @@ app.include_router(user.router)
 
 @app.get("/")
 async def main():
-    return {"message": "Helloworld FastAPI", "data": user.schemas.Test()}
+    return {"message": "Helloworld FastAPI"}
 
 
 if __name__ == "__main__":
