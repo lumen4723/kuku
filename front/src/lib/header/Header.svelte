@@ -7,7 +7,9 @@
 	<section class="hero is-primary">
 		<div class="hero-head">
 			<nav class="navbar">
-				<div class="container is-fluid">
+				<div class="container is-fluid"
+				style="padding: 0px 6%;
+				position: fixed;">
 					<div class="navbar-brand">
 						<a class="navbar-item" sveltekit:prefetch href="/">KUKU</a>
 

@@ -36,7 +36,7 @@
 		</div>
 	</div>
 </main> -->
-<section class="hero is-primary is-fullheight">
+<section class="hero is-primary is-halfheight">
     <div class="hero-body">
 		<main class="container mt-4">
 			<div class="columns">
