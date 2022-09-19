@@ -10,7 +10,7 @@
 
 	let valid_email =
 		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
+	let vaild_name = /^[가-힣]{2,6}|[a-zA-Z]{2,10}\s[a-zA-Z]{2,10}$/;
 	let show_password = false;
 	let show_confirmpassword = false;
 	function passwordShow_button() {
@@ -84,8 +84,8 @@
 		<div class="control has-icons-left has-icons-right">
 			<input
 				class="input"
-				class:is-danger={is_empty(name)}
-				class:is-success={!is_empty(name)}
+				class:is-danger={!is_empty(name) && name.match(vaild_name) == null}
+				class:is-success={name.match(vaild_name)}
 				name="name"
 				type="text"
 				placeholder="Your name"
@@ -94,15 +94,17 @@
 			<span class="icon is-small is-left">
 				<i
 					class="fa-regular fa-user"
-					class:has-text-danger={is_empty(name)}
-					class:has-text-success={!is_empty(name)}
+					class:has-text-danger={!is_empty(name) &&
+						name.match(vaild_name) == null}
+					class:has-text-success={name.match(vaild_name)}
 				/>
 			</span>
 			<span class="icon is-small is-right">
 				<i
 					class="fas fa-check"
-					class:has-text-danger={is_empty(name)}
-					class:has-text-success={!is_empty(name)}
+					class:has-text-danger={!is_empty(name) &&
+						name.match(vaild_name) == null}
+					class:has-text-success={name.match(vaild_name)}
 				/>
 			</span>
 		</div>
@@ -201,6 +203,16 @@
 					bind:this={passwordThis}
 					on:input={() => (password = passwordThis.value)}
 				/>
+				<span class="icon is-small is-left">
+					<i
+						class="fas fa-key"
+						class:has-text-danger={(!is_empty(password) &&
+							password.length < 8) ||
+							password.length > 128}
+						class:has-text-success={password.length > 7 &&
+							password.length < 129}
+					/>
+				</span>
 				<span class="icon is-small is-right">
 					<i
 						class={show_password
@@ -235,6 +247,16 @@
 				bind:this={confirmpasswordThis}
 				on:input={() => (confirmpassword = confirmpasswordThis.value)}
 			/>
+			<span class="icon is-small is-left">
+				<i
+					class="fas fa-key"
+					class:has-text-danger={(!is_empty(password) &&
+						password.length < 8) ||
+						password.length > 128}
+					class:has-text-success={password.length > 7 &&
+						password.length < 129}
+				/>
+			</span>
 			<span class="icon is-small is-right">
 				<i
 					class={show_confirmpassword

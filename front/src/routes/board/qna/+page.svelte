@@ -7,8 +7,8 @@
 		return data;
 	};
 
-	let boardFree = load();
-	console.log(boardFree);
+	let boardQna = load();
+	console.log(boardQna);
 </script>
 
 <table class="table container is-fluid">
@@ -51,12 +51,12 @@
 		</tr>
 	</tfoot>
 	<tbody>
-		{#await boardFree}
+		{#await boardQna}
 			<h2>Loading....</h2>
 		{:then data}
 			{#each data as { created, title, author, id, like }}
 				<tr>
-					<td><a sveltekit:prefetch href="/boardFree/{id}">{title}</a></td>
+					<td><a sveltekit:prefetch href="/board/qna/{id}">{title}</a></td>
 					<td>{author}</td>
 					<td>{created}</td>
 					<td>{like}</td>

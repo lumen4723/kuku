@@ -37,15 +37,15 @@
 						<div class="navbar-start">
 							<a
 								class="navbar-item"
-								class:is-active={$page.url.pathname === '/boardFree'}
+								class:is-active={$page.url.pathname === '/board/free'}
 								sveltekit:prefetch
-								href="/boardFree">자유게시판</a
+								href="/board/free">자유게시판</a
 							>
 							<a
 								class="navbar-item"
-								class:is-active={$page.url.pathname === '/boardQna'}
+								class:is-active={$page.url.pathname === '/board/qna'}
 								sveltekit:prefetch
-								href="/boardQna">질문게시판</a
+								href="/board/qna">질문게시판</a
 							>
 							<a
 								class="navbar-item"
