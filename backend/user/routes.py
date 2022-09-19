@@ -25,7 +25,7 @@ async def create_user(
 ):
     return database.create_user(user, session).map_err(
         throwMsg
-    )
+    ).unwrap()
 
 
 # 모든 user 정보 보여주는 함수

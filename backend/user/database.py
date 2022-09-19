@@ -2,10 +2,11 @@ from option import *
 from pydantic import EmailStr
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlmodel import Field, SQLModel
-from typing import Optional
+from sqlmodel import Field, SQLModel, Relationship
+from typing import Optional , List
 from .securiy import get_password_hash
 from utils.exception import *
+
 
 class User(SQLModel, table=True):
     uid: Optional[int] = Field(default=None, primary_key=True)
@@ -17,6 +18,9 @@ class User(SQLModel, table=True):
         default=0
     )  # emailuncormfirmed = 0, emailconformed = 1,  upser = 2
     state: int = Field(default=1)  # deleted = 0, normal = 1
+    
+    # board_free <-> user table
+    free : List["board_free"] = Relationship(back_populates="userRel")
 
 
 # get user by email
