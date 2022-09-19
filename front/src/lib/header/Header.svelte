@@ -1,61 +1,67 @@
 <script>
 	import { page } from '$app/stores';
+	let navbarStatus = false;
 </script>
 
 <header>
-	<nav class="navbar">
+	<nav class="navbar is-primary">
 		<div class="navbar-brand">
-			<a sveltekit:prefetch href="/" class="navbar-item">KUKU</a>
+			<a class="navbar-item" sveltekit:prefetch href="/">KUKU</a>
+			<!-- svelte-ignore a11y-missing-attribute -->
+			<a
+				role="button"
+				class="navbar-burger"
+				aria-label="menu"
+				aria-expanded="false"
+				data-target="navbarMenu"
+				on:click={() => (navbarStatus = !navbarStatus)}
+			>
+				<span aria-hidden="true" />
+				<span aria-hidden="true" />
+				<span aria-hidden="true" />
+			</a>
 		</div>
-
-		<ul>
-			<li class:active={$page.url.pathname === '/board'}>
-				<a sveltekit:prefetch href="/board">게시판</a>
-			</li>
-			<li class:active={$page.url.pathname === '/study'}>
-				<a sveltekit:prefetch href="/study">문제</a>
-			</li>
-		</ul>
+		<div
+			id="navbarMenu"
+			class="navbar-menu"
+			class:is-active={navbarStatus}
+		>
+			<div class="navbar-start">
+				<a
+					class="navbar-item"
+					class:is-active={$page.url.pathname === '/board/free'}
+					sveltekit:prefetch
+					href="/board/free">자유게시판</a
+				>
+				<a
+					class="navbar-item"
+					class:is-active={$page.url.pathname === '/board/qna'}
+					sveltekit:prefetch
+					href="/board/qna">질문게시판</a
+				>
+				<a
+					class="navbar-item"
+					class:is-active={$page.url.pathname === '/study'}
+					sveltekit:prefetch
+					href="/study">문제</a
+				>
+				<!-- <div class="navbar-item has-dropdown">
+								<a class="navbar-link">뭐하지</a>
+								<div class="navbar-dropdown ">
+									<a class="navbar-item"> Overview </a>
+									<a class="navbar-item"> Modifiers </a>
+									<a class="navbar-item"> Columns </a>
+									<a class="navbar-item"> Layout </a>
+									<a class="navbar-item"> Form </a>
+									<hr class="navbar-divider" />
+									<a class="navbar-item"> Elements </a>
+									<a class="navbar-item"> Components </a>
+								</div>
+							</div> -->
+			</div>
+			<div class="navbar-end">
+				<a class="navbar-item" sveltekit:prefetch href="/account">Login</a>
+			</div>
+		</div>
 	</nav>
-
-	<div class="corner"><a sveltekit:prefetch href="/account">Login</a></div>
 </header>
-
-<style>
-	header {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.corner {
-		width: 3em;
-		height: 3em;
-	}
-
-	nav {
-		display: flex;
-		justify-content: center;
-	}
-
-	ul {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		list-style: none;
-	}
-
-	li {
-		position: relative;
-	}
-
-	nav a {
-		display: flex;
-		align-items: center;
-		padding: 0 1em;
-		font-size: 1rem;
-		letter-spacing: 0.1em;
-		color: black;
-		text-decoration: none;
-	}
-</style>

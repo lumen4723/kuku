@@ -1,5 +1,4 @@
-// src/routes/+layout.js
-
 // This can be false if you're using a fallback (i.e. SPA mode)
+// src/routes/+layout.js
+export const csr = true;
 export const prerender = false;
-export const ssr = false;
