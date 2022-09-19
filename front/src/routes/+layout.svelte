@@ -12,17 +12,3 @@
 </main>
 
 <Footer />
-
-<style>
-	/* main {
-		min-height: calc(100vh - 100px - 20px);
-	}
-	footer {
-		width: 100%;
-		text-align: center;
-		font-size: small;
-		color: darkgray;
-		bottom: 0px;
-		height: 20px;
-	} */
-</style>
