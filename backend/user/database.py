@@ -3,10 +3,9 @@ from pydantic import EmailStr
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional , List
+from typing import Optional, List
 from .securiy import get_password_hash
 from utils.exception import *
-
 
 class User(SQLModel, table=True):
     uid: Optional[int] = Field(default=None, primary_key=True)
