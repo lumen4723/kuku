@@ -1,13 +1,10 @@
-from . import database, schemas
+from . import database
 from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 from option import *
 import utils
-from typing import Any
-from sqlalchemy.exc import IntegrityError
-from .exceptions import *
-from .securiy import get_password_hash
-from .schemas import User, createuser
+from .schemas import createuser
+from utils.exception import throwMsg
 
 router = APIRouter(
     prefix="/user",

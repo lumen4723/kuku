@@ -17,4 +17,5 @@ async def main():
 if __name__ == "__main__":
     import uvicorn
 
+    print("port -> ", Config.HTTP["port"])
     uvicorn.run("main:app", host="127.0.0.1", port=Config.HTTP["port"], reload=True)

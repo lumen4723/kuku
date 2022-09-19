@@ -2,11 +2,10 @@ from option import *
 from pydantic import EmailStr
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional , List
+from sqlmodel import Field, SQLModel
+from typing import Optional
 from .securiy import get_password_hash
 from utils.exception import *
-
 
 class User(SQLModel, table=True):
     uid: Optional[int] = Field(default=None, primary_key=True)
@@ -27,9 +26,8 @@ class User(SQLModel, table=True):
 def get_user_by_email(email: str, db: Session):
     return db.query(User).filter_by(email=email).first()
 
-
 # create_user
-def create_user(object_in: User, db: Session) -> Result[User, str]:
+def create_user(object_in: User, db: Session) -> Result:
     try:
         object_in.password = get_password_hash(object_in.password)
         user = User.from_orm(object_in)
@@ -42,16 +40,14 @@ def create_user(object_in: User, db: Session) -> Result[User, str]:
         err_msg = str(e).lower()
 
         if "username_unique" in err_msg:
-            return Err("duplicated username")
+            return Err(AlreadyExists())
         if "email_unique" in err_msg:
-            return Err("duplicated email")
-
+            return Err(AlreadyExists())
         if "data too long" in err_msg:
-            return Err("malformed form data")
+            return Err(DefaultException(detail = "malformed form data"))
         if "is not a valid" in err_msg:
-            return Err("form data vaildation error")
-
-        return Err("Unknown Error")
+            return Err(DefaultException(detail = "form data is not a valid"))
+        return Err(DefaultException(detail = "unknown error"))
 
 
 # get all user objects
