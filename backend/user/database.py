@@ -2,8 +2,8 @@ from option import *
 from pydantic import EmailStr
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlmodel import Field, SQLModel
-from typing import Optional
+from sqlmodel import Field, SQLModel, Relationship
+from typing import Optional, List
 from .securiy import get_password_hash
 from utils.exception import *
 
