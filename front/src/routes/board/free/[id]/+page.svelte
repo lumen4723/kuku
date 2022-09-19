@@ -4,4 +4,3 @@
 </script>
 
 {$page.params.id}
-
