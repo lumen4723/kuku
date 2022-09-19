@@ -1,10 +1,17 @@
 from option import *
-from pydantic import BaseModel
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, relationship
+from pydantic import EmailStr
+from datetime import datetime
+from sqlalchemy.orm import Session
+from sqlmodel import Field, SQLModel, Relationship
+from typing import Optional , List
+from .securiy import get_password_hash
+from utils.exception import *
 
 Base = declarative_base()
+
+    # board_free <-> user table
+    free : List["board_free"] = Relationship(back_populates="userRel")
+
 
 
 class User(Base):
