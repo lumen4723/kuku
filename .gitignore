@@ -3,6 +3,7 @@ backend/config_custom.py
 
 *.pyc
 */__pycache__/
+*.orig
 ################# VS Code ##########################
 
 .vscode
