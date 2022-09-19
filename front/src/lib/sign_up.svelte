@@ -228,7 +228,7 @@
 				</span>
 			</div>
 		</div>
-		<p class="help">Should contail at least 8 ~ 128 characters</p>
+		<p class="help">Should contain at least 8 ~ 128 characters</p>
 	</div>
 
 	<div class="field">
@@ -250,10 +250,10 @@
 			<span class="icon is-small is-left">
 				<i
 					class="fas fa-key"
-					class:has-text-danger={(!is_empty(password) &&
-						password.length < 8) ||
-						password.length > 128}
-					class:has-text-success={password.length > 7 &&
+					class:has-text-danger={!is_empty(confirmpassword) &&
+						password !== confirmpassword}
+					class:has-text-success={password === confirmpassword &&
+						password.length > 7 &&
 						password.length < 129}
 				/>
 			</span>
