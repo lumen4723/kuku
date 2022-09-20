@@ -2,10 +2,16 @@
 	import { page } from '$app/stores';
 	import List from '../+page.svelte';
 	import Header from '$lib/header/HeaderBC.svelte';
-	import Like from '$lib/Like.svelte';
+
 	//let count;
 	//count = isClicked? count+1 : count
-
+	let isClicked = false;
+	const likeclick = () => {
+		isClicked = !isClicked;
+	};
+	const alt = () => {
+		alert('로그인이 필요합니다.');
+	};
 	let isLogin = false;
 </script>
 
@@ -15,7 +21,19 @@
 
 <div class="content" />
 
-<Like />
+<div style="margin: 0 auto; width: 100px; text-align: center">
+	<span class="is-size-3">
+		{#if isLogin}
+			<i
+				class={isClicked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
+				on:click={likeclick}
+			/>
+		{:else}
+			<i class="fa-regular fa-heart" on:click={alt} />
+		{/if}
+	</span>
+	<div>추천 count</div>
+</div>
 
 <hr style="margin-top: 0;" />
 
@@ -55,6 +73,9 @@
 <style>
 	hr {
 		border: 1px solid #dbdbdb;
+	}
+	span i {
+		color: rgb(251, 106, 130);
 	}
 	.content {
 		width: 100%;
