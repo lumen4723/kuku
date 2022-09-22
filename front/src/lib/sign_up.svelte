@@ -1,13 +1,10 @@
 <script>
 	import { is_empty } from 'svelte/internal';
 
-	let submitted = false;
 	let username = '',
 		email = '',
 		password = '',
 		confirmpassword = '';
-
-	let postResult = null;
 
 	let valid_email =
 		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -95,7 +92,7 @@
 	};
 </script>
 
-<form on:submit|preventDefault={postUser}>
+<form method="post" on:submit|preventDefault={postUser}>
 	<div class="field">
 		<label class="label" for="username">Username</label>
 		<div class="control has-icons-left has-icons-right">

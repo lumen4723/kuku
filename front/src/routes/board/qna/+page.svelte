@@ -3,7 +3,9 @@
 	import BoadList from '$lib/BoardList.svelte';
 
 	const getBoardList = async ({ params }) => {
-		const res = await fetch('http://home-sv:8080', { mode: 'cors' });
+		const res = await fetch('http://localhost:8089/board_qna/getAll', {
+			mode: 'cors'
+		});
 		const qnaBoard = await res.json();
 		if (res.ok) {
 			return qnaBoard;
