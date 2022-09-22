@@ -1,5 +1,5 @@
 <script>
-    export let boardList;
+	export let boardList;
 </script>
 
 <table class="table container is-fluid">
@@ -53,10 +53,7 @@
 		{:then freeBoard}
 			{#each freeBoard.data.free as free}
 				<tr>
-					<td
-						><a sveltekit:prefetch href="free/{free.id}">{free.title}</a
-						></td
-					>
+					<td><a href="free/{free.id}">{free.title}</a></td>
 					<td>{free.author}</td>
 					<td>{free.created}</td>
 					<td>{free.like}</td>

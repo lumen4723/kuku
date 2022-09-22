@@ -1,16 +1,16 @@
 <script>
 	import { is_empty } from 'svelte/internal';
 
-	let name = '',
-		username = '',
+	let submitted = false;
+	let username = '',
 		email = '',
 		password = '',
 		confirmpassword = '';
-	let message = { success: null, display: '' };
+
+	let postResult = null;
 
 	let valid_email =
 		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	let vaild_name = /^[가-힣]{2,6}|[a-zA-Z]{2,10}\s[a-zA-Z]{2,10}$/;
 	let show_password = false;
 	let show_confirmpassword = false;
 	function passwordShow_button() {
@@ -75,41 +75,27 @@
 			loading = false;
 		}
 	};
-	//
+
+	const postUser = async () => {
+		const res = await fetch('http://localhost:8089/user/user', {
+			method: 'POST',
+			headers: {
+				Aceept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				username,
+				password,
+				email
+			}),
+			mode: 'cors'
+		});
+		const json = await res.json();
+		postResult = JSON.stringify(json);
+	};
 </script>
 
-<form>
-	<div class="field">
-		<label class="label" for="name">Name</label>
-		<div class="control has-icons-left has-icons-right">
-			<input
-				class="input"
-				class:is-danger={!is_empty(name) && name.match(vaild_name) == null}
-				class:is-success={name.match(vaild_name)}
-				name="name"
-				type="text"
-				placeholder="Your name"
-				bind:value={name}
-			/>
-			<span class="icon is-small is-left">
-				<i
-					class="fa-regular fa-user"
-					class:has-text-danger={!is_empty(name) &&
-						name.match(vaild_name) == null}
-					class:has-text-success={name.match(vaild_name)}
-				/>
-			</span>
-			<span class="icon is-small is-right">
-				<i
-					class="fas fa-check"
-					class:has-text-danger={!is_empty(name) &&
-						name.match(vaild_name) == null}
-					class:has-text-success={name.match(vaild_name)}
-				/>
-			</span>
-		</div>
-		<p class="help">Write your name</p>
-	</div>
+<form on:submit|preventDefault={postUser}>
 	<div class="field">
 		<label class="label" for="username">Username</label>
 		<div class="control has-icons-left has-icons-right">
@@ -122,6 +108,7 @@
 				placeholder="Your username"
 				bind:value={username}
 				on:input={checkUsername}
+				required
 			/>
 			<span class="icon is-small is-left ">
 				<i
@@ -167,6 +154,7 @@
 				type="text"
 				placeholder="Your email"
 				bind:value={email}
+				required
 			/>
 			<span class="icon is-small is-left">
 				<i
@@ -202,6 +190,7 @@
 					placeholder="Set your new password"
 					bind:this={passwordThis}
 					on:input={() => (password = passwordThis.value)}
+					required
 				/>
 				<span class="icon is-small is-left">
 					<i
@@ -246,6 +235,7 @@
 				placeholder="Confirm your new password"
 				bind:this={confirmpasswordThis}
 				on:input={() => (confirmpassword = confirmpasswordThis.value)}
+				required
 			/>
 			<span class="icon is-small is-left">
 				<i
@@ -275,10 +265,14 @@
 
 	<div class="field is-grouped">
 		<div class="control">
-			<button class="button is-link" type="submit">Signup</button>
+			<button
+				class="button is-link"
+				type="submit"
+				on:click={() => (submitted = true)}>Signup</button
+			>
 		</div>
 		<div class="control">
-			<button class="button is-link is-light" type="submit">Cancel</button>
+			<button class="button is-link is-light" type="button">Cancel</button>
 		</div>
 	</div>
 </form>
