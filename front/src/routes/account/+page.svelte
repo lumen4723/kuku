@@ -37,7 +37,7 @@
 	</div>
 </main> -->
 <section class="hero is-primary is-halfheight">
-    <div class="hero-body">
+	<div class="hero-body">
 		<main class="container mt-4">
 			<div class="columns">
 				<div class="box column is-4 is-offset-4">
@@ -67,7 +67,3 @@
 		</main>
 	</div>
 </section>
-
-
-<style>
-</style>
