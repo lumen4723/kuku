@@ -23,9 +23,7 @@ async def user(email: str, session: Session = Depends(utils.database.get_db)):
 async def create_user(
     user: createuser, session: Session = Depends(utils.database.get_db)
 ):
-    return database.create_user(user, session).map_err(
-        throwMsg
-    ).unwrap()
+    return database.create_user(user, session).map_err(throwMsg).unwrap()
 
 
 # 모든 user 정보 보여주는 함수
