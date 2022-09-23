@@ -22,9 +22,10 @@ class board_free(SQLModel, table=True):
 
 
 # create board_free aritcle
-def create_article(object_in: board_free, db: Session) -> Result:
+def create_article(object_in: board_free,uid:int, db: Session) -> Result:
     try:
         article = board_free.from_orm(object_in)
+        article.userid = uid
         db.add(article)
         db.commit()
         db.refresh(article)
@@ -54,7 +55,18 @@ def get_article(start_page: int, db: Session):
         return Ok(articles)
     except Exception as e:
         err_msg = str(e).lower()
-        print(err_msg)
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+
+        return Err(DefaultException(detail="unknown error"))
+
+#get ariticle by id from
+def get_article_by_id(article_id: int, db: Session):
+    try:
+        article = db.query(board_free).filter_by(article_id=article_id).first()
+        return Ok(article)
+    except Exception as e:
+        err_msg = str(e).lower()
         if "background" in err_msg:
             return Err(DefaultException(detail="malformed form data"))
 
