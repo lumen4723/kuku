@@ -5,4 +5,3 @@ from pydantic import *
 class board_free_create(BaseModel):
     title: str = ''
     content: str = ''
-    userid: int = 0
