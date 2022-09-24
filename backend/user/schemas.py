@@ -1,21 +1,28 @@
+from datetime import datetime
+from mimetypes import init
 from option import *
 from pydantic import *
 
+
 class User(BaseModel):
-    username: str = ''
-    password: str = ''
+    username: str = ""
+    password: str = ""
 
-    # def __init__(self, username: str, password: str):
-    #     self.username = username
-    #     self.password = password
 
-#create_user class
+# create_user class
 class createuser(BaseModel):
-    username: str = ''
-    password: str = ''
-    email: str = ''
+    username: str = ""
+    password: str = ""
+    email: str = ""
 
-    # def __init__(self, username: str, password: str, email: str):
-    #     self.username = username
-    #     self.password = password
-    #     self.email = email
+
+# longin user class methods
+class loginuser(BaseModel):
+    username: str = ""
+    password: str = ""
+
+
+class UserInformation(BaseModel):
+    username: str = ""
+    email: str = ""
+    created: datetime
