@@ -4,9 +4,10 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
-from .securiy import get_password_hash, verify_password
+from .security import get_password_hash, verify_password
 from utils.exception import *
 from .schemas import loginuser, UserInformation
+from ..board import database as BoardDatabase
 
 
 class User(SQLModel, table=True):
@@ -19,9 +20,9 @@ class User(SQLModel, table=True):
         default=0
     )  # emailuncormfirmed = 0, emailconformed = 1,  upser = 2
     state: int = Field(default=1)  # deleted = 0, normal = 1
-    
+
     # board_free <-> user table
-    free: List["board_free"] = Relationship(back_populates="userRel")
+    free: List["BoardDatabase.board_free"] = Relationship(back_populates="userRel")
 
 
 # get user by email
@@ -30,10 +31,14 @@ def get_user_by_email(email: str, db: Session):
 
 
 # get user by uid
-def get_user_by_uid(uid: int, db: Session)-> Result:
+def get_user_by_uid(uid: int, db: Session) -> Result:
     user = db.query(User).filter_by(uid=uid).first()
     if user is not None:
-        return Ok(UserInformation(username = user.username, email = user.email, created=user.created))
+        return Ok(
+            UserInformation(
+                username=user.username, email=user.email, created=user.created
+            )
+        )
     else:
         return Err(NotFound())
 
@@ -47,8 +52,10 @@ def create_user(object_in: User, db: Session) -> Result:
         db.commit()
         db.refresh(user)
         return Ok(
-            UserInformation(username = user.username, email = user.email, created=user.created)
-        ) 
+            UserInformation(
+                username=user.username, email=user.email, created=user.created
+            )
+        )
 
     except Exception as e:
         err_msg = str(e).lower()
