@@ -1,3 +1,7 @@
+<script>
+    import Carousel from '$lib/carousel.svelte';
+</script>
+
 <section class="hero is-primary is-halfheight">
     <div class="hero-body">
         <div class="container">
@@ -62,18 +66,7 @@
                     </h1>
                 </div>
             </div>
-            <div class="columns">
-                <div class="column">
-                    <div class="box"
-                    style="width: 86%;
-                    margin: 0 auto;
-                    border-radius: 10px;
-                    height: 240px"
-                    >
-                        누가 carousel 좀 알려줘
-                    </div>
-                </div>
-            </div>
+            <Carousel />
         </div>
         <div class="container block">
             <div class="columns"
@@ -90,18 +83,7 @@
                     </h1>
                 </div>
             </div>
-            <div class="columns">
-                <div class="column">
-                    <div class="box"
-                    style="width: 86%;
-                    margin: 0 auto;
-                    border-radius: 10px;
-                    height: 240px"
-                    >
-                        누가 carousel 좀 알려줘
-                    </div>
-                </div>
-            </div>
+            <Carousel />
         </div>
     </div>
 </section>
@@ -149,3 +131,6 @@
         </table>
     </div>
 </section>
+
+<style>
+</style>
