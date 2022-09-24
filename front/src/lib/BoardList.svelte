@@ -1,19 +1,30 @@
 <script>
 	export let boardList;
+	// 	{
+	//     "article_id": 1,
+	//     "userid": 1,
+	//     "state": 1,
+	//     "views": 0,
+	//     "title": "test",
+	//     "content": "test",
+	//     "created": "2022-09-19T19:29:49",
+	//     "like": 0
+	//   }
 </script>
 
-<table class="table container is-fluid">
+<table class="table container is-fluid has-text-centered">
 	<thead>
 		<tr>
-			<th>제목</th>
-			<th>작성자</th>
-			<th>작성일자</th>
-			<th>추천</th>
+			<th class="has-text-centered">제목</th>
+			<th class="has-text-centered">작성자</th>
+			<th class="has-text-centered">작성일자</th>
+			<th class="has-text-centered">추천</th>
+			<th class="has-text-centered">조회수</th>
 		</tr>
 	</thead>
 	<tfoot>
 		<tr>
-			<td colspan="4">
+			<td colspan="5">
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<nav class="pagination is-centered" aria-label="pagination">
 					<a class="pagination-previous">Previous</a>
@@ -48,20 +59,21 @@
 	<tbody>
 		{#await boardList}
 			<tr>
-				<td colspan="4">Loading...</td>
+				<td colspan="5">Loading...</td>
 			</tr>
 		{:then freeBoard}
-			{#each freeBoard.data.free as free}
+			{#each freeBoard as free}
 				<tr>
 					<td><a href="free/{free.id}">{free.title}</a></td>
-					<td>{free.author}</td>
+					<td>{free.userid}</td>
 					<td>{free.created}</td>
 					<td>{free.like}</td>
+					<td>{free.views}</td>
 				</tr>
 			{/each}
 		{:catch error}
 			<tr>
-				<td colspan="4">{error.message}</td>
+				<td colspan="5">{error.message}</td>
 			</tr>
 		{/await}
 	</tbody>
