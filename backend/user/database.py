@@ -7,10 +7,15 @@ from typing import Optional, List
 from .security import get_password_hash, verify_password
 from utils.exception import *
 from .schemas import loginuser, UserInformation
-from ..board import database as BoardDatabase
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from board.free.database import board_free
 
 
 class User(SQLModel, table=True):
+
     uid: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(sa_column_kwargs={"name": "username", "unique": True})
     password: str
@@ -22,7 +27,7 @@ class User(SQLModel, table=True):
     state: int = Field(default=1)  # deleted = 0, normal = 1
 
     # board_free <-> user table
-    free: List["BoardDatabase.board_free"] = Relationship(back_populates="userRel")
+    free: List["board_free"] = Relationship(back_populates="userRel")
 
 
 # get user by email
