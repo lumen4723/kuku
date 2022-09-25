@@ -23,6 +23,20 @@ class board_free(SQLModel, table=True):
 
 
 def _combine_username(articles: List["board_free"]) -> dict:
+    # if articles is board_free, then add username
+    if type(articles) is board_free:
+        return {
+            "article_id": articles.article_id,
+            "title": articles.title,
+            "content": articles.content,
+            "userid": articles.userid,
+            "username": articles.userRel.username,
+            "created": articles.created,
+            "state": articles.state,
+            "like": articles.like,
+            "views": articles.views,
+        }
+
     result = []
 
     for article in articles:
@@ -89,7 +103,7 @@ def list_article(db: Session, all: bool = False, page=1, limit=20):
 def get_article(article_id: int, db: Session):
     try:
         article = _combine_username(
-            db.query(board_free).join(User).filter_by(article_id=article_id).first()
+            db.query(board_free).filter_by(article_id=article_id).join(User).first()
         )
         return Ok(article)
 
