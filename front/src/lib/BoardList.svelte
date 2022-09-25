@@ -64,7 +64,7 @@
 		{:then freeBoard}
 			{#each freeBoard['list'] as free}
 				<tr>
-					<td><a href="./{free.article_id}">{free.title}</a></td>
+					<td><a href="../article/{free.article_id}">{free.title}</a></td>
 					<td>{free.username}</td>
 					<td>{free.created}</td>
 					<td>{free.like}</td>

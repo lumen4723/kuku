@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import List from '../+page.svelte';
+	import List from '../../[page]/+page.svelte';
 	import Header from '$lib/header/HeaderBC.svelte';
 
 	const getArticle = async (article_id) => {

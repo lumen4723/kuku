@@ -17,7 +17,7 @@
 		}
 	};
 
-	let boardList = getBoardList($page.url.searchParams.get('page') || 1);
+	let boardList = getBoardList($page.params.page || 1);
 </script>
 
 <BoadList {boardList} />
