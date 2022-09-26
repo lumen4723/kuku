@@ -1,6 +1,3 @@
-<script>
-</script>
-
 <header>
 	<!-- 검색 -->
 	<section class="hero is-small ">
@@ -12,3 +9,7 @@
 		</div>
 	</section>
 </header>
+
+<main class="container">
+	<slot />
+</main>
