@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
 from utils.exception import *
+from user.database import User
 
 
 class board_free(SQLModel, table=True):
@@ -21,10 +22,37 @@ class board_free(SQLModel, table=True):
     views: int = Field(default=0)
 
 
+def _combine_username(articles: List["board_free"]) -> dict:
+    # if articles is board_free, then add username
+    if type(articles) is board_free:
+        return {
+            "article_id": articles.article_id,
+            "title": articles.title,
+            "content": articles.content,
+            "userid": articles.userid,
+            "username": articles.userRel.username,
+            "created": articles.created,
+            "state": articles.state,
+            "like": articles.like,
+            "views": articles.views,
+        }
+
+    result = []
+
+    for article in articles:
+        a = article.dict()
+        a["username"] = article.userRel.username
+
+        result.append(a)
+
+    return result
+
+
 # create board_free aritcle
-def create_article(object_in: board_free, db: Session) -> Result:
+def create_article(object_in: board_free, uid: int, db: Session) -> Result:
     try:
         article = board_free.from_orm(object_in)
+        article.userid = uid
         db.add(article)
         db.commit()
         db.refresh(article)
@@ -39,22 +67,48 @@ def create_article(object_in: board_free, db: Session) -> Result:
         return Err(DefaultException(detail="unknown error"))
 
 
-# get all user objects
-def get_all_article_free(db: Session):
-    return db.query(board_free).all()
-
-
-# get ariticle
-def get_article(start_page: int, db: Session):
+def list_article(db: Session, all: bool = False, page=1, limit=20):
     try:
-        article_ct = db.query(board_free).count()
-        start = 0 + (start_page - 1) * 10
-        articles = db.query(board_free).offset(start).limit(10).all()
-        articles.append({"count": {article_ct}})
-        return Ok(articles)
+        article_cnt = db.query(board_free).count()
+        if all:
+            return Ok(
+                {
+                    "list": _combine_username(db.query(board_free).join(User).all()),
+                    "cnt": article_cnt,
+                }
+            )
+
+        start = (page - 1) * limit
+        list = _combine_username(
+            db.query(board_free).join(User).offset(start).limit(limit).all()
+        )
+        article_cnt = db.query(board_free).count()
+
+        return Ok(
+            {
+                "list": list,
+                "cnt": article_cnt,
+            }
+        )
+    except Exception as e:
+        print(e)
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+
+        return Err(DefaultException(detail="unknown error"))
+
+
+# get ariticle by id from
+def get_article(article_id: int, db: Session):
+    try:
+        article = _combine_username(
+            db.query(board_free).filter_by(article_id=article_id).join(User).first()
+        )
+        return Ok(article)
+
     except Exception as e:
         err_msg = str(e).lower()
-        print(err_msg)
         if "background" in err_msg:
             return Err(DefaultException(detail="malformed form data"))
 

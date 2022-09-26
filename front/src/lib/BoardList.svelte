@@ -62,10 +62,10 @@
 				<td colspan="5">Loading...</td>
 			</tr>
 		{:then freeBoard}
-			{#each freeBoard as free}
+			{#each freeBoard['list'] as free}
 				<tr>
-					<td><a href="free/{free.id}">{free.title}</a></td>
-					<td>{free.userid}</td>
+					<td><a href="../article/{free.article_id}">{free.title}</a></td>
+					<td>{free.username}</td>
 					<td>{free.created}</td>
 					<td>{free.like}</td>
 					<td>{free.views}</td>
