@@ -1,7 +1,25 @@
 <script>
 	import { page } from '$app/stores';
-	import List from '../+page.svelte';
+	import List from '../../[page]/+page.svelte';
 	import Header from '$lib/header/HeaderBC.svelte';
+
+	const getArticle = async (article_id) => {
+		const res = await fetch(
+			`http://api.eyo.kr:8081/board/free/article/${article_id}`,
+			{
+				mode: 'cors'
+			}
+		);
+
+		const article = await res.json();
+		if (res.ok) {
+			return article;
+		} else {
+			throw new Error(article);
+		}
+	};
+
+	let article = getArticle($page.params.id);
 
 	//let count;
 	//count = isClicked? count+1 : count
@@ -15,25 +33,29 @@
 	let isLogin = false;
 </script>
 
-<Header />
+{#await article}
+	<p class="has-text-centered">Loading in progress...</p>
+{:then article}
+	<Header {article} />
 
-<hr style="margin:0;" />
+	<hr style="margin:0;" />
 
-<div class="content" />
+	<div class="content">{@html article.content}</div>
 
-<div style="margin: 0 auto; width: 100px; text-align: center">
-	<span class="is-size-3">
-		{#if isLogin}
-			<i
-				class={isClicked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
-				on:click={likeclick}
-			/>
-		{:else}
-			<i class="fa-regular fa-heart" on:click={alt} />
-		{/if}
-	</span>
-	<div>추천 count</div>
-</div>
+	<div style="margin: 0 auto; width: 100px; text-align: center">
+		<span class="is-size-3">
+			{#if isLogin}
+				<i
+					class={isClicked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
+					on:click={likeclick}
+				/>
+			{:else}
+				<i class="fa-regular fa-heart" on:click={alt} />
+			{/if}
+		</span>
+		<div>추천 {article.like}</div>
+	</div>
+{/await}
 
 <hr style="margin-top: 0;" />
 

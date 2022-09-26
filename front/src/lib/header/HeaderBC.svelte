@@ -1,4 +1,5 @@
 <script>
+	export let article;
 	let isLogin = false;
 </script>
 
@@ -16,10 +17,10 @@
 			<span class="is-size-3">Title</span> <br />
 			<div style="float: left;">
 				<a class="author" href="/" style="color: #4A4A4A;"
-					>가나다라마바사아자차카타파하</a
+					>{article.title}</a
 				>
 				<span style="color: #DBDBDB;">|</span>
-				2022-09-18 &nbsp; 20:46:24
+				{article.created}
 			</div>
 		</div>
 		<div style="clear:both" />
