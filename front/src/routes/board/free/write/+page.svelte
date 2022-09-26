@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	let ClassicEditor;
 	onMount(async () => {
-		const module = await import('@ckeditor/ckeditor5-build-custom');
+		const module = await import('@ckeditor/ckeditor5-build-classic');
 		ClassicEditor = module.default;
 		ClassicEditor.create(document.querySelector('#editor'))
 			.then((editor) => {
