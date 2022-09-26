@@ -14,10 +14,10 @@
 			</div>
 		{/if}
 		<div style="float:left;">
-			<span class="is-size-3">Title</span> <br />
+			<span class="is-size-3">{article.title}</span> <br />
 			<div style="float: left;">
 				<a class="author" href="/" style="color: #4A4A4A;"
-					>{article.title}</a
+					>{article.author}</a
 				>
 				<span style="color: #DBDBDB;">|</span>
 				{article.created}
