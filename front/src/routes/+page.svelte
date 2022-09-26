@@ -96,7 +96,6 @@
     ">
         <table class="table
         is-bordered
-        is-striped
         is-hoverable
         is-fullwidth"
         style="
@@ -106,26 +105,35 @@
         >
             <thead>
                 <tr>
-                    <th style="text-align: center;">새로운 내용</th>
-                    <th style="text-align: center;">공지사항</th>
-                    <th style="text-align: center;">새로운 질문과 답변</th>
+                    <th colspan="3">새로운 내용</th>
+                    <th colspan="3">공지사항</th>
+                    <th colspan="3">새로운 질문과 답변</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>추가 어캐함</td>
-                    <td>추가 어캐함</td>
-                    <td>추가 어캐함</td>
+                    <td colspan="2">여기 제목 들어감</td>
+                    <td colspan="1">여기 이름 들어감</td>
+                    <td colspan="2">여기 제목 들어감</td>
+                    <td colspan="1">여기 이름 들어감</td>
+                    <td colspan="2">여기 제목 들어감</td>
+                    <td colspan="1">여기 분류 들어감</td>
                 </tr>
                 <tr>
-                    <td>추가 어캐함</td>
-                    <td>추가 어캐함</td>
-                    <td>추가 어캐함</td>
+                    <td colspan="2">how add this?</td>
+                    <td colspan="1">추가 어캐함</td>
+                    <td colspan="2">how add it?</td>
+                    <td colspan="1">추가 어캐함</td>
+                    <td colspan="2">how add this?</td>
+                    <td colspan="1">추가 어캐함</td>
                 </tr>
                 <tr>
-                    <td>추가 어캐함</td>
-                    <td>추가 어캐함</td>
-                    <td>추가 어캐함</td>
+                    <td colspan="2">how do you do?</td>
+                    <td colspan="1">추가 어캐함</td>
+                    <td colspan="2">how add it?</td>
+                    <td colspan="1">추가 어캐함</td>
+                    <td colspan="2">how are you?</td>
+                    <td colspan="1">추가 어캐함</td>
                 </tr>
             </tbody>
         </table>
@@ -133,4 +141,11 @@
 </section>
 
 <style>
+    thead tr {
+        background-color: #10e1c2;
+    }
+    thead th {
+        text-align: center;
+        color: #ffffff;
+    }
 </style>
