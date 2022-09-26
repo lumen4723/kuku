@@ -5,7 +5,7 @@
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/free/article/${article_id}`,
+			`http://api.eyo.kr:8081/board/free/article_id/${article_id}`,
 			{
 				mode: 'cors'
 			}
