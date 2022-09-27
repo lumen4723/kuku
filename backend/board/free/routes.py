@@ -21,7 +21,7 @@ async def user(session: Session = Depends(utils.database.get_db)):
 
 # create article router
 @router.post(
-    "/article", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
+    "/create", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
 )
 async def create_article(
     article: board_free_create,
@@ -48,8 +48,45 @@ async def list_article(
 
 
 # get article by id router
-@router.get("/article/{article_id}")
+@router.get("/article_id/{article_id}")
 async def get_article_by_id(
     article_id: int, session: Session = Depends(utils.database.get_db)
 ):
-    return database.get_article(article_id, session).map_err(throwMsg).unwrap()
+    return database.get_article_by_id(article_id, session).map_err(throwMsg).unwrap()
+
+
+# get article by uid router
+@router.get("/uid/{uid}")
+async def get_article_by_uid(
+    uid: int, session: Session = Depends(utils.database.get_db)
+):
+    return database.get_article_by_uid(uid, session).map_err(throwMsg).unwrap()
+
+
+# delete articles from database
+@router.delete("/delete/{article_id}", dependencies=[Depends(cookie)])
+async def delete_article(
+    article_id: int,
+    session: Session = Depends(utils.database.get_db),
+    session_data: SessionData = Depends(verifier),
+):
+    return (
+        database.delete_article(article_id, session_data.uid, session)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# update article
+@router.put("/update/{article_id}", dependencies=[Depends(cookie)])
+async def update_article(
+    article_id: int,
+    article: board_free_create,
+    session: Session = Depends(utils.database.get_db),
+    session_data: SessionData = Depends(verifier),
+):
+    return (
+        database.update_article(article_id, session_data.uid, article, session)
+        .map_err(throwMsg)
+        .unwrap()
+    )
