@@ -3,23 +3,23 @@
 	import List from '../../[page]/+page.svelte';
 	import Header from '$lib/header/HeaderBQC.svelte';
 
-	// const getArticle = async (article_id) => {
-	// 	const res = await fetch(
-	// 		`http://api.eyo.kr:8081/board/qna/list?start_page=${article_id}`,
-	// 		{
-	// 			mode: 'cors'
-	// 		}
-	// 	);
+	const getArticle = async (article_id) => {
+		const res = await fetch(
+			`http://api.eyo.kr:8081/board/qna/article/${article_id}`,
+			{
+				mode: 'cors'
+			}
+		);
 
-	// 	const article = await res.json();
-	// 	if (res.ok) {
-	// 		return article;
-	// 	} else {
-	// 		throw new Error(article);
-	// 	}
-	// };
+		const article = await res.json();
+		if (res.ok) {
+			return article;
+		} else {
+			throw new Error(article);
+		}
+	};
 
-	// let article = getArticle($page.params.id || 1);
+	let article = getArticle($page.params.id);
 
 	let isClicked = false;
 	const likeclick = () => {
@@ -40,6 +40,7 @@
 	let isLogin = true;
 </script>
 
+<<<<<<< HEAD
 <Header />
 
 <div style="clear:both" />
@@ -66,6 +67,76 @@
 	</span>
 	<div>추천 count</div>
 </div>
+=======
+{#await article}
+	<p class="has-text-centered">Loading in progress...</p>
+{:then article}
+	<!-- <Header {article} /> -->
+	<header>
+		<div style="padding: 16px">
+			{#if isLogin}
+				<div class="edit" style="float: right; margin-top: 16px">
+					<a href="/"
+						><button class="button is-rounded is-light"> 수정 </button></a
+					>
+					<button class="button is-rounded is-light"> 삭제 </button>
+				</div>
+			{/if}
+
+			<div style="float:left;">
+				<span class="is-size-3">title</span> <br />
+				<div style="float: left;">
+					<a class="author" href="/" style="color: #4A4A4A;">author</a>
+					<span style="color: #DBDBDB;">|</span>
+					created
+				</div>
+			</div>
+			<div style="clear:both" />
+
+			<div style="float:left;">
+				<div>
+					<div class="icon is-medium" style="float: left;">
+						<i class="fa-solid fa-tag" />
+					</div>
+					<a href="/board/qna/tag/">
+						<button
+							class="button is-rounded is-link is-light is-small is-responsive"
+						>
+							태그
+						</button>
+					</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<div style="clear:both" />
+
+	<hr style="margin:0;" />
+
+	<div class="content">
+		{@html article.content}
+		<!-- 이 부분은 질문의 내용 부분입니다. <br />
+	양식에 맞게 질문을 작성해주세요. <br /><br />
+	ex) 여기 링크가 있습니다. <a href="/">기술 블로그</a> <br />
+	,등등 -->
+	</div>
+
+	<div style="margin: 0 0 0 870px; width: 100px; text-align: center; 	">
+		<span class="is-size-3">
+			{#if isLogin}
+				<i
+					class={isClicked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
+					on:click={likeclick}
+				/>
+			{:else}
+				<i class="fa-regular fa-heart" on:click={alt} />
+			{/if}
+		</span>
+		<div>추천 {article.like}</div>
+	</div>
+{/await}
+>>>>>>> 572e953... untracked files on dev-backend: 5de52bc QnA 부분 적용
 
 <hr style="margin-top: 0;" />
 
