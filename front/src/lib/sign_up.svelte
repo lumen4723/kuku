@@ -262,11 +262,7 @@
 
 	<div class="field is-grouped">
 		<div class="control">
-			<button
-				class="button is-link"
-				type="submit"
-				on:click={() => (submitted = true)}>Signup</button
-			>
+			<button class="button is-link" type="submit">Signup</button>
 		</div>
 		<div class="control">
 			<button class="button is-link is-light" type="button">Cancel</button>

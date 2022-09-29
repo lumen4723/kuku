@@ -1,15 +1,21 @@
 <script>
-	import { beforeUpdate, afterUpdate, onMount } from 'svelte';
-	onMount(() => {
-		ClassicEditor.create(document.querySelector('#editor'), {
-			language: 'ko',
-			height: '800px'
-		});
+	import { onMount } from 'svelte';
+	let ClassicEditor;
+	onMount(async () => {
+		const module = await import('@ckeditor/ckeditor5-build-classic');
+		ClassicEditor = module.default;
+		ClassicEditor.create(document.querySelector('#editor'))
+			.then((editor) => {
+				console.log(editor);
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	});
 </script>
 
 <br />
-<div>
+<div class="content">
 	<form action="" method="POST">
 		<input
 			class="input is-medium mb-4"
@@ -22,12 +28,6 @@
 			placeholder="내용을 입력하세요."
 		/>
 	</form>
-	<script
-		src="https://cdn.ckeditor.com/ckeditor5/35.1.0/classic/ckeditor.js"></script>
-	<script
-		src="https://cdn.ckeditor.com/ckeditor5/35.1.0/classic/translations/ko.js"></script>
-	<script>
-	</script>
 	<hr />
 </div>
 <div class="file has-name">
@@ -43,7 +43,7 @@
 	</label>
 </div>
 <br />
-<button class="button is-info" style="float: right;">글쓰기</button>
+<button class="button is-info">완료</button>
 <br /> <br />
 
 <style>
@@ -52,7 +52,6 @@
 		height: 50em;
 		resize: none;
 	}
-
 	:global(.ck-editor__editable_inline) {
 		min-height: 400px;
 	}

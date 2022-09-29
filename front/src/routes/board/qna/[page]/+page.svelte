@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import BoadListQna from '$lib/boardListqna.svelte';
+	import BoadListQna from '$lib/BoardListqna.svelte';
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
