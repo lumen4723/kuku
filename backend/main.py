@@ -5,10 +5,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import user
 import board.free
+import board.qna
+
 
 app = FastAPI(title="kuku-api")
 app.include_router(user.router)
 app.include_router(board.free.router)
+app.include_router(board.qna.router)
 
 origins = ["*"]
 app.add_middleware(
@@ -22,8 +25,7 @@ app.add_middleware(
 
 @app.get("/")
 async def main():
-    return {"message": "Helloworld FastAPI"}
-
+    return {"message": "Hello!! fastapi"}
 
 if __name__ == "__main__":
     import uvicorn
