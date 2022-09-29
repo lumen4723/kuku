@@ -1,11 +1,5 @@
-<!-- <script>
-	import { page } from '$app/stores';
-	import Page from './[page]/+page.svelte';
-</script>
-
-{#if }
 <header>
-	
+	<!-- 검색 -->
 	<section class="hero is-small ">
 		<div class="hero-body">
 			<div class="container">
@@ -15,7 +9,7 @@
 		</div>
 	</section>
 </header>
-{/if} -->
+
 <main class="container">
 	<slot />
 </main>

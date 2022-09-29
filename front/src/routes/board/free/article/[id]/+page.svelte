@@ -9,7 +9,6 @@
 				mode: 'cors'
 			}
 		);
-
 		const article = await res.json();
 		if (res.ok) {
 			return article;
@@ -17,7 +16,6 @@
 			throw new Error(article);
 		}
 	};
-
 	let article = getArticle($page.params.id);
 
 	let isClicked = false;
