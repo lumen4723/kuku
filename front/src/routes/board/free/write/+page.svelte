@@ -15,7 +15,7 @@
 </script>
 
 <br />
-<div>
+<div class="content">
 	<form action="" method="POST">
 		<input
 			class="input is-medium mb-4"
@@ -52,10 +52,6 @@
 		height: 50em;
 		resize: none;
 	}
-	/* 
-	:global(.ck-editor__editable_inline > *) {
-		padding: 0 2em 0 2em;
-	} */
 	:global(.ck-editor__editable_inline) {
 		min-height: 400px;
 	}
