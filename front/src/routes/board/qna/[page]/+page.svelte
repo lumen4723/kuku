@@ -1,10 +1,10 @@
 <script>
 	import { page } from '$app/stores';
-	import BoadList from '$lib/BoardList.svelte';
+	import BoadListQna from '$lib/boardListqna.svelte';
 
-	const getBoardList = async (pageIdx) => {
+	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/list?start_page=${pageIdx}`,
+			`http://api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
 			{
 				mode: 'cors'
 			}
@@ -20,7 +20,7 @@
 		}
 	};
 
-	let boardList = getBoardList($page.params.page || 1);
+	let boardList = getBoardList($page.params.page || 1, 10);
 </script>
 
-<BoadList {boardList} />
+<BoadListQna {boardList} />

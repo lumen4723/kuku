@@ -46,6 +46,6 @@
 
 <style>
 	:global(.ck-editor__editable_inline) {
-		min-height: 300px;
+		min-height: 400px;
 	}
 </style>
