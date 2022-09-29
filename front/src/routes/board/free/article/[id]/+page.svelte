@@ -1,11 +1,10 @@
 <script>
 	import { page } from '$app/stores';
 	import List from '../../[page]/+page.svelte';
-	import Header from '$lib/header/HeaderBC.svelte';
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/free/article_id/${article_id}`,
+			`http://api.eyo.kr:8081/board/free/article/${article_id}`,
 			{
 				mode: 'cors'
 			}
@@ -21,8 +20,6 @@
 
 	let article = getArticle($page.params.id);
 
-	//let count;
-	//count = isClicked? count+1 : count
 	let isClicked = false;
 	const likeclick = () => {
 		isClicked = !isClicked;
@@ -36,7 +33,31 @@
 {#await article}
 	<p class="has-text-centered">Loading in progress...</p>
 {:then article}
-	<Header {article} />
+	<header>
+		<div style="padding: 16px">
+			{#if isLogin}
+				<div class="edit" style="float: right; margin-top: 16px">
+					<a href="/"
+						><button class="button is-rounded is-light"> 수정 </button></a
+					>
+					<button class="button is-rounded is-light"> 삭제 </button>
+				</div>
+			{/if}
+			<div style="float:left;">
+				<span class="is-size-3">{article.title}</span> <br />
+				<div style="float: left;">
+					<a
+						class="author"
+						href="/free/{article.username}"
+						style="color: #4A4A4A;">{article.username}</a
+					>
+					<span style="color: #DBDBDB;">|</span>
+					{article.created}
+				</div>
+			</div>
+			<div style="clear:both" />
+		</div>
+	</header>
 
 	<hr style="margin:0;" />
 
@@ -59,7 +80,7 @@
 
 <hr style="margin-top: 0;" />
 
-<div class="comment">
+<div class="comment" style="padding: 16px">
 	<table class="table container is-fluid">
 		<tbody>
 			<tr>
@@ -102,10 +123,10 @@
 	.content {
 		width: 100%;
 		height: 300px;
+		padding: 16px;
 	}
 	.comment table {
 		width: 100%;
-
 		background-color: rgba(239, 235, 235, 0.805);
 	}
 	textarea {

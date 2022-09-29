@@ -6,8 +6,6 @@ from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
 from utils.exception import *
 from user.database import User
-from board.information.database import change_information, board_information
-from sqlalchemy import desc
 
 
 class board_free(SQLModel, table=True):
@@ -58,7 +56,6 @@ def create_article(object_in: board_free, uid: int, db: Session) -> Result:
         db.add(article)
         db.commit()
         db.refresh(article)
-        change_information("free", 0, db).map_err(throwMsg).unwrap()
         return Ok(article)
 
     except Exception as e:
@@ -72,40 +69,21 @@ def create_article(object_in: board_free, uid: int, db: Session) -> Result:
 
 def list_article(db: Session, all: bool = False, page=1, limit=20):
     try:
-        article_cnt = db.query(board_information).filter_by(description="free").first()
-        if article_cnt is None:
-            article_cnt = 0
-        else:
-            article_cnt = article_cnt.size
+        article_cnt = db.query(board_free).count()
         if all:
             return Ok(
                 {
-                    "list": _combine_username(
-                        db.query(board_free)
-                        .filter_by(state=1)
-                        .order_by(board_free.created.desc())
-                        .join(User)
-                        .all()
-                    ),
+                    "list": _combine_username(db.query(board_free).join(User).all()),
                     "cnt": article_cnt,
                 }
             )
 
         start = (page - 1) * limit
         list = _combine_username(
-            db.query(board_free)
-            .filter_by(state=1)
-            .order_by(board_free.created.desc())
-            .join(User)
-            .offset(start)
-            .limit(limit)
-            .all()
+            db.query(board_free).join(User).offset(start).limit(limit).all()
         )
-        article_cnt = db.query(board_information).filter_by(description="free").first()
-        if article_cnt is None:
-            article_cnt = 0
-        else:
-            article_cnt = article_cnt.size
+        article_cnt = db.query(board_free).count()
+
         return Ok(
             {
                 "list": list,
@@ -113,6 +91,7 @@ def list_article(db: Session, all: bool = False, page=1, limit=20):
             }
         )
     except Exception as e:
+        print(e)
         err_msg = str(e).lower()
         if "background" in err_msg:
             return Err(DefaultException(detail="malformed form data"))
@@ -121,14 +100,10 @@ def list_article(db: Session, all: bool = False, page=1, limit=20):
 
 
 # get ariticle by id from
-def get_article_by_id(article_id: int, db: Session):
+def get_article(article_id: int, db: Session):
     try:
         article = _combine_username(
-            db.query(board_free)
-            .filter_by(article_id=article_id, state=1)
-            .order_by(board_free.created.desc())
-            .join(User)
-            .first()
+            db.query(board_free).filter_by(article_id=article_id).join(User).first()
         )
         return Ok(article)
 
@@ -136,75 +111,5 @@ def get_article_by_id(article_id: int, db: Session):
         err_msg = str(e).lower()
         if "background" in err_msg:
             return Err(DefaultException(detail="malformed form data"))
-        elif "nonetype" in err_msg:
-            return Err(NotFound())
-        return Err(DefaultException(detail="unknown error"))
 
-
-# get article by uid form
-def get_article_by_uid(uid: int, db: Session):
-    try:
-        article = _combine_username(
-            db.query(board_free)
-            .filter_by(userid=uid, state=1)
-            .order_by(board_free.created.desc())
-            .join(User)
-            .all()
-        )
-        return Ok(article)
-
-    except Exception as e:
-        err_msg = str(e).lower()
-        if "background" in err_msg:
-            return Err(DefaultException(detail="malformed form data"))
-        elif "nonetype" in err_msg:
-            return Err(NotFound())
-        return Err(DefaultException(detail="unknown error"))
-
-
-# delete article by id
-def delete_article(article_id: int, uid: int, db: Session):
-    try:
-        article = db.query(board_free).filter_by(article_id=article_id, state=1).first()
-        if article is None:
-            return Err(NotFound())
-        elif article.userid != uid:
-            return Err(NotAuthorized())
-        article.state = 0
-        db.add(article)
-        db.commit()
-        db.refresh(article)
-        change_information("free", 1, db).map_err(throwMsg).unwrap()
-        return Ok(article)
-
-    except Exception as e:
-        err_msg = str(e).lower()
-        if "background" in err_msg:
-            return Err(DefaultException(detail="malformed form data"))
-        elif "nonetype" in err_msg:
-            return Err(NotFound())
-        return Err(DefaultException(detail="unknown error"))
-
-
-# update article by id
-def update_article(article_id: int, uid: int, object_in: board_free, db: Session):
-    try:
-        article = db.query(board_free).filter_by(article_id=article_id, state=1).first()
-        if article is None:
-            return Err(NotFound())
-        elif article.userid != uid:
-            return Err(NotAuthorized())
-        article.title = object_in.title
-        article.content = object_in.content
-        db.add(article)
-        db.commit()
-        db.refresh(article)
-        return Ok(article)
-
-    except Exception as e:
-        err_msg = str(e).lower()
-        if "background" in err_msg:
-            return Err(DefaultException(detail="malformed form data"))
-        elif "nonetype" in err_msg:
-            return Err(NotFound())
         return Err(DefaultException(detail="unknown error"))
