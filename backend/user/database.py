@@ -28,7 +28,7 @@ class User(SQLModel, table=True):
 
     # board_free <-> user table
     free: List["board_free"] = Relationship(back_populates="userRel")
-
+    qna: List["board_qna"] = Relationship(back_populates="userRel")
 
 # get user by email
 def get_user_by_email(email: str, db: Session):
