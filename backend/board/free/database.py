@@ -106,12 +106,7 @@ def list_article(db: Session, all: bool = False, page=1, limit=20):
             article_cnt = 0
         else:
             article_cnt = article_cnt.size
-        return Ok(
-            {
-                "list": list,
-                "cnt": article_cnt,
-            }
-        )
+        return Ok({"list": list, "cnt": article_cnt,})
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:
@@ -130,6 +125,14 @@ def get_article_by_id(article_id: int, db: Session):
             .join(User)
             .first()
         )
+
+        # increase views by 1 when get article
+        article["views"] += 1
+        db.query(board_free).filter_by(article_id=article_id).update(
+            {"views": article["views"]}
+        )
+        db.commit()
+
         return Ok(article)
 
     except Exception as e:
