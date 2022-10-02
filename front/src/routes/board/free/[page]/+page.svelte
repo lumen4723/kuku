@@ -1,6 +1,11 @@
 <script>
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { each } from 'svelte/internal';
+	import Layout from '../../../+layout.svelte';
+
+	let current_page = 1;
+	let pageLimit = 10;
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
@@ -17,15 +22,23 @@
 		}
 	};
 
-	let boardList = getBoardList($page.params.page || 1, 10);
-	let rows = [];
-	let totalPages = [];
-	let currentPageRows = [];
-	let itemsPerPage = 10;
+	const changePage = (p) => {
+		console.log('changePage');
+		current_page = p + 1;
+	};
+
+	// let boardList = getBoardList(
+	// 	$page.params.page || current_page,
+	// 	pageLimit
+	// );
+	let boardList = getBoardList(current_page, pageLimit);
 </script>
 
 <div class="container">
-	<table class="table container is-fluid has-text-centered">
+	<table
+		class="table container is-fluid has-text-centered"
+		style="margin-bottom: 0;"
+	>
 		<thead>
 			<tr>
 				<th class="has-text-centered">제목</th>
@@ -35,26 +48,6 @@
 				<th class="has-text-centered">조회수</th>
 			</tr>
 		</thead>
-		<tfoot>
-			<tr>
-				<td colspan="5">
-					{#await boardList}
-						<tr>
-							<td colspan="5">Loading...</td>
-						</tr>
-					{:then boardList}
-						<!-- svelte-ignore a11y-no-redundant-roles -->
-						<nav
-							class="pagination is-centered"
-							role="navigation"
-							aria-label="pagination"
-						>
-							<ul class="pagination-list" />
-						</nav>
-					{/await}
-				</td>
-			</tr>
-		</tfoot>
 		<tbody>
 			{#await boardList}
 				<tr>
@@ -77,29 +70,56 @@
 				</tr>
 			{/await}
 		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="5" />
+			</tr></tfoot
+		>
 	</table>
-	<div class="field is-horizontal">
-		<div class="field-body">
-			<div class="select">
-				<select>
-					<option>제목</option>
-					<option>작성자</option>
-					<option>내용</option>
-				</select>
+	{#await boardList}
+		<div class="container is-fluid has-text-centered">
+			<div class="buttons is-centered">
+				<button class="button is-primary" disabled>이전</button>
+				<button class="button is-primary" disabled>다음</button>
 			</div>
-			<div class="control is-expanded has-icons-left">
-				<input
-					class="input"
-					type="text"
-					placeholder="검색어를 입력하세요."
-				/>
-				<span class="icon is-small is-left">
-					<i class="fas fa-search" />
-				</span>
+		</div>
+	{:then freeBoard}
+		<nav class="pagination is-centered" aria-label="pagination">
+			<ul class="pagination-list">
+				{#each Array(Math.ceil(freeBoard['cnt'] / pageLimit)) as n, i}
+					<li>
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<a class="pagination-link" on:click={changePage(i)}>{i + 1}</a>
+					</li>
+				{/each}
+			</ul>
+		</nav>
+	{/await}
+
+	<div class="container">
+		<div class="field is-horizontal">
+			<div class="field-body">
+				<div class="select">
+					<select>
+						<option>제목</option>
+						<option>작성자</option>
+						<option>내용</option>
+					</select>
+				</div>
+				<div class="control is-expanded has-icons-left">
+					<input
+						class="input"
+						type="text"
+						placeholder="검색어를 입력하세요."
+					/>
+					<span class="icon is-small is-left">
+						<i class="fas fa-search" />
+					</span>
+				</div>
+				<p class="control">
+					<button class="button is-info"> 검색 </button>
+				</p>
 			</div>
-			<p class="control">
-				<button class="button is-info"> 검색 </button>
-			</p>
 		</div>
 	</div>
 </div>
