@@ -1,5 +1,24 @@
 <script>
     import Carousel from '$lib/carousel.svelte';
+    import { page } from '$app/stores';
+
+    const getBoardList = async (pageIdx, pageLimit) => {
+		const res = await fetch(
+			`http://127.0.0.1:8000/board/free/list/${pageIdx}?limit=${pageLimit}`,
+			{
+				mode: 'cors'
+			}
+		);
+		const freeBoard = await res.json();
+		if (res.ok) {
+			return freeBoard;
+		} else {
+			throw new Error(freeBoard);
+		}
+	};
+
+    let boardList = getBoardList($page.params.page || 1, 10);
+
 </script>
 
 <section class="hero is-primary is-halfheight">
@@ -89,60 +108,144 @@
 </section>
 
 <section class="hero-body">
-    <div class="table-container"
-    style="
-    margin: 0px auto;
+    <div style="margin: 0px auto;
     width: 80%;
     ">
-        <table class="table
-        is-bordered
-        is-hoverable
-        is-fullwidth"
-        style="
-        text-align: center;
-        table-layout: fixed;
-        "
-        >
-            <thead>
-                <tr>
-                    <th colspan="3">새로운 내용</th>
-                    <th colspan="3">공지사항</th>
-                    <th colspan="3">새로운 질문과 답변</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="2">여기 제목 들어감</td>
-                    <td colspan="1">여기 이름 들어감</td>
-                    <td colspan="2">여기 제목 들어감</td>
-                    <td colspan="1">여기 이름 들어감</td>
-                    <td colspan="2">여기 제목 들어감</td>
-                    <td colspan="1">여기 분류 들어감</td>
-                </tr>
-                <tr>
-                    <td colspan="2">how add this?</td>
-                    <td colspan="1">추가 어캐함</td>
-                    <td colspan="2">how add it?</td>
-                    <td colspan="1">추가 어캐함</td>
-                    <td colspan="2">how add this?</td>
-                    <td colspan="1">추가 어캐함</td>
-                </tr>
-                <tr>
-                    <td colspan="2">how do you do?</td>
-                    <td colspan="1">추가 어캐함</td>
-                    <td colspan="2">how add it?</td>
-                    <td colspan="1">추가 어캐함</td>
-                    <td colspan="2">how are you?</td>
-                    <td colspan="1">추가 어캐함</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="columns">
+            <div class="column"
+            style="padding: 12px 0px;
+            ">
+                <div class="table-container">
+                    <table class="table
+                    is-bordered
+                    is-hoverable"
+                    style="
+                    text-align: center;
+                    table-layout: fixed;
+                    width: -webkit-fill-available;
+                    "
+                    >
+                        <thead>
+                            <tr>
+                                <th colspan="3">새로운 내용</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td colspan="2">여기 제목 들어감</td>
+                            <td colspan="1">여기 이름 들어감</td>
+                            {#await boardList}
+                                <tr>
+                                    <td colspan="3">Loading...</td>
+                                </tr>
+                            {:then freeBoard}
+                                {#each freeBoard['list'] as free}
+                                    <tr>
+                                        <td colspan="2"><a href="../article/{free.article_id}">{free.title}</a></td>
+                                        <td colspan="1">{free.username}</td>
+                                    </tr>
+                                {/each}
+                            {:catch error}
+                                <tr>
+                                    <td colspan="5">{error.message}</td>
+                                </tr>
+                            {/await}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="column"
+            style="padding: 12px 0px;
+            ">
+                <div class="table-container">
+                    <table class="table
+                    is-bordered
+                    is-hoverable"
+                    style="
+                    text-align: center;
+                    table-layout: fixed;
+                    width: -webkit-fill-available;
+                    ">
+                        <thead>
+                            <tr>
+                                <th colspan="3">공지사항</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td colspan="2">여기 제목 들어감</td>
+                            <td colspan="1">여기 시간 들어감</td>
+                            <!-- boardfree 의 state가 다른 애들 == 공지인 애들만 호출로 변경해야함 -->
+                            {#await boardList}
+                                <tr>
+                                    <td colspan="3">Loading...</td>
+                                </tr>
+                            {:then freeBoard}
+                                {#each freeBoard['list'] as free}
+                                    <tr>
+                                        <td colspan="2"><a href="../article/{free.article_id}">{free.title}</a></td>
+                                        <td colspan="1">
+                                            {#each [2,3,4,5,6,7,8,9] as i}
+                                                {free.created[i]}
+                                            {/each}
+                                        </td>
+                                    </tr>
+                                {/each}
+                            {:catch error}
+                                <tr>
+                                    <td colspan="5">{error.message}</td>
+                                </tr>
+                            {/await}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="column"
+            style="padding: 12px 0px;
+            ">
+                <div class="table-container">
+                    <table class="table
+                    is-bordered
+                    is-hoverable"
+                    style="
+                    text-align: center;
+                    table-layout: fixed;
+                    width: -webkit-fill-available;
+                    ">
+                        <thead>
+                            <tr>
+                                <th colspan="3">새로운 질문과 답변</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td colspan="2">여기 제목 들어감</td>
+                            <td colspan="1">여기 분류 들어감</td>
+                            <!-- qnaboard 제목이랑 분류로 변경해야함 -->
+                            {#await boardList}
+                                <tr>
+                                    <td colspan="3">Loading...</td>
+                                </tr>
+                            {:then freeBoard}
+                                {#each freeBoard['list'] as free}
+                                    <tr>
+                                        <td colspan="2"><a href="../article/{free.article_id}">{free.title}</a></td>
+                                        <td colspan="1">{free.state}</td>
+                                    </tr>
+                                {/each}
+                            {:catch error}
+                                <tr>
+                                    <td colspan="5">{error.message}</td>
+                                </tr>
+                            {/await}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 <style>
     thead tr {
-        background-color: #10e1c2;
+        background-color: #00d1b2;
     }
     thead th {
         text-align: center;
