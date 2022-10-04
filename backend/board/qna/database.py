@@ -1,11 +1,14 @@
 from option import *
-from pydantic import EmailStr
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
 from utils.exception import *
 from user.database import User
+from .schemas import Board_qna_question, Board_qna_answer
+from board.information.database import change_information, board_information
+from board.tag_qna.database import *
+from board.tag.database import *
 
 
 class board_qna(SQLModel, table=True):
@@ -18,13 +21,21 @@ class board_qna(SQLModel, table=True):
 
     created: datetime = Field(default=datetime.now())
     state: int = Field(default=1)  # deleted = 0, normal = 1
-    like: int = Field(default=0)
+    is_clear: int = Field(default=0)  # notCleared = 0, cleared = 1
+
+    parentid: Optional[int] = Field(default=None, foreign_key="board_qna.article_id")
     views: int = Field(default=0)
+    like: int = Field(default=0)
+
+    tagRel: List["board_qna_tag"] = Relationship(back_populates="boardRel")
 
 
-def _combine_username(articles: List["board_qna"]) -> dict:
+def _combine_username_tags(articles: List["board_qna"]) -> dict:
     # if articles is board_free, then add username
+    tagList = []
     if type(articles) is board_qna:
+        for getTag in articles.tagRel:
+            tagList.append(getTag.tagRel)
         return {
             "article_id": articles.article_id,
             "title": articles.title,
@@ -35,6 +46,7 @@ def _combine_username(articles: List["board_qna"]) -> dict:
             "state": articles.state,
             "like": articles.like,
             "views": articles.views,
+            "tags": tagList,
         }
 
     result = []
@@ -42,74 +54,353 @@ def _combine_username(articles: List["board_qna"]) -> dict:
     for article in articles:
         a = article.dict()
         a["username"] = article.userRel.username
-
+        for getTag in article.tagRel:
+            tagList.append(getTag.tagRel)
+        a["tags"] = tagList
+        tagList = []
         result.append(a)
-
     return result
 
 
 # create board_free aritcle
-def create_article(object_in: board_qna, uid: int, db: Session) -> Result:
+def create_question(object_in: Board_qna_question, uid: int, db: Session) -> Result:
     try:
-        article = board_qna.from_orm(object_in)
+        article = board_qna()
+        article.title = object_in.title
+        article.content = object_in.content
         article.userid = uid
         db.add(article)
         db.commit()
         db.refresh(article)
+        change_information("qna", 0, db)
+        for tag in object_in.tags:
+            tagid = get_id_by_slug(tag, db).unwrap()
+            create_tag_qna(article.article_id, tagid, db).unwrap()
         return Ok(article)
-
     except Exception as e:
         err_msg = str(e).lower()
         if "data too long" in err_msg:
             return Err(DefaultException(detail="malformed form data"))
         elif "foreign key constraint fails" in err_msg:
             return Err(DefaultException(detail="user id is not a valid"))
+        elif "change information error" in err_msg:
+            return Err(DefaultException(detail="change information error"))
+        elif "get id by slug error" in err_msg:
+            delete_all_tag_qna(article.article_id, db)
+            change_information("qna", -1, db)
+            db.delete(article)
+            db.commit()
+            return Err(DefaultException(detail="get id by slug error"))
+        elif "create tag qna error" in err_msg:
+            delete_all_tag_qna(article.article_id, db)
+            change_information("qna", -1, db)
+            db.delete(article)
+            db.commit()
+            return Err(DefaultException(detail="create tag qna error"))
+        return Err(DefaultException(detail=err_msg))
+
+
+# create board_free aritcle
+def create_answer(object_in: Board_qna_answer, uid: int, db: Session) -> Result:
+    try:
+        article = board_qna()
+        article.title = object_in.title
+        article.content = object_in.content
+        article.userid = uid
+        article.parentid = object_in.parentid
+        db.add(article)
+        db.commit()
+        db.refresh(article)
+        change_information("qna", 0, db)
+        return Ok(article)
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "data too long" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "foreign key constraint fails" in err_msg:
+            return Err(DefaultException(detail="user id is not a valid"))
+        elif "change information error" in err_msg:
+            db.delete(article)
+            db.commit()
+            return Err(DefaultException(detail="change information error"))
+        return Err(DefaultException(detail=err_msg))
+
+
+# delete board_qna aritcle
+def delete_article(article_id: int, uid: int, db: Session) -> Result:
+    try:
+        article = db.query(board_qna).filter_by(article_id=article_id).first()
+        if article is None:
+            return Err(NotFound())
+        if article.userid != uid:
+            return Err(NotAuthorized())
+        article.state = 0
+        db.add(article)
+        db.commit()
+        db.refresh(article)
+        change_information("qna", -1, db)
+        return Ok(article)
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "change information error" in err_msg:
+            return Err(DefaultException(detail="change information error"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
         return Err(DefaultException(detail="unknown error"))
 
 
-def list_article(db: Session, all: bool = False, page=1, limit=20):
+def list_article(
+    db: Session, all: bool = False, page=1, limit=20, like: bool = False
+) -> Result:
     try:
-        article_cnt = db.query(board_qna).count()
+        article_cnt = db.query(board_information).filter_by(description="qna").first()
         if all:
-            return Ok(
-                {
-                    "list": _combine_username(db.query(board_qna).join(User).all()),
-                    "cnt": article_cnt,
-                }
-            )
+            if not like:
+                return Ok(
+                    {
+                        "list": _combine_username_tags(
+                            db.query(board_qna)
+                            .filter_by(state=1, parentid=None)
+                            .join(User)
+                            .outerjoin(board_qna_tag)
+                            .order_by(board_qna.created.desc())
+                            .all()
+                        ),
+                        "cnt": article_cnt.size,
+                    }
+                )
+            else:
+                return Ok(
+                    {
+                        "list": _combine_username_tags(
+                            db.query(board_qna)
+                            .filter_by(state=1, parentid=None)
+                            .join(User)
+                            .outerjoin(board_qna_tag)
+                            .order_by(board_qna.like.desc())
+                            .order_by(board_qna.created.desc())
+                            .all()
+                        ),
+                        "cnt": article_cnt.size,
+                    }
+                )
 
         start = (page - 1) * limit
-        list = _combine_username(
-            db.query(board_qna).join(User).offset(start).limit(limit).all()
+        list = _combine_username_tags(
+            db.query(board_qna)
+            .filter_by(state=1)
+            .join(User)
+            .outerjoin(board_qna_tag)
+            .outerjoin(tag)
+            .order_by(board_qna.created.desc())
+            .offset(start)
+            .limit(limit)
+            .all()
+            if not like
+            else db.query(board_qna)
+            .filter_by(state=1)
+            .join(User)
+            .outerjoin(board_qna_tag)
+            .outerjoin(tag)
+            .order_by(board_qna.like.desc())
+            .offset(start)
+            .limit(limit)
+            .all()
         )
-        article_cnt = db.query(board_qna).count()
+
+        article_cnt = db.query(board_information).filter_by(description="qna").first()
 
         return Ok(
             {
                 "list": list,
-                "cnt": article_cnt,
+                "cnt": article_cnt.size,
             }
         )
     except Exception as e:
-        print(e)
         err_msg = str(e).lower()
         if "background" in err_msg:
             return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
 
+
+def _combine_username_tags_slug(articles: list) -> list:
+    # if articles is board_free, then add username
+    result = []
+    tagList = []
+    for article in articles:
+        a = article.board_qna.dict()
+        a["username"] = article.board_qna.userRel.username
+        for getTag in article.board_qna.tagRel:
+            tagList.append(getTag.tagRel)
+        a["tags"] = tagList
+        result.append(a)
+        tagList = []
+    return result
+
+
+def list_article_by_slug(
+    db: Session, slug: str, all: bool = False, page=1, limit=20, like=False
+) -> Result:
+    try:
+        # 성능 저하가 있다고 해도 이렇게 하는게 좋을듯 합니다. information으로 tag 관리를 하기에는 너무 복잡해질 것 같아서요.
+        count = (
+            db.query(tag)
+            .filter_by(slug=slug)
+            .join(board_qna_tag)
+            .join(board_qna)
+            .filter(board_qna.state == 1)
+            .count()
+        )
+        qurey = (
+            db.query(tag, board_qna_tag, board_qna)
+            .filter(tag.slug == slug)
+            .join(board_qna_tag, tag.tid == board_qna_tag.tagid)
+            .join(board_qna, board_qna_tag.article_id == board_qna.article_id)
+            .filter(board_qna.state == 1)
+        )
+        if all:
+            if not like:
+                return Ok(
+                    {
+                        "list": _combine_username_tags_slug(
+                            qurey.order_by(board_qna.created.desc()).all()
+                        ),
+                        "cnt": count,
+                    }
+                )
+            else:
+                return Ok(
+                    {
+                        "list": _combine_username_tags_slug(
+                            qurey.order_by(board_qna.like.desc())
+                            .order_by(board_qna.created.desc())
+                            .all()
+                        ),
+                        "cnt": count,
+                    }
+                )
+
+        start = (page - 1) * limit
+        if not like:
+            return Ok(
+                {
+                    "list": _combine_username_tags_slug(
+                        qurey.order_by(board_qna.created.desc())
+                        .offset(start)
+                        .limit(limit)
+                        .all()
+                    ),
+                    "cnt": count,
+                }
+            )
+        else:
+            return Ok(
+                {
+                    "list": _combine_username_tags_slug(
+                        qurey.order_by(board_qna.like.desc())
+                        .order_by(board_qna.created.desc())
+                        .offset(start)
+                        .limit(limit)
+                        .all()
+                    ),
+                    "cnt": count,
+                }
+            )
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
         return Err(DefaultException(detail="unknown error"))
 
 
 # get ariticle by id from
-def get_article(article_id: int, db: Session):
+def get_article(article_id: int, db: Session) -> Result:
     try:
-        article = _combine_username(
-            db.query(board_qna).filter_by(article_id=article_id).join(User).first()
+        article = (
+            db.query(board_qna)
+            .filter_by(article_id=article_id, state=1)
+            .join(User)
+            .outerjoin(board_qna_tag)
+            .first()
         )
+        article.views += 1
+        db.add(article)
+        db.commit()
+        article = _combine_username_tags(article)
+        answers = _combine_username_tags(
+            db.query(board_qna)
+            .filter_by(parentid=article_id, state=1)
+            .join(User)
+            .order_by(board_qna.like.desc())
+            .all()
+        )
+        article["answers"] = answers
         return Ok(article)
 
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:
             return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
 
+
+# update ariticle
+def update_article(
+    article_id: int, uid: int, object_in: Board_qna_question, db: Session
+) -> Result:
+    try:
+        article = db.query(board_qna).filter_by(article_id=article_id, state=1).first()
+        if article is None:
+            return Err(NotFound())
+        elif article.userid != uid:
+            return Err(NotAuthorized())
+        article.title = object_in.title
+        article.content = object_in.content
+        db.add(article)
+        db.commit()
+        db.refresh(article)
+        delete_all_tag_qna(article_id, db)
+        for getTag in object_in.tags:
+            tagid = get_id_by_slug(getTag, db).unwrap()
+            create_tag_qna(article_id, tagid, db).unwrap()
+        return Ok(article)
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "delete_all_tag_qna error" in err_msg:
+            return Err(DefaultException(detail="delete_all_tag_qna error"))
+        elif "get id by slug error" in err_msg:
+            return Err(DefaultException(detail="get id by slug error"))
+        elif "create tag qna error" in err_msg:
+            return Err(DefaultException(detail="create tag qna error"))
+        return Err(DefaultException(detail="unknown error"))
+
+
+# board_qna is_clear is sucessful
+def clear_article(article_id: int, uid: int, db: Session) -> Result:
+    try:
+        article = db.query(board_qna).filter_by(article_id=article_id, state=1).first()
+        if article is None:
+            return Err(NotFound())
+        elif article.userid != uid:
+            return Err(NotAuthorized())
+        db.add(article)
+        db.commit()
+        db.refresh(article)
+        return Ok(article)
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
         return Err(DefaultException(detail="unknown error"))
