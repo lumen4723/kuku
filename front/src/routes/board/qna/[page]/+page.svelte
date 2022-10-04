@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <script>
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -106,31 +105,3 @@
 		</div>
 	</div>
 </div>
-=======
-<script>
-	import { page } from '$app/stores';
-	import BoadListQna from '$lib/BoardListqna.svelte';
-
-	const getBoardList = async (pageIdx, pageLimit) => {
-		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
-			{
-				mode: 'cors'
-			}
-		);
-		const qnaBoard = await res.json();
-		//const freeBoard = await res.json();
-		if (res.ok) {
-			return qnaBoard;
-			//return freeBoard;
-		} else {
-			throw new Error(qnaBoard);
-			//throw new Error(freeBoard);
-		}
-	};
-
-	let boardList = getBoardList($page.params.page || 1, 10);
-</script>
-
-<BoadListQna {boardList} />
->>>>>>> 56cb4178459c11afe485dc743867b698676cfcc4
