@@ -57,7 +57,10 @@ def create_article(object_in: board_free, uid: int, db: Session) -> Result:
         article.userid = uid
         db.add(article)
         db.refresh(article)
-        change_information("free", 0, db).map_err(throwMsg).unwrap()
+
+        change_information("free", True, db, commit=False).map_err(throwMsg).unwrap()
+
+        db.commit()
         return Ok(article)
 
     except Exception as e:
@@ -162,19 +165,24 @@ def get_article_by_uid(uid: int, db: Session):
 
 
 # delete article by id
-def delete_article(article_id: int, uid: int, db: Session):
+def delete_article(
+    article_id: int, uid: int, db: Session
+) -> Result[None, HTTPException]:
     try:
         article = db.query(board_free).filter_by(article_id=article_id, state=1).first()
         if article is None:
             return Err(NotFound())
         elif article.userid != uid:
             return Err(NotAuthorized())
+
         article.state = 0
         db.add(article)
-        db.commit()
         db.refresh(article)
-        change_information("free", 1, db).map_err(throwMsg).unwrap()
-        return Ok(article)
+
+        change_information("free", False, db, commit=False).map_err(throwMsg).unwrap()
+        db.commit()
+
+        return Ok(None)
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -182,6 +190,7 @@ def delete_article(article_id: int, uid: int, db: Session):
             return Err(DefaultException(detail="malformed form data"))
         elif "nonetype" in err_msg:
             return Err(NotFound())
+
         return Err(DefaultException(detail="unknown error"))
 
 
