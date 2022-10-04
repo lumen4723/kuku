@@ -1,5 +1,24 @@
 <script>
-	import Carousel from '$lib/carousel.svelte';
+    import Carousel from '$lib/carousel.svelte';
+    import { page } from '$app/stores';
+
+    const getBoardList = async (pageIdx, pageLimit) => {
+		const res = await fetch(
+			`http://127.0.0.1:8000/board/free/list/${pageIdx}?limit=${pageLimit}`,
+			{
+				mode: 'cors'
+			}
+		);
+		const freeBoard = await res.json();
+		if (res.ok) {
+			return freeBoard;
+		} else {
+			throw new Error(freeBoard);
+		}
+	};
+
+    let boardList = getBoardList($page.params.page || 1, 10);
+
 </script>
 
 <section class="hero is-primary is-halfheight">
@@ -87,6 +106,7 @@
 </section>
 
 <section class="hero-body">
+<<<<<<< HEAD
 	<div
 		class="table-container"
 		style="
