@@ -1,8 +1,8 @@
 <script>
-    import Carousel from '$lib/carousel.svelte';
-    import { page } from '$app/stores';
+	import Carousel from '$lib/carousel.svelte';
+	import { page } from '$app/stores';
 
-    const getBoardList = async (pageIdx, pageLimit) => {
+	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
 			`http://127.0.0.1:8000/board/free/list/${pageIdx}?limit=${pageLimit}`,
 			{
@@ -17,8 +17,7 @@
 		}
 	};
 
-    let boardList = getBoardList($page.params.page || 1, 10);
-
+	let boardList = getBoardList($page.params.page || 1, 10);
 </script>
 
 <section class="hero is-primary is-halfheight">
@@ -106,58 +105,59 @@
 </section>
 
 <section class="hero-body">
-<<<<<<< HEAD
-	<div
-		class="table-container"
-		style="
+	<div class="container">
+		<div
+			class="table-container"
+			style="
     margin: 0px auto;
     width: 80%;
     "
-	>
-		<table
-			class="table
+		>
+			<table
+				class="table
         is-bordered
         is-hoverable
         is-fullwidth"
-			style="
+				style="
         text-align: center;
         table-layout: fixed;
         "
-		>
-			<thead>
-				<tr>
-					<th colspan="3">새로운 내용</th>
-					<th colspan="3">공지사항</th>
-					<th colspan="3">새로운 질문과 답변</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td colspan="2">여기 제목 들어감</td>
-					<td colspan="1">여기 이름 들어감</td>
-					<td colspan="2">여기 제목 들어감</td>
-					<td colspan="1">여기 이름 들어감</td>
-					<td colspan="2">여기 제목 들어감</td>
-					<td colspan="1">여기 분류 들어감</td>
-				</tr>
-				<tr>
-					<td colspan="2">how add this?</td>
-					<td colspan="1">추가 어캐함</td>
-					<td colspan="2">how add it?</td>
-					<td colspan="1">추가 어캐함</td>
-					<td colspan="2">how add this?</td>
-					<td colspan="1">추가 어캐함</td>
-				</tr>
-				<tr>
-					<td colspan="2">how do you do?</td>
-					<td colspan="1">추가 어캐함</td>
-					<td colspan="2">how add it?</td>
-					<td colspan="1">추가 어캐함</td>
-					<td colspan="2">how are you?</td>
-					<td colspan="1">추가 어캐함</td>
-				</tr>
-			</tbody>
-		</table>
+			>
+				<thead>
+					<tr>
+						<th colspan="3">새로운 내용</th>
+						<th colspan="3">공지사항</th>
+						<th colspan="3">새로운 질문과 답변</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="2">여기 제목 들어감</td>
+						<td colspan="1">여기 이름 들어감</td>
+						<td colspan="2">여기 제목 들어감</td>
+						<td colspan="1">여기 이름 들어감</td>
+						<td colspan="2">여기 제목 들어감</td>
+						<td colspan="1">여기 분류 들어감</td>
+					</tr>
+					<tr>
+						<td colspan="2">how add this?</td>
+						<td colspan="1">추가 어캐함</td>
+						<td colspan="2">how add it?</td>
+						<td colspan="1">추가 어캐함</td>
+						<td colspan="2">how add this?</td>
+						<td colspan="1">추가 어캐함</td>
+					</tr>
+					<tr>
+						<td colspan="2">how do you do?</td>
+						<td colspan="1">추가 어캐함</td>
+						<td colspan="2">how add it?</td>
+						<td colspan="1">추가 어캐함</td>
+						<td colspan="2">how are you?</td>
+						<td colspan="1">추가 어캐함</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </section>
 
