@@ -6,6 +6,7 @@ import utils
 from utils.exception import throwMsg
 from utils.session import *
 from .schemas import Tag_create
+
 router = APIRouter(
     prefix="/board/tag",
     tags=["tag"],
@@ -17,15 +18,16 @@ router = APIRouter(
 async def list_tag(session: Session = Depends(utils.database.get_db)):
     return database.get_all_tags(session).map_err(throwMsg).unwrap()
 
+
 # create a new tag
 @router.post(
     "/create", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
 )
 async def create_tag(
-    tag: Tag_create,
-    session: Session = Depends(utils.database.get_db)
+    tag: Tag_create, session: Session = Depends(utils.database.get_db)
 ):
     return database.create_tag(tag, session).map_err(throwMsg).unwrap()
+
 
 # get id by slug
 @router.get("/get_id_by_slug/{slug}")
