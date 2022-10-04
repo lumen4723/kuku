@@ -1,19 +1,36 @@
 <script>
 	let loading = false;
 	let email, password;
-	let message = { success: null, display: '' };
+
+	const login = async () => {
+		const res = await fetch('http://api.eyo.kr:8081/user/login', {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				username: email,
+				password
+			}),
+			mode: 'cors'
+		});
+		const json = await res.json();
+		console.log(json);
+		localStorage.setItem('username', json.username);
+	};
 </script>
 
-<form>
+<form method="post" on:submit|preventDefault={login}>
 	<div class="field">
 		<label class="label" for="email">Email Address</label>
 		<div class="control">
 			<input
 				class="input"
-				id="email"
-				type="email"
+				type="text"
 				placeholder="Your email"
 				bind:value={email}
+				required
 			/>
 		</div>
 	</div>
@@ -22,10 +39,10 @@
 		<div class="control">
 			<input
 				class="input"
-				id="password"
 				type="password"
 				placeholder="Set your new password"
 				bind:value={password}
+				required
 			/>
 		</div>
 	</div>
@@ -36,12 +53,4 @@
 			>
 		</div>
 	</div>
-	{#if message.success != null}
-		<div>
-			{message.display}
-		</div>
-	{/if}
 </form>
-
-<style>
-</style>

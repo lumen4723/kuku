@@ -59,7 +59,7 @@
 				on:mouseleave={autoPlay}
 			>
 				<div class="column" id="arrow">
-					<img on:click={prev} class="arrowbutton" src="https://via.placeholder.com/30x30/aa6600" alt=""/>
+					<img on:click={prev} class="arrowbutton" src="https://via.placeholder.com/60x60/aa6600" alt=""/>
 				</div>
 				<div class="column" id="contain1">
 					<div class="slider" style="left: -{positionLeft}%;">
@@ -69,7 +69,7 @@
 					</div>
 				</div>
 				<div class="column" id="arrow">
-					<img on:click={next} class="arrowbutton" src="https://via.placeholder.com/30x30/66aa00" alt=""/>
+					<img on:click={next} class="arrowbutton" src="https://via.placeholder.com/60x60/66aa00" alt=""/>
 				</div>
 			</div>
 			<div class="buttons has-addons is-centered">
@@ -118,7 +118,7 @@
 		padding-right: 0px;
 	}
 	.arrowbutton {
-		width: 100%;
+		width: -webkit-fill-available;
 	}
 	.column {
 		flex-basis: unset;

@@ -9,7 +9,6 @@
 				mode: 'cors'
 			}
 		);
-
 		const article = await res.json();
 		if (res.ok) {
 			return article;
@@ -17,9 +16,9 @@
 			throw new Error(article);
 		}
 	};
-
 	let article = getArticle($page.params.id);
 
+	let count = 0;
 	let isClicked = false;
 	const likeclick = () => {
 		isClicked = !isClicked;
@@ -27,20 +26,20 @@
 	const alt = () => {
 		alert('로그인이 필요합니다.');
 	};
-	let isLogin = false;
+	let isLogin = true;
 </script>
 
-{#await article}
-	<p class="has-text-centered">Loading in progress...</p>
-{:then article}
+{#await article then article}
 	<header>
 		<div style="padding: 16px">
 			{#if isLogin}
 				<div class="edit" style="float: right; margin-top: 16px">
-					<a href="/"
+					<a href="/board/free/write/update/{article.article_id}"
 						><button class="button is-rounded is-light"> 수정 </button></a
 					>
-					<button class="button is-rounded is-light"> 삭제 </button>
+					<a href="/board/free/1"
+						><button class="button is-rounded is-light"> 삭제 </button></a
+					>
 				</div>
 			{/if}
 			<div style="float:left;">

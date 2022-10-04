@@ -1,26 +1,25 @@
 <script>
 	import { page } from '$app/stores';
 	import List from '../../[page]/+page.svelte';
-	import Header from '$lib/header/HeaderBQC.svelte';
+	// import Header from '$lib/header/HeaderBQC.svelte';
 
-	const getArticle = async (article_id) => {
+	const getArticle = async (qna_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/article/${article_id}`,
+			`http://api.eyo.kr:8081/board/qna/article/${qna_id}`,
 			{
 				mode: 'cors'
 			}
 		);
 
-		const article = await res.json();
+		const qnaboard = await res.json();
 		if (res.ok) {
-			return article;
+			return qnaboard;
 		} else {
-			throw new Error(article);
+			throw new Error(qnaboard);
 		}
 	};
 
 	let article = getArticle($page.params.id);
-
 	let isClicked = false;
 	const likeclick = () => {
 		isClicked = !isClicked;
@@ -43,7 +42,7 @@
 {#await article}
 	<p class="has-text-centered">Loading in progress...</p>
 {:then article}
-	<!-- <Header {article} /> -->
+	<!--<Header {article} />-->
 	<header>
 		<div style="padding: 16px">
 			{#if isLogin}
@@ -56,15 +55,38 @@
 			{/if}
 
 			<div style="float:left;">
-				<span class="is-size-3">title</span> <br />
+				<span class="is-size-3">{article.title}</span>
+				{#if article.is_answered}
+					<span style="float: right;">
+						<span class="icon is-large">
+							<i
+								class="fas fa-check-circle fas fa-2x"
+								s
+								style="color: #4A4A4A;"
+							/>
+						</span>
+					</span>
+				{:else}
+					<span style="float: right;">
+						<span class="icon is-large">
+							<i
+								class="fas fa-check-circle fas fa-2x"
+								s
+								style="color: #4A4A4A;"
+							/>
+						</span>
+					</span>
+				{/if}
+				<br />
 				<div style="float: left;">
-					<a class="author" href="/" style="color: #4A4A4A;">author</a>
+					<a class="author" href="/" style="color: #4A4A4A;"
+						>{article.author}</a
+					>
 					<span style="color: #DBDBDB;">|</span>
-					created
+					{article.created}
 				</div>
 			</div>
 			<div style="clear:both" />
-
 			<div style="float:left;">
 				<div>
 					<div class="icon is-medium" style="float: left;">
@@ -88,13 +110,15 @@
 
 	<div class="content">
 		{@html article.content}
-		<!-- 이 부분은 질문의 내용 부분입니다. <br />
+		<!--이 부분은 질문의 내용 부분입니다. <br />
 	양식에 맞게 질문을 작성해주세요. <br /><br />
 	ex) 여기 링크가 있습니다. <a href="/">기술 블로그</a> <br />
-	,등등 -->
+	,등등-->
 	</div>
 
-	<div style="margin: 0 0 0 870px; width: 100px; text-align: center; 	">
+	<div
+		style="margin: 0 0 0 100%; width: auto%; text-align: center; float: right"
+	>
 		<span class="is-size-3">
 			{#if isLogin}
 				<i
@@ -105,65 +129,109 @@
 				<i class="fa-regular fa-heart" on:click={alt} />
 			{/if}
 		</span>
-		<div>추천 {article.like}</div>
+		<span>추천 {article.like}</span>
 	</div>
 {/await}
 
 <hr style="margin-top: 0;" />
 
-<div class="comment">
-	<table class="table container is-fluid">
-		<tbody>
-			<tr>
-				<td style="text-align: left; width: 100px;"
-					><a href="/">댓글이름</a></td
-				>
-				<td style="width: 600px;">2022-09-15 &nbsp; 19:29:50</td>
-				<td>
-					{#if isLogin}
-						<button
-							class="button is-rounded is-link is-light is-small is-responsive"
-						>
-							수정
-						</button>
-						<button
-							class="button is-rounded is-link is-light is-small is-responsive"
-						>
-							삭제
-						</button>
-					{/if}
-				</td>
-
-				<div style="text-align: center; float: right;">
-					<span class="is-size-4">
-						{#if isLogin}
-							<i
-								class={isClicked2
-									? 'fa-solid fa-heart'
-									: 'fa-regular fa-heart'}
-								on:click={likeclick2}
-							/>
-						{:else}
-							<i class="fa-regular fa-heart" on:click={alt} />
-						{/if}
-					</span>
-					<span>추천 count</span>
-				</div>
-			</tr>
-		</tbody>
-	</table>
-	{#if isLogin}
-		<textarea class="textarea" placeholder="댓글을 입력하세요." />
-		<button class="button">댓글 쓰기</button>
-	{:else}
-		<textarea
-			class="textarea"
-			placeholder="댓글을 쓰려면 로그인이 필요합니다."
-		/>
-		<button class="button" on:click={alt}>댓글 쓰기</button>
-	{/if}
+<div style="padding: 5px ">
+	<div style="float: left;">
+		<a href="/board/qna/1"
+			><button class="button is-rounded is-light">목록</button></a
+		>
+	</div>
+	<div style="float: right;">
+		<a href="/board/qna/write/answer"
+			><button class="button is-rounded is-light">답글 작성</button></a
+		>
+	</div>
+</div>
+<br /><br />
+<div style="padding: 16px">
+	<div style="float: left;">
+		<div class="icon is-medium" style="float: left;">
+			<i class="fa-solid fa-comment" />
+		</div>
+		<span class="is-size-4">답변</span>
+	</div>
+	<div style="clear:both" />
 </div>
 
+{#await article}
+	<p class="has-text-centered">Loading in progress...</p>
+{:then article}
+	{#each article.comments as comment}
+		<div class="comment">
+			<table class="table container is-fluid comment_table">
+				<tbody>
+					<tr>
+						<td
+							style="text-align: left; width: 100px; border-right: 2px solid #dbdbdb; padding: 10px;"
+						>
+							<a class="comment_author" href="/" style="color: #4A4A4A;"
+								>{comment.author}</a
+							>
+						</td>
+						<td style="width: 900px;">{comment.created}</td>
+						<td style="left: 100%;">
+							{#if isLogin}
+								<button
+									class="button is-rounded is-link is-light is-small is-responsive"
+								>
+									수정
+								</button>
+								<button
+									class="button is-rounded is-link is-light is-small is-responsive"
+								>
+									삭제
+								</button>
+							{/if}
+						</td>
+
+						<div style="text-align: center; float: right;">
+							<span class="is-size-4">
+								{#if isLogin}
+									<i
+										class={isClicked2
+											? 'fa-solid fa-heart'
+											: 'fa-regular fa-heart'}
+										on:click={likeclick2}
+									/>
+								{:else}
+									<i class="fa-regular fa-heart" on:click={alt} />
+								{/if}
+							</span>
+							<span>추천 {comment.like}</span>
+						</div>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="comment_WordStyle">
+				<div class="comment_content">
+					{@html comment.content}<br />
+				</div>
+			</div>
+
+			<hr style="margin: 0;" />
+		</div>
+	{/each}
+{/await}
+
+<br /><br />
+<!--
+{#if isLogin}
+	<textarea class="textarea" placeholder="댓글을 입력하세요." />
+	<button class="button">댓글 쓰기</button>
+{:else}
+	<textarea
+		class="textarea"
+		placeholder="댓글을 쓰려면 로그인이 필요합니다."
+	/>
+	<button class="button" on:click={alt}>댓글 쓰기</button>
+{/if}
+-->
 <br /><br /><br />
 <List />
 
@@ -177,16 +245,21 @@
 	}
 	.content {
 		width: 100%;
-		height: 300px;
+		height: 100px;
+		padding: 16px;
 	}
 	.comment table {
 		width: 100%;
-
+		border: 1px solid #dbdbdb;
 		background-color: rgba(239, 235, 235, 0.805);
+		margin: 0 0 0 0;
 	}
-	textarea {
-		width: 100%;
-		height: 5.25em;
-		resize: none;
+	.comment_WordStyle {
+		padding: 0 100px 0 100px;
+		height: 100px;
+		border-left: solid 2px #dbdbdb;
+		border-right: solid 2px #dbdbdb;
+		/*		border-bottom-right-radius: 10px;
+		border-bottom-left-radius: 10px; */
 	}
 </style>
