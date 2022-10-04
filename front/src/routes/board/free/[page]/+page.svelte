@@ -1,11 +1,10 @@
 <script>
   let currentPage = 1;
   let pageLimit = 10;
-  let label = 1;
 
-  const getBoardList = async (pageIdx, pageLimit, pagelabel) => {
+  const getBoardList = async (pageIdx, pageLimit) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}&label=${pagelabel}`,
+      `http://api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
       {
         mode: "cors",
       }
@@ -18,7 +17,7 @@
     }
   };
 
-  $: boardList = getBoardList(currentPage, pageLimit, label);
+  $: boardList = getBoardList(currentPage, pageLimit);
 </script>
 
 <div class="container">
@@ -30,9 +29,9 @@
       <tr>
         <th class="has-text-centered">제목</th>
         <th class="has-text-centered">작성자</th>
-        <th class="has-text-centered" on:click={() => (label = 1)}>작성일자</th>
-        <th class="has-text-centered" on:click={() => (label = 3)}>추천</th>
-        <th class="has-text-centered" on:click={() => (label = 2)}>조회수</th>
+        <th class="has-text-centered">작성일자</th>
+        <th class="has-text-centered">추천</th>
+        <th class="has-text-centered">조회수</th>
       </tr>
     </thead>
     <tbody>

@@ -1,6 +1,7 @@
 <script>
 	import Carousel from '$lib/carousel.svelte';
 	import { page } from '$app/stores';
+    import { xlink_attr } from 'svelte/internal';
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
@@ -18,6 +19,13 @@
 	};
 
 	let boardList = getBoardList($page.params.page || 1, 10);
+	let date = (date) => {
+		let year = date.slice(0, 4);
+		let month = date.slice(5, 7);
+		let day = date.slice(8, 10);
+		let hour = date.slice(11, 13);
+		return `${year}년 ${month}월 ${day}일 ${hour}시`;
+	};
 </script>
 
 <section class="hero is-primary is-halfheight">
@@ -106,57 +114,102 @@
 
 <section class="hero-body">
 	<div class="container">
-		<div
-			class="table-container"
-			style="
-    margin: 0px auto;
-    width: 80%;
-    "
-		>
-			<table
-				class="table
-        is-bordered
-        is-hoverable
-        is-fullwidth"
-				style="
-        text-align: center;
-        table-layout: fixed;
-        "
-			>
-				<thead>
-					<tr>
-						<th colspan="3">새로운 내용</th>
-						<th colspan="3">공지사항</th>
-						<th colspan="3">새로운 질문과 답변</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td colspan="2">여기 제목 들어감</td>
-						<td colspan="1">여기 이름 들어감</td>
-						<td colspan="2">여기 제목 들어감</td>
-						<td colspan="1">여기 이름 들어감</td>
-						<td colspan="2">여기 제목 들어감</td>
-						<td colspan="1">여기 분류 들어감</td>
-					</tr>
-					<tr>
-						<td colspan="2">how add this?</td>
-						<td colspan="1">추가 어캐함</td>
-						<td colspan="2">how add it?</td>
-						<td colspan="1">추가 어캐함</td>
-						<td colspan="2">how add this?</td>
-						<td colspan="1">추가 어캐함</td>
-					</tr>
-					<tr>
-						<td colspan="2">how do you do?</td>
-						<td colspan="1">추가 어캐함</td>
-						<td colspan="2">how add it?</td>
-						<td colspan="1">추가 어캐함</td>
-						<td colspan="2">how are you?</td>
-						<td colspan="1">추가 어캐함</td>
-					</tr>
-				</tbody>
-			</table>
+		<div class="columns">
+			<div class="column">
+				<div class="table-container">
+					<table class="table
+					is-bordered
+        			is-hoverable"
+					style="
+        			text-align: center;
+        			table-layout: fixed;
+        			">
+						<thead>
+							<tr>
+								<th colspan="2">새로운 내용</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#await boardList then freeBoard}
+       							{#each freeBoard["list"] as free}
+									<tr>
+										<td><a href="/board/free/article/{free.article_id}">{free.title}</a></td>
+										<td>{free.username}</td>
+									</tr>
+								{/each}
+      						{:catch error}
+        						<tr>
+          							<td colspan="2">{error.message}</td>
+        						</tr>
+      						{/await}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="column">
+				<div class="table-container">
+					<table class="table
+					is-bordered
+        			is-hoverable"
+					style="
+        			text-align: center;
+        			table-layout: fixed;
+        			">
+						<thead>
+							<tr>
+								<th colspan="2">공지사항</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#await boardList then freeBoard}
+       							{#each freeBoard["list"] as free}
+									<tr>
+										<td><a href="/board/free/article/{free.article_id}">{free.title}</a></td>
+										<td>
+											{date(free.created)}
+										</td>
+									</tr>
+								{/each}
+      						{:catch error}
+        						<tr>
+          							<td colspan="2">{error.message}</td>
+        						</tr>
+      						{/await}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="column">
+				<div class="table-container">
+					<table class="table
+					is-bordered
+        			is-hoverable"
+					style="
+        			text-align: center;
+        			table-layout: fixed;
+        			">
+						<thead>
+							<tr>
+								<th colspan="2">새로운 질문과 답변</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#await boardList then freeBoard}
+       							{#each freeBoard["list"] as free}
+									<tr>
+										<td><a href="/board/free/article/{free.article_id}">{free.title}</a></td>
+										<td>{free.state}</td>
+									</tr>
+								{/each}
+      						{:catch error}
+        						<tr>
+          							<td colspan="2">{error.message}</td>
+        						</tr>
+      						{/await}
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>
@@ -168,5 +221,8 @@
 	thead th {
 		text-align: center;
 		color: #ffffff;
+	}
+	.table-container table {
+		width: -webkit-fill-available;
 	}
 </style>
