@@ -3,9 +3,9 @@
 	import List from '../../[page]/+page.svelte';
 	// import Header from '$lib/header/HeaderBQC.svelte';
 
-	const getArticle = async (qna_id) => {
+	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/article/${qna_id}`,
+			`http://api.eyo.kr:8081/board/qna/article/${article_id}`,
 			{
 				mode: 'cors'
 			}
@@ -42,15 +42,15 @@
 {#await article}
 	<p class="has-text-centered">Loading in progress...</p>
 {:then article}
-	<!--<Header {article} />-->
 	<header>
 		<div style="padding: 16px">
 			{#if isLogin}
 				<div class="edit" style="float: right; margin-top: 16px">
-					<a href="/"
+					<a href="/board/qna/write/question/{article.id}"
 						><button class="button is-rounded is-light"> 수정 </button></a
-					>
-					<button class="button is-rounded is-light"> 삭제 </button>
+					><a href="/board/qna/1">
+						<button class="button is-rounded is-light"> 삭제 </button>
+					</a>
 				</div>
 			{/if}
 
@@ -58,11 +58,10 @@
 				<span class="is-size-3">{article.title}</span>
 				{#if article.is_answered}
 					<span style="float: right;">
-						<span class="icon is-large">
+						<span class="icon is-large ">
 							<i
 								class="fas fa-check-circle fas fa-2x"
-								s
-								style="color: #4A4A4A;"
+								style="color: greenyellow"
 							/>
 						</span>
 					</span>
@@ -71,7 +70,6 @@
 						<span class="icon is-large">
 							<i
 								class="fas fa-check-circle fas fa-2x"
-								s
 								style="color: #4A4A4A;"
 							/>
 						</span>
