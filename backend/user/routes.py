@@ -52,8 +52,13 @@ async def create_session(
 
 
 @router.get("/whoami", dependencies=[Depends(cookie)])
-async def whoami(session_data: SessionData = Depends(verifier),session: Session = Depends(utils.database.get_db)):
-    return database.get_user_by_uid(session_data.uid, session).map_err(throwMsg).unwrap()
+async def whoami(
+    session_data: SessionData = Depends(verifier),
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_user_by_uid(session_data.uid, session).map_err(throwMsg).unwrap()
+    )
 
 
 @router.post("/logout")

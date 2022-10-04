@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from board.qna.database import board_qna
     from board.qna.like.database import board_qna_like
 
+
 class User(SQLModel, table=True):
 
     uid: Optional[int] = Field(default=None, primary_key=True)
@@ -29,8 +30,9 @@ class User(SQLModel, table=True):
     # board_free <-> user table
     free: List["board_free"] = Relationship(back_populates="userRel")
     qna: List["board_qna"] = Relationship(back_populates="userRel")
-    qna_likeRel : List["board_qna_like"] = Relationship(back_populates="userRel")
-    
+    qna_likeRel: List["board_qna_like"] = Relationship(back_populates="userRel")
+
+
 # get user by email
 def get_user_by_email(email: str, db: Session):
     return db.query(User).filter_by(email=email).first()
@@ -42,7 +44,10 @@ def get_user_by_uid(uid: int, db: Session) -> Result:
     if user is not None:
         return Ok(
             UserInformation(
-                userid= user.uid, username=user.username, email=user.email, created=user.created
+                userid=user.uid,
+                username=user.username,
+                email=user.email,
+                created=user.created,
             )
         )
     else:
@@ -59,7 +64,10 @@ def create_user(object_in: User, db: Session) -> Result:
         db.refresh(user)
         return Ok(
             UserInformation(
-                userid= user.uid, username=user.username, email=user.email, created=user.created
+                userid=user.uid,
+                username=user.username,
+                email=user.email,
+                created=user.created,
             )
         )
 
