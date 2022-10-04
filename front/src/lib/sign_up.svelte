@@ -74,7 +74,7 @@
 	};
 
 	const postUser = async () => {
-		const res = await fetch('http://localhost:8089/user/user', {
+		const res = await fetch('http://api.eyo.kr:8081/user/user', {
 			method: 'POST',
 			headers: {
 				Aceept: 'application/json',

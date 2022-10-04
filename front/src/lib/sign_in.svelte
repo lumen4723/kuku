@@ -10,12 +10,13 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				email,
+				username: email,
 				password
 			}),
 			mode: 'cors'
 		});
 		const json = await res.json();
+		console.log(json);
 		localStorage.setItem('username', json.username);
 	};
 </script>
@@ -26,7 +27,7 @@
 		<div class="control">
 			<input
 				class="input"
-				type="email"
+				type="text"
 				placeholder="Your email"
 				bind:value={email}
 				required

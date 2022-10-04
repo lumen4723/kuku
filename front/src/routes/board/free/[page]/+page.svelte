@@ -1,10 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import { each } from 'svelte/internal';
-	import Layout from '../../../+layout.svelte';
-
-	let current_page = 1;
+	let currentPage = 1;
 	let pageLimit = 10;
 
 	const getBoardList = async (pageIdx, pageLimit) => {
@@ -22,16 +17,7 @@
 		}
 	};
 
-	const changePage = (p) => {
-		console.log('changePage');
-		current_page = p + 1;
-	};
-
-	// let boardList = getBoardList(
-	// 	$page.params.page || current_page,
-	// 	pageLimit
-	// );
-	let boardList = getBoardList(current_page, pageLimit);
+	$: boardList = getBoardList(currentPage, pageLimit);
 </script>
 
 <div class="container">
@@ -49,11 +35,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#await boardList}
-				<tr>
-					<td colspan="5">Loading...</td>
-				</tr>
-			{:then freeBoard}
+			{#await boardList then freeBoard}
 				{#each freeBoard['list'] as free}
 					<tr>
 						<td><a href="../article/{free.article_id}">{free.title}</a></td
@@ -76,24 +58,24 @@
 			</tr></tfoot
 		>
 	</table>
-	{#await boardList}
-		<div class="container is-fluid has-text-centered">
-			<div class="buttons is-centered">
-				<button class="button is-primary" disabled>이전</button>
-				<button class="button is-primary" disabled>다음</button>
-			</div>
-		</div>
-	{:then freeBoard}
+	{#await boardList then freeBoard}
 		<nav class="pagination is-centered" aria-label="pagination">
 			<ul class="pagination-list">
 				{#each Array(Math.ceil(freeBoard['cnt'] / pageLimit)) as n, i}
 					<li>
 						<!-- svelte-ignore a11y-missing-attribute -->
-						<a class="pagination-link" on:click={changePage(i)}>{i + 1}</a>
+						<a
+							class="pagination-link"
+							class:is-current={i + 1 === currentPage}
+							sveltekit:prefetch
+							on:click={() => (currentPage = i + 1)}>{i + 1}</a
+						>
 					</li>
 				{/each}
 			</ul>
 		</nav>
+	{:catch error}
+		{error.message}
 	{/await}
 
 	<div class="container">
