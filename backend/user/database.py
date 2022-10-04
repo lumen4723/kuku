@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from board.free.database import board_free
     from board.qna.database import board_qna
     from board.qna.like.database import board_qna_like
-
+    from board.free.like.database import board_free_like
 
 class User(SQLModel, table=True):
 
@@ -31,6 +31,7 @@ class User(SQLModel, table=True):
     free: List["board_free"] = Relationship(back_populates="userRel")
     qna: List["board_qna"] = Relationship(back_populates="userRel")
     qna_likeRel: List["board_qna_like"] = Relationship(back_populates="userRel")
+    free_likeRel: List["board_free_like"] = Relationship(back_populates="userRel")
 
 
 # get user by email

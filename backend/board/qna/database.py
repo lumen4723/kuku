@@ -156,36 +156,21 @@ def list_article(
 ) -> Result:
     try:
         article_cnt = db.query(board_information).filter_by(description="qna").first()
+        order = board_qna.like.desc() if like else None
         if all:
-            if not like:
-                return Ok(
-                    {
-                        "list": _combine_username_tags(
-                            db.query(board_qna)
-                            .filter_by(state=1, parentid=None)
-                            .join(User)
-                            .outerjoin(board_qna_tag)
-                            .order_by(board_qna.created.desc())
-                            .all()
-                        ),
-                        "cnt": article_cnt.size,
-                    }
-                )
-            else:
-                return Ok(
-                    {
-                        "list": _combine_username_tags(
-                            db.query(board_qna)
-                            .filter_by(state=1, parentid=None)
-                            .join(User)
-                            .outerjoin(board_qna_tag)
-                            .order_by(board_qna.like.desc())
-                            .order_by(board_qna.created.desc())
-                            .all()
-                        ),
-                        "cnt": article_cnt.size,
-                    }
-                )
+            return Ok(
+                {
+                    "list": _combine_username_tags(
+                        db.query(board_qna)
+                        .filter_by(state=1, parentid=None)
+                        .join(User)
+                        .outerjoin(board_qna_tag)
+                        .order_by(order, board_qna.created.desc())
+                        .all()
+                    ),
+                    "cnt": article_cnt.size,
+                }
+            )
 
         start = (page - 1) * limit
         list = _combine_username_tags(
@@ -194,17 +179,7 @@ def list_article(
             .join(User)
             .outerjoin(board_qna_tag)
             .outerjoin(tag)
-            .order_by(board_qna.created.desc())
-            .offset(start)
-            .limit(limit)
-            .all()
-            if not like
-            else db.query(board_qna)
-            .filter_by(state=1)
-            .join(User)
-            .outerjoin(board_qna_tag)
-            .outerjoin(tag)
-            .order_by(board_qna.like.desc())
+            .order_by(order, board_qna.created.desc())
             .offset(start)
             .limit(limit)
             .all()
@@ -262,54 +237,30 @@ def list_article_by_slug(
             .join(board_qna, board_qna_tag.article_id == board_qna.article_id)
             .filter(board_qna.state == 1)
         )
+        order = board_qna.like.desc() if like else None
         if all:
-            if not like:
-                return Ok(
-                    {
-                        "list": _combine_username_tags_slug(
-                            qurey.order_by(board_qna.created.desc()).all()
-                        ),
-                        "cnt": count,
-                    }
-                )
-            else:
-                return Ok(
-                    {
-                        "list": _combine_username_tags_slug(
-                            qurey.order_by(board_qna.like.desc())
-                            .order_by(board_qna.created.desc())
-                            .all()
-                        ),
-                        "cnt": count,
-                    }
-                )
+            return Ok(
+                {
+                    "list": _combine_username_tags_slug(
+                        qurey.order_by(order, board_qna.created.desc()).all()
+                    ),
+                    "cnt": count,
+                }
+            )
 
         start = (page - 1) * limit
-        if not like:
-            return Ok(
-                {
-                    "list": _combine_username_tags_slug(
-                        qurey.order_by(board_qna.created.desc())
-                        .offset(start)
-                        .limit(limit)
-                        .all()
-                    ),
-                    "cnt": count,
-                }
-            )
-        else:
-            return Ok(
-                {
-                    "list": _combine_username_tags_slug(
-                        qurey.order_by(board_qna.like.desc())
-                        .order_by(board_qna.created.desc())
-                        .offset(start)
-                        .limit(limit)
-                        .all()
-                    ),
-                    "cnt": count,
-                }
-            )
+        return Ok(
+            {
+                "list": _combine_username_tags_slug(
+                    qurey.order_by(order, board_qna.created.desc())
+                    .offset(start)
+                    .limit(limit)
+                    .all()
+                ),
+                "cnt": count,
+            }
+        )
+
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:
