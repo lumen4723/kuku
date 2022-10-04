@@ -92,6 +92,7 @@ async def update_article(
         .unwrap()
     )
 
+
 # like article by id router
 @router.post(
     "/article/{article_id}/like",
@@ -103,11 +104,11 @@ async def like_article_by_id(
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
 ):
-    return (
-        create_free_like(article_id, session_data.uid, session)
+    return {
+        "isOk": create_free_like(article_id, session_data.uid, session)
         .map_err(throwMsg)
-        .unwrap()
-    )
+        .is_ok
+    }
 
 
 @router.put(
@@ -120,11 +121,12 @@ async def dislike_article_by_id(
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
 ):
-    return (
-        cancel_free_like(article_id, session_data.uid, session)
+    return {
+        "isOk": cancel_free_like(article_id, session_data.uid, session)
         .map_err(throwMsg)
-        .unwrap()
-    )
+        .is_ok
+    }
+
 
 # get article start ~ end page router
 @router.get("/list/like/get/{start_page}")
@@ -132,11 +134,14 @@ async def list_article(
     start_page: int, limit: int = 20, session: Session = Depends(utils.database.get_db)
 ):
     return (
-        database.list_article(session, page=start_page, limit=limit, like= True)
+        database.list_article(session, page=start_page, limit=limit, like=True)
         .map_err(throwMsg)
         .unwrap()
     )
 
+
 @router.get("/list/like/getall")
 async def user(session: Session = Depends(utils.database.get_db)):
-    return database.list_article(session, all=True, like= True).map_err(throwMsg).unwrap()
+    return (
+        database.list_article(session, all=True, like=True).map_err(throwMsg).unwrap()
+    )

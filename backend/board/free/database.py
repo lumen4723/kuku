@@ -56,7 +56,6 @@ def create_article(object_in: board_free, uid: int, db: Session) -> Result:
         article = board_free.from_orm(object_in)
         article.userid = uid
         db.add(article)
-        db.commit()
         db.refresh(article)
         change_information("free", 0, db).map_err(throwMsg).unwrap()
         return Ok(article)
