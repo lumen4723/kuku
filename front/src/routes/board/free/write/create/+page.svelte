@@ -17,7 +17,7 @@
 	});
 
 	const postArticle = async () => {
-		const res = await fetch(`http://api.eyo.kr:8081/board/free/article`, {
+		const res = await fetch(`http://api.eyo.kr:8081/board/free/create`, {
 			method: 'POST',
 			headers: {
 				Aceept: 'application/json',
