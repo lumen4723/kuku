@@ -18,7 +18,6 @@
 		const json = await res.json();
 		localStorage.setItem('username', json.username);
 	};
-	localStorage
 </script>
 
 <form method="post" on:submit|preventDefault={login}>

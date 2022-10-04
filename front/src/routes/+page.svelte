@@ -4,7 +4,7 @@
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
-			`http://127.0.0.1:8000/board/free/list/${pageIdx}?limit=${pageLimit}`,
+			`http://api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
 			{
 				mode: 'cors'
 			}
