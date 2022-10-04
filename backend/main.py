@@ -6,13 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import user
 import board.free
 import board.qna
-
+import board.tag
 
 app = FastAPI(title="kuku-api")
 app.include_router(user.router)
 app.include_router(board.free.router)
 app.include_router(board.qna.router)
-
+app.include_router(board.tag.router)
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
