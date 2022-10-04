@@ -9,3 +9,6 @@ node_modules
 .vscode
 playwright.config.js
 tests
+
+.prettierignore
+.prettierrc
