@@ -12,7 +12,7 @@ class board_information(SQLModel, table=True):
 
 
 # create board information if type is 0 add size else sub size
-def change_information(description: str, type: int, db: Session) -> Result:
+def add_tag(description: str, type: int, db: Session) -> Result:
     try:
         get_board = (
             db.query(board_information)
@@ -36,4 +36,4 @@ def change_information(description: str, type: int, db: Session) -> Result:
         db.refresh(get_board)
         return Ok(get_board)
     except Exception as e:
-        return Err("change information error")
+        return Err(DefaultException("unknown error"))

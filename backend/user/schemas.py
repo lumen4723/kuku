@@ -18,11 +18,12 @@ class createuser(BaseModel):
 
 # longin user class methods
 class loginuser(BaseModel):
-    username: str = ""
+    email: str = ""
     password: str = ""
 
 
 class UserInformation(BaseModel):
+    userid: int = 0
     username: str = ""
     email: str = ""
     created: datetime

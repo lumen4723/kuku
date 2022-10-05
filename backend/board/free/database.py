@@ -70,20 +70,22 @@ def create_article(object_in: board_free, uid: int, db: Session) -> Result:
         return Err(DefaultException(detail="unknown error"))
 
 
-def list_article(db: Session, all: bool = False, page=1, limit=20):
+def list_article(db: Session, all: bool = False, page=1, limit=20, like=False):
     try:
         article_cnt = db.query(board_information).filter_by(description="free").first()
+        order = board_free.like.desc() if like else None
         if article_cnt is None:
             article_cnt = 0
         else:
             article_cnt = article_cnt.size
         if all:
+
             return Ok(
                 {
                     "list": _combine_username(
                         db.query(board_free)
                         .filter_by(state=1)
-                        .order_by(board_free.created.desc())
+                        .order_by(order, board_free.created.desc())
                         .join(User)
                         .all()
                     ),
@@ -95,12 +97,13 @@ def list_article(db: Session, all: bool = False, page=1, limit=20):
         list = _combine_username(
             db.query(board_free)
             .filter_by(state=1)
-            .order_by(board_free.created.desc())
+            .order_by(order, board_free.created.desc())
             .join(User)
             .offset(start)
             .limit(limit)
             .all()
         )
+
         article_cnt = db.query(board_information).filter_by(description="free").first()
         if article_cnt is None:
             article_cnt = 0
@@ -130,6 +133,14 @@ def get_article_by_id(article_id: int, db: Session):
             .join(User)
             .first()
         )
+
+        # increase views by 1 when get article
+        article["views"] += 1
+        db.query(board_free).filter_by(article_id=article_id).update(
+            {"views": article["views"]}
+        )
+        db.commit()
+
         return Ok(article)
 
     except Exception as e:

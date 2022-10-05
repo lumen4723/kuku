@@ -42,18 +42,23 @@ async def create_session(
     session: Session = Depends(utils.database.get_db),
 ):
     uid = database.login(user, session).map_err(throwMsg).unwrap()
-    session = uuid4()
+    uuidSession = uuid4()
     data = SessionData(uid=uid)
 
-    await backend.create(session, data)
-    cookie.attach_to_response(response, session)
+    await backend.create(uuidSession, data)
+    cookie.attach_to_response(response, uuidSession)
 
-    return f"created session for '{user.username}' user"
+    return database.get_user_by_uid(uid, session).map_err(throwMsg).unwrap()
 
 
 @router.get("/whoami", dependencies=[Depends(cookie)])
-async def whoami(session_data: SessionData = Depends(verifier),session: Session = Depends(utils.database.get_db)):
-    return database.get_user_by_uid(session_data.uid, session).map_err(throwMsg).unwrap()
+async def whoami(
+    session_data: SessionData = Depends(verifier),
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_user_by_uid(session_data.uid, session).map_err(throwMsg).unwrap()
+    )
 
 
 @router.post("/logout")

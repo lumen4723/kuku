@@ -7,12 +7,13 @@ from typing import Optional, List
 from .security import get_password_hash, verify_password
 from utils.exception import *
 from .schemas import loginuser, UserInformation
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from board.free.database import board_free
-
+    from board.qna.database import board_qna
+    from board.qna.like.database import board_qna_like
+    from board.free.like.database import board_free_like
 
 class User(SQLModel, table=True):
 
@@ -29,6 +30,9 @@ class User(SQLModel, table=True):
     # board_free <-> user table
     free: List["board_free"] = Relationship(back_populates="userRel")
     qna: List["board_qna"] = Relationship(back_populates="userRel")
+    qna_likeRel: List["board_qna_like"] = Relationship(back_populates="userRel")
+    free_likeRel: List["board_free_like"] = Relationship(back_populates="userRel")
+
 
 # get user by email
 def get_user_by_email(email: str, db: Session):
@@ -41,7 +45,10 @@ def get_user_by_uid(uid: int, db: Session) -> Result:
     if user is not None:
         return Ok(
             UserInformation(
-                username=user.username, email=user.email, created=user.created
+                userid=user.uid,
+                username=user.username,
+                email=user.email,
+                created=user.created,
             )
         )
     else:
@@ -58,7 +65,10 @@ def create_user(object_in: User, db: Session) -> Result:
         db.refresh(user)
         return Ok(
             UserInformation(
-                username=user.username, email=user.email, created=user.created
+                userid=user.uid,
+                username=user.username,
+                email=user.email,
+                created=user.created,
             )
         )
 
@@ -84,7 +94,7 @@ def get_all_user(db: Session):
 # login
 def login(object_in: loginuser, db: Session) -> Result:
 
-    user = db.query(User).filter_by(username=object_in.username).first()
+    user = db.query(User).filter_by(email=object_in.email).first()
     if user is None:
         return Err(NotFound())
     if not verify_password(object_in.password, user.password):
