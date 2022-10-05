@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from board.qna.database import board_qna
     from board.qna.like.database import board_qna_like
     from board.free.like.database import board_free_like
-    from board.comment.database import board_comment
+    from board.comment.database import board_free_comment
 
 
 class User(SQLModel, table=True):
@@ -34,7 +34,7 @@ class User(SQLModel, table=True):
     qna: List["board_qna"] = Relationship(back_populates="userRel")
     qna_likeRel: List["board_qna_like"] = Relationship(back_populates="userRel")
     free_likeRel: List["board_free_like"] = Relationship(back_populates="userRel")
-    commentRel: List["board_comment"] = Relationship(back_populates="userRel")
+    comment: List["board_free_comment"] = Relationship(back_populates="userRel")
 
 
 # get user by email

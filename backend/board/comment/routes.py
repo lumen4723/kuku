@@ -4,7 +4,7 @@ from sqlmodel import Session
 from option import *
 import utils
 from utils.exception import throwMsg
-from .schemas import board_comment_create
+from .schemas import board_free_comment_create
 from utils.session import *
 
 router = APIRouter(
@@ -15,12 +15,12 @@ router = APIRouter(
 
 # create comment router
 @router.post(
-    "/comment/create/{article_id}",
+    "/create/{article_id}",
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_201_CREATED,
 )
 async def create_comment(
-    comment: board_comment_create,
+    comment: board_free_comment_create,
     article_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -33,8 +33,12 @@ async def create_comment(
 
 
 # get comment by article id router
-@router.get("/comment/article_id/{article_id}")
+@router.get("/article_id/{article_id}")
 async def get_comment_by_article_id(
     article_id: int, session: Session = Depends(utils.database.get_db)
 ):
-    return database.get_comment(article_id, session).map_err(throwMsg).unwrap()
+    return (
+        database.get_comment(article_id, session)
+        .map_err(throwMsg)
+        .unwrap()
+    )
