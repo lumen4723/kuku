@@ -1,7 +1,6 @@
 <script>
 	import Carousel from '$lib/carousel.svelte';
 	import { page } from '$app/stores';
-    import { xlink_attr } from 'svelte/internal';
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
@@ -222,7 +221,7 @@
 		text-align: center;
 		color: #ffffff;
 	}
-	.table-container table {
+	table.table {
 		width: -webkit-fill-available;
 	}
 </style>
