@@ -24,7 +24,7 @@ class board_free(SQLModel, table=True):
     views: int = Field(default=0)
 
 
-def _combine_username(articles: List["board_free"]) -> Dict | List:
+def _combine_username(articles: List["board_free"]) -> Dict:
     # if articles is board_free, then add username
     if type(articles) is board_free:
         return {
@@ -97,12 +97,7 @@ def list_article(db: Session, all: bool = False, page=1, limit=20, like=False):
                 .all()
             )
 
-        return Ok(
-            {
-                "list": list,
-                "cnt": article_cnt,
-            }
-        )
+        return Ok({"list": list, "cnt": article_cnt,})
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:

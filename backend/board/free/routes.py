@@ -4,9 +4,10 @@ from sqlmodel import Session
 from option import *
 import utils
 from utils.exception import throwMsg
-from .schemas import board_free_create
+from .schemas import board_free_create, board_free_comment_create
 from utils.session import *
 from board.free.like.database import *
+from board.free.comment.database import *
 
 router = APIRouter(
     prefix="/board/free",
@@ -104,11 +105,11 @@ async def like_article_by_id(
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
 ):
-    return {
-        "isOk": create_free_like(article_id, session_data.uid, session)
+    return (
+        create_free_like(article_id, session_data.uid, session)
         .map_err(throwMsg)
-        .is_ok
-    }
+        .unwrap()
+    )
 
 
 @router.put(
@@ -121,11 +122,11 @@ async def dislike_article_by_id(
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
 ):
-    return {
-        "isOk": cancel_free_like(article_id, session_data.uid, session)
+    return (
+        cancel_free_like(article_id, session_data.uid, session)
         .map_err(throwMsg)
-        .is_ok
-    }
+        .unwrap()
+    )
 
 
 # get article start ~ end page router
@@ -145,3 +146,31 @@ async def user(session: Session = Depends(utils.database.get_db)):
     return (
         database.list_article(session, all=True, like=True).map_err(throwMsg).unwrap()
     )
+
+
+# create comment router
+@router.post(
+    "/comment/create/{article_id}",
+    dependencies=[Depends(cookie)],
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_comment(
+    comment: board_free_comment_create,
+    article_id: int,
+    session: Session = Depends(utils.database.get_db),
+    session_data: SessionData = Depends(verifier),
+):
+    return (
+        create_free_comment(comment, article_id, session_data.uid, session)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# get comment by article id router
+@router.get("/comment/{article_id}")
+async def get_comment_by_article_id(
+    article_id: int, session: Session = Depends(utils.database.get_db)
+):
+    return get_comment(article_id, session).map_err(throwMsg).unwrap()
+
