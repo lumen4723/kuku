@@ -13,6 +13,7 @@ app.include_router(user.router)
 app.include_router(board.free.router)
 app.include_router(board.qna.router)
 app.include_router(board.tag.router)
+
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +27,7 @@ app.add_middleware(
 @app.get("/")
 async def main():
     return {"message": "Hello!! fastapi"}
+
 
 if __name__ == "__main__":
     import uvicorn

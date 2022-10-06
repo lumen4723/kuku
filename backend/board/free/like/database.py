@@ -19,93 +19,119 @@ class board_free_like(SQLModel, table=True):
     state: int = Field(default=1)
 
 
-def like_free(article_id: int, db: Session) -> Result:
+def _like_free(article_id: int, db: Session, commit: bool = True) -> Result:
     try:
-        article = db.query(board_free).filter_by(article_id=article_id).first()
-        article.like += 1
-        db.add(article)
-        db.commit()
+        article = (
+            db.query(board_free)
+            .filter_by(article_id=article_id)
+            .update({"like": board_free.like + 1})
+        )
+
+        if commit:
+            db.commit()
+
         return Ok(article)
     except Exception as e:
         return Err("like_free error")
 
 
 # dislike board_free
-def dislike_free(article_id: int, db: Session) -> Result:
+def _dislike_free(
+    article_id: int, db: Session, commit: bool = True
+) -> Result[None, str]:
     try:
-        article = db.query(board_free).filter_by(article_id=article_id).first()
-        if article.like > 0:
-            article.like -= 1
-            db.add(article)
+        article = (
+            db.query(board_free)
+            .filter_by(article_id=article_id)
+            .filter(board_free.like > 0)
+            .update({"like": board_free.like - 1})
+        )
+
+        if commit:
             db.commit()
-            return Ok(article)
+
+        if article == 1:
+            return Ok(None)
         else:
             return Err("dislike_free error")
+
     except Exception as e:
         return Err("dislike_free error")
 
 
 # create board_free_like
-def create_free_like(article_id: int, userid: int, db: Session) -> Result:
+def create_free_like(article_id: int, userid: int, db: Session) -> Result[None, Any]:
     try:
-        if (
+        is_user_already_like = (
             db.query(board_free_like)
             .filter_by(article_id=article_id, userid=userid, state=1)
-            .first()
-            is not None
-        ):
+            .count()
+            > 0
+        )
+
+        if is_user_already_like:
             return Err(AlreadyExists())
-        check = (
+
+        if _like_free(article_id, db, commit=False).is_err:
+            return Err("like_free error")
+
+        is_user_liked_before = (
             db.query(board_free_like)
             .filter_by(article_id=article_id, userid=userid, state=0)
-            .first()
+            .count()
+            > 0
         )
-        if check is not None:
-            like_free(article_id, db).unwrap()
-            check
-            check.state = 1
-            db.add(check)
-            db.commit()
-            return Ok(check)
-        like_free(article_id, db).unwrap()
-        article = board_free_like()
-        article.article_id = article_id
-        article.userid = userid
-        db.add(article)
+
+        if is_user_liked_before:
+            is_state_change_success = (
+                db.query(board_free_like)
+                .filter_by(article_id=article_id, userid=userid, state=0)
+                .update({board_free_like.state: 1})
+                == 1
+            )
+
+            if is_state_change_success is False:
+                return Err("state change error")
+        else:
+            article = board_free_like()
+            article.article_id = article_id
+            article.userid = userid
+            db.add(article)
+
         db.commit()
-        db.refresh(article)
-        like_free(article_id, db).unwrap()
-        return Ok(article)
+        return Ok(None)
+
     except Exception as e:
         err_msg = str(e).lower()
         if "duplicate" in err_msg:
             return Err(AlreadyExists())
         elif "like_free error" in err_msg:
             return Err(DefaultException(detail="like_free error"))
-        else:
-            dislike_free(article_id, db)
-            return Err(DefaultException(detail="create_free like error"))
+
+        return Err(DefaultException(detail="create_free like error"))
 
 
 # create cancel_free like
-def cancel_free_like(article_id: int, userid: int, db: Session) -> Result:
+def cancel_free_like(article_id: int, userid: int, db: Session) -> Result[None, Any]:
     try:
-        article = (
+        update_and_check_success = (
             db.query(board_free_like)
             .filter_by(article_id=article_id, userid=userid, state=1)
-            .first()
+            .update({board_free_like.state: 0})
+            == 1
         )
-        if article is None:
+
+        if update_and_check_success == False:
             return Err(NotFound())
-        dislike_free(article_id, db)
-        article.state = 0
-        db.add(article)
+
+        if _dislike_free(article_id, db, commit=False).is_err:
+            return Err("dislike_free error")
+
         db.commit()
-        return Ok(article)
+        return Ok(None)
     except Exception as e:
         err_msg = str(e).lower()
         if "dislike_free error" in err_msg:
             return Err(DefaultException(detail="dislike_free error"))
-        else:
-            like_free(article_id, db)
-            return Err(DefaultException(detail="cancel_free like error"))
+
+        return Err(DefaultException(detail="cancel_free like error"))
