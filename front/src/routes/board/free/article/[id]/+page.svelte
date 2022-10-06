@@ -1,6 +1,6 @@
 <script>
-	import { page } from '$app/stores';
-	import List from '../../[page]/+page.svelte';
+  import { page } from "$app/stores";
+  import List from "../../[page]/+page.svelte";
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
@@ -76,23 +76,23 @@
 		</div>
 	</header>
 
-	<hr style="margin:0;" />
+  <hr style="margin:0;" />
 
-	<div class="content">{@html article.content}</div>
+  <div class="content">{@html article.content}</div>
 
-	<div style="margin: 0 auto; width: 100px; text-align: center">
-		<span class="is-size-3">
-			{#if isLogin}
-				<i
-					class={isClicked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
-					on:click={likeclick}
-				/>
-			{:else}
-				<i class="fa-regular fa-heart" on:click={alt} />
-			{/if}
-		</span>
-		<div>추천 {article.like}</div>
-	</div>
+  <div style="margin: 0 auto; width: 100px; text-align: center">
+    <span class="is-size-3">
+      {#if isLogin}
+        <i
+          class={isClicked ? "fa-solid fa-heart" : "fa-regular fa-heart"}
+          on:click={likeclick}
+        />
+      {:else}
+        <i class="fa-regular fa-heart" on:click={alt} />
+      {/if}
+    </span>
+    <div>추천 {article.like}</div>
+  </div>
 {/await}
 
 
@@ -153,24 +153,24 @@
 <List />
 
 <style>
-	hr {
-		border: 1px solid #dbdbdb;
-	}
-	span i {
-		color: rgb(251, 106, 130);
-	}
-	.content {
-		width: 100%;
-		height: 300px;
-		padding: 16px;
-	}
-	.comment table {
-		width: 100%;
-		background-color: rgba(239, 235, 235, 0.805);
-	}
-	textarea {
-		width: 100%;
-		height: 5.25em;
-		resize: none;
-	}
+  hr {
+    border: 1px solid #dbdbdb;
+  }
+  span i {
+    color: rgb(251, 106, 130);
+  }
+  .content {
+    width: 100%;
+    height: 300px;
+    padding: 16px;
+  }
+  .comment table {
+    width: 100%;
+    background-color: rgba(239, 235, 235, 0.805);
+  }
+  textarea {
+    width: 100%;
+    height: 5.25em;
+    resize: none;
+  }
 </style>
