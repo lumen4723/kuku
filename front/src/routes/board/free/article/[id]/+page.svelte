@@ -27,9 +27,27 @@
 		alert('로그인이 필요합니다.');
 	};
 	let isLogin = true;
+
+	const getComment = async (article_id) => {
+		const res = await fetch(
+			`http://api.eyo.kr:8081/board/free/comment/${article_id}`,
+			{
+				mode: 'cors'
+			}
+		);
+		const comment = await res.json();
+		if (res.ok) {
+			return comment;
+		} else {
+			throw new Error(comment);
+		}
+	};
+	$: comments = getComment($page.params.id);
 </script>
 
-{#await article then article}
+{#await article}
+	<p class="has-text-centered">Loading in progress...</p>
+{:then article}
 	<header>
 		<div style="padding: 16px">
 			{#if isLogin}
@@ -77,30 +95,52 @@
 	</div>
 {/await}
 
+
 <hr style="margin-top: 0;" />
 
 <div class="comment" style="padding: 16px">
 	<table class="table container is-fluid">
 		<tbody>
-			<tr>
-				<td style="text-align: left;">ㅎ</td>
-				<td style="width: 150px;">나다</td>
-				<td style="width: 200px;">2022-09-19 &nbsp; 20:46:24</td>
-				<td style="width: 150px;">
-					{#if isLogin}
-						<button
-							class="button is-rounded is-link is-light is-small is-responsive"
-						>
-							수정
-						</button>
-						<button
-							class="button is-rounded is-link is-light is-small is-responsive"
-						>
-							삭제
-						</button>
-					{/if}
-				</td>
-			</tr>
+			{#await comments then comments}
+				{#if comments.list.length === 0}
+					<tr>
+						<td>댓글이 없습니다.</td>
+					</tr>
+				{:else}
+					{#each comments["list"] as comment}
+						<tr>
+							<td>
+								<a
+									class="author"
+									href="/free/{comment.username}"
+									style="color: #4A4A4A;">{comment.username}</a
+								>
+								<span style="color: #DBDBDB;">|</span>
+								{comment.created}
+							</td>
+						</tr>
+						<tr>
+							<td>{comment.content}</td>
+						</tr>
+						{#if isLogin}
+							<button
+							class="button is-rounded
+							is-link is-light is-small
+							is-responsive
+							">
+								수정
+							</button>
+							<button
+							class="button is-rounded
+							is-link is-light is-small
+							is-responsive
+							">
+								삭제
+							</button>
+						{/if}
+					{/each}
+				{/if}
+			{/await}
 		</tbody>
 	</table>
 	{#if isLogin}

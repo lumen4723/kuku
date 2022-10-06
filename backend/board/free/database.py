@@ -24,7 +24,7 @@ class board_free(SQLModel, table=True):
     views: int = Field(default=0)
 
 
-def _combine_username(articles: List["board_free"]) -> dict:
+def _combine_username(articles: List["board_free"]) -> Dict:
     # if articles is board_free, then add username
     if type(articles) is board_free:
         return {
@@ -56,7 +56,6 @@ def create_article(object_in: board_free, uid: int, db: Session) -> Result:
         article = board_free.from_orm(object_in)
         article.userid = uid
         db.add(article)
-        db.commit()
         db.refresh(article)
         change_information("free", 0, db).map_err(throwMsg).unwrap()
         return Ok(article)
@@ -73,48 +72,32 @@ def create_article(object_in: board_free, uid: int, db: Session) -> Result:
 def list_article(db: Session, all: bool = False, page=1, limit=20, like=False):
     try:
         article_cnt = db.query(board_information).filter_by(description="free").first()
+
         order = board_free.like.desc() if like else None
         if article_cnt is None:
             article_cnt = 0
         else:
             article_cnt = article_cnt.size
-        if all:
 
-            return Ok(
-                {
-                    "list": _combine_username(
-                        db.query(board_free)
-                        .filter_by(state=1)
-                        .order_by(order, board_free.created.desc())
-                        .join(User)
-                        .all()
-                    ),
-                    "cnt": article_cnt,
-                }
+        list = []
+        if all:
+            list = _combine_username(
+                db.query(board_free).filter_by(state=1).order_by(order).join(User).all()
             )
 
-        start = (page - 1) * limit
-        list = _combine_username(
-            db.query(board_free)
-            .filter_by(state=1)
-            .order_by(order, board_free.created.desc())
-            .join(User)
-            .offset(start)
-            .limit(limit)
-            .all()
-        )
-
-        article_cnt = db.query(board_information).filter_by(description="free").first()
-        if article_cnt is None:
-            article_cnt = 0
         else:
-            article_cnt = article_cnt.size
-        return Ok(
-            {
-                "list": list,
-                "cnt": article_cnt,
-            }
-        )
+            start = (page - 1) * limit
+            list = _combine_username(
+                db.query(board_free)
+                .filter_by(state=1)
+                .order_by(order, board_free.created.desc())
+                .join(User)
+                .offset(start)
+                .limit(limit)
+                .all()
+            )
+
+        return Ok({"list": list, "cnt": article_cnt,})
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:
