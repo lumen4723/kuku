@@ -3,23 +3,23 @@
   let pageLimit = 10;
   let label = 1;
 
-	const getBoardList = async (pageIdx, pageLimit) => {
-		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
-			{
-				mode: 'cors'
-			}
-		);
-		const qnaBoard = await res.json();
-		//const freeBoard = await res.json();
-		if (res.ok) {
-			return qnaBoard;
-			//return freeBoard;
-		} else {
-			throw new Error(qnaBoard);
-			//throw new Error(freeBoard);
-		}
-	};
+  const getBoardList = async (pageIdx, pageLimit) => {
+    const res = await fetch(
+      `http://api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+      {
+        mode: "cors",
+      }
+    );
+    const qnaBoard = await res.json();
+    //const freeBoard = await res.json();
+    if (res.ok) {
+      return qnaBoard;
+      //return freeBoard;
+    } else {
+      throw new Error(qnaBoard);
+      //throw new Error(freeBoard);
+    }
+  };
 
   $: boardList = getBoardList(currentPage, pageLimit, label);
 </script>
