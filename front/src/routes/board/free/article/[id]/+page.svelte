@@ -111,20 +111,22 @@
 
   <div class="content">{@html article.content}</div>
 
-  <div style="margin: 0 auto; width: 100px; text-align: center">
+  <form
+    style="margin: 0 auto; width: 100px; text-align: center"
+    on:submit|preventDefault={isClicked ? Like : disLike}
+  >
     <span class="is-size-3">
       {#if isLogin}
         <i
           class={isClicked ? "fa-solid fa-heart" : "fa-regular fa-heart"}
           on:click={likeclick}
-          on:submit={isClicked ? Like : disLike}
         />
       {:else}
         <i class="fa-regular fa-heart" on:click={alt} />
       {/if}
     </span>
     <div>추천 {article.like}</div>
-  </div>
+  </form>
 {/await}
 
 <hr style="margin-top: 0;" />
