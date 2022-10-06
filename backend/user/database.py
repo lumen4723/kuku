@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from board.qna.database import board_qna
     from board.qna.like.database import board_qna_like
     from board.free.like.database import board_free_like
-    from board.comment.database import board_free_comment
+    from board.free.comment.database import board_free_comment
 
 
 class User(SQLModel, table=True):

@@ -13,7 +13,6 @@ class board_free_comment(SQLModel, table=True):
     userid: int = Field(default=None, foreign_key="user.uid")
     userRel: "User" = Relationship(back_populates="comment")
 
-
     article_id: int = Field(default=None, foreign_key="board_free.article_id")
     content: str
 
@@ -44,7 +43,10 @@ def _combine_username(comments: List["board_free_comment"]) -> Dict:
 
     return result
 
-def create_comment(object_in: board_free_comment, aid: int, uid: int, db: Session) -> Result:
+
+def create_free_comment(
+    object_in: board_free_comment, aid: int, uid: int, db: Session
+) -> Result:
     try:
         comment = board_free_comment.from_orm(object_in)
         comment.article_id = aid
@@ -66,9 +68,21 @@ def create_comment(object_in: board_free_comment, aid: int, uid: int, db: Sessio
 def get_comment(aid: int, db: Session, all: bool = False, page=1, limit=20) -> Result:
     try:
         if all:
-            comments = db.query(board_free_comment).filter(board_free_comment.article_id == aid).join(User).all()
+            comments = (
+                db.query(board_free_comment)
+                .filter(board_free_comment.article_id == aid)
+                .join(User)
+                .all()
+            )
         else:
-            comments = db.query(board_free_comment).filter(board_free_comment.article_id == aid).join(User).offset((page - 1) * limit).limit(limit).all()
+            comments = (
+                db.query(board_free_comment)
+                .filter(board_free_comment.article_id == aid)
+                .join(User)
+                .offset((page - 1) * limit)
+                .limit(limit)
+                .all()
+            )
 
         return Ok(_combine_username(comments))
 

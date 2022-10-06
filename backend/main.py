@@ -7,14 +7,13 @@ import user
 import board.free
 import board.qna
 import board.tag
-import board.comment
 
 app = FastAPI(title="kuku-api")
 app.include_router(user.router)
 app.include_router(board.free.router)
 app.include_router(board.qna.router)
 app.include_router(board.tag.router)
-app.include_router(board.comment.router)
+
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
