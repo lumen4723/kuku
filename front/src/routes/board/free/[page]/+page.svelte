@@ -88,7 +88,10 @@
           </select>
         </div>
         <div class="control is-expanded has-icons-left">
-          <input class="input" type="text" placeholder="검색어를 입력하세요." />
+          <input class="input"
+          type="text"
+          placeholder="검색어를 입력하세요."
+          />
           <span class="icon is-small is-left">
             <i class="fas fa-search" />
           </span>
