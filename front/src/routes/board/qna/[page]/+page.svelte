@@ -21,7 +21,7 @@
     }
   };
 
-  $: boardList = getBoardList(currentPage, pageLimit, label);
+  $: boardList = getBoardList(currentPage, pageLimit, label); // 이거 뭐야 파라메터 안맞음
 </script>
 
 <div class="container">
@@ -33,9 +33,9 @@
       <tr>
         <th class="has-text-centered">제목</th>
         <th class="has-text-centered">작성자</th>
-        <th class="has-text-centered" on:click={() => (label = 1)}>작성일자</th>
-        <th class="has-text-centered" on:click={() => (label = 3)}>추천</th>
-        <th class="has-text-centered" on:click={() => (label = 2)}>조회수</th>
+        <th class="has-text-centered">작성일자</th>
+        <th class="has-text-centered">추천</th>
+        <th class="has-text-centered">조회수</th>
       </tr>
     </thead>
     <tbody>
@@ -92,7 +92,10 @@
           </select>
         </div>
         <div class="control is-expanded has-icons-left">
-          <input class="input" type="text" placeholder="검색어를 입력하세요." />
+          <input class="input"
+          type="text"
+          placeholder="검색어를 입력하세요."
+          />
           <span class="icon is-small is-left">
             <i class="fas fa-search" />
           </span>

@@ -3,21 +3,21 @@
 	let email, password;
 
 	const login = async () => {
-		const res = await fetch('http://api.eyo.kr:8081/user/login', {
-			method: 'POST',
+		const res = await fetch("http://api.eyo.kr:8081/user/login", {
+			method: "POST",
 			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json'
+				Accept: "application/json",
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				username: email,
-				password
+				email,
+				password,
 			}),
-			mode: 'cors'
+			mode: "cors",
 		});
 		const json = await res.json();
 		console.log(json);
-		localStorage.setItem('username', json.username);
+		localStorage.setItem("username", json.username);
 	};
 </script>
 
@@ -27,7 +27,7 @@
 		<div class="control">
 			<input
 				class="input"
-				type="text"
+				type="email"
 				placeholder="Your email"
 				bind:value={email}
 				required
@@ -49,7 +49,7 @@
 	<div class="field">
 		<div class="control">
 			<button class="button is-link" disabled={loading}
-				>{loading ? 'Loading' : 'Login'}</button
+				>{loading ? "Loading" : "Login"}</button
 			>
 		</div>
 	</div>
