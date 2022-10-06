@@ -65,26 +65,16 @@ def create_free_comment(
         return Err(DefaultException(detail="unknown error"))
 
 
-def get_comment(aid: int, db: Session, all: bool = False, page=1, limit=20) -> Result:
+def get_comment(aid: int, db: Session) -> Result:
     try:
-        if all:
-            comments = (
-                db.query(board_free_comment)
-                .filter(board_free_comment.article_id == aid)
-                .join(User)
-                .all()
-            )
-        else:
-            comments = (
-                db.query(board_free_comment)
-                .filter(board_free_comment.article_id == aid)
-                .join(User)
-                .offset((page - 1) * limit)
-                .limit(limit)
-                .all()
-            )
+        comments = _combine_username(
+            db.query(board_free_comment)
+            .filter(board_free_comment.article_id == aid)
+            .join(User)
+            .all()
+        )
 
-        return Ok(_combine_username(comments))
+        return Ok({"list": comments})
 
     except Exception as e:
         err_msg = str(e).lower()

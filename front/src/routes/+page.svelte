@@ -17,7 +17,7 @@
 		}
 	};
 
-	let boardList = getBoardList($page.params.page || 1, 10);
+	let boardList = getBoardList(1, 10);
 	let date = (date) => {
 		let year = date.slice(0, 4);
 		let month = date.slice(5, 7);
