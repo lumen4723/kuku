@@ -19,93 +19,118 @@ class board_qna_like(SQLModel, table=True):
     state: int = Field(default=1)
 
 
-def like_qna(article_id: int, db: Session) -> Result:
+def _like_qna(article_id: int, db: Session, commit: bool = True) -> Result[None, str]:
     try:
         article = db.query(board_qna).filter_by(article_id=article_id).first()
         article.like += 1
         db.add(article)
-        db.commit()
-        return Ok(article)
+
+        if commit:
+            db.commit()
+
+        return Ok(None)
+
     except Exception as e:
         return Err("like qna error")
 
 
 # dislike board_qna
-def dislike_qna(article_id: int, db: Session) -> Result:
+def _dislike_qna(article_id: int, db: Session, commit: bool = True) -> Result:
     try:
-        article = db.query(board_qna).filter_by(article_id=article_id).first()
-        if article.like > 0:
-            article.like -= 1
-            db.add(article)
+        count = (
+            db.query(board_qna)
+            .filter_by(article_id=article_id)
+            .filter(board_qna.like > 0)
+            .update({"like": board_qna.like - 1})
+        )
+
+        if commit:
             db.commit()
-            return Ok(article)
-        else:
-            return Err("dislike qna error")
+
+        if count == 1:
+            return Ok(None)
+
+        return Err("dislike_free error")
+
     except Exception as e:
-        return Err("dislike qna error")
+        return Err("dislike_free error")
 
 
 # create board_qna_like
 def create_qna_like(article_id: int, userid: int, db: Session) -> Result:
     try:
-        if (
+        is_user_already_like = (
             db.query(board_qna_like)
             .filter_by(article_id=article_id, userid=userid, state=1)
-            .first()
-            is not None
-        ):
+            .count()
+            > 0
+        )
+
+        if is_user_already_like:
             return Err(AlreadyExists())
-        check = (
+
+        _like_qna(article_id, db, commit=False).unwrap()
+
+        is_user_liked_before = (
             db.query(board_qna_like)
             .filter_by(article_id=article_id, userid=userid, state=0)
-            .first()
+            .count()
+            > 0
         )
-        if check is not None:
-            like_qna(article_id, db).unwrap()
-            check
-            check.state = 1
-            db.add(check)
-            db.commit()
-            return Ok(check)
-        like_qna(article_id, db).unwrap()
-        article = board_qna_like()
-        article.article_id = article_id
-        article.userid = userid
-        db.add(article)
+
+        if is_user_liked_before:
+            is_state_change_success = (
+                db.query(board_qna_like)
+                .filter_by(article_id=article_id, userid=userid, state=0)
+                .update({board_qna_like.state: 1})
+                == 1
+            )
+
+            if is_state_change_success is False:
+                return Err("state change error")
+
+        else:
+            like = board_qna_like()
+            like.article_id = article_id
+            like.userid = userid
+            db.add(like)
+
         db.commit()
-        db.refresh(article)
-        like_qna(article_id, db).unwrap()
-        return Ok(article)
+        return Ok(None)
+
     except Exception as e:
         err_msg = str(e).lower()
         if "duplicate" in err_msg:
             return Err(AlreadyExists())
         elif "like qna error" in err_msg:
             return Err(DefaultException(detail="like qna error"))
-        else:
-            dislike_qna(article_id, db)
-            return Err(DefaultException(detail="create qna like error"))
+
+        return Err(DefaultException(detail="create qna like error"))
 
 
 # create cancel qna like
-def cancel_qna_like(article_id: int, userid: int, db: Session) -> Result:
+def cancel_qna_like(
+    article_id: int, userid: int, db: Session
+) -> Result[None, HTTPException]:
     try:
-        article = (
+        update_and_check_success = (
             db.query(board_qna_like)
             .filter_by(article_id=article_id, userid=userid, state=1)
-            .first()
+            .update({board_qna_like.state: 0})
+            == 1
         )
-        if article is None:
+
+        if update_and_check_success is False:
             return Err(NotFound())
-        dislike_qna(article_id, db)
-        article.state = 0
-        db.add(article)
+
+        _dislike_qna(article_id, db, commit=False).unwrap()
+
         db.commit()
-        return Ok(article)
+        return Ok(None)
+
     except Exception as e:
         err_msg = str(e).lower()
         if "dislike qna error" in err_msg:
             return Err(DefaultException(detail="dislike qna error"))
-        else:
-            like_qna(article_id, db)
-            return Err(DefaultException(detail="cancel qna like error"))
+
+        return Err(DefaultException(detail="cancel qna like error"))
