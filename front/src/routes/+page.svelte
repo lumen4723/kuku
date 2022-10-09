@@ -1,7 +1,6 @@
 <script>
 	import Carousel from '$lib/carousel.svelte';
 	import { page } from '$app/stores';
-    import { xlink_attr } from 'svelte/internal';
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
@@ -18,7 +17,7 @@
 		}
 	};
 
-	let boardList = getBoardList($page.params.page || 1, 10);
+	let boardList = getBoardList(1, 10);
 	let date = (date) => {
 		let year = date.slice(0, 4);
 		let month = date.slice(5, 7);
@@ -37,8 +36,8 @@
 					style="align-items: center;
                 justify-content: center;
                 display: flex;
-                padding-bottom: 5%;"
-				>
+                padding-bottom: 5%;
+				">
 					<div>
 						<h1 class="title" style="word-break: keep-all;">
 							차 한잔과 함께하는 코딩 사이트
@@ -222,7 +221,7 @@
 		text-align: center;
 		color: #ffffff;
 	}
-	.table-container table {
+	table.table {
 		width: -webkit-fill-available;
 	}
 </style>
