@@ -85,7 +85,11 @@ def list_article(db: Session, all: bool = False, page=1, limit=20, like=False):
         list = []
         if all:
             list = _combine_username(
-                db.query(board_free).filter_by(state=1).order_by(order).join(User).all()
+                db.query(board_free)
+                .filter_by(state=1)
+                .order_by(order, board_free.created.desc())
+                .join(User)
+                .all()
             )
 
         else:
