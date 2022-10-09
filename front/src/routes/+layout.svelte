@@ -1,8 +1,18 @@
 <script>
-	import 'bulma/css/bulma.css';
-	import '@fortawesome/fontawesome-free/css/all.css';
-	import { page } from '$app/stores';
+	import "bulma/css/bulma.css";
+	import "@fortawesome/fontawesome-free/css/all.css";
+	import { page } from "$app/stores";
+	import { browser } from "$app/env";
+
 	let navbarStatus = false;
+
+	let loginBtnStr = "Login";
+	if (browser) {
+		let username = window.localStorage.getItem("user.username");
+		if (username != null) {
+			loginBtnStr = username;
+		}
+	}
 </script>
 
 <header class="header">
@@ -32,19 +42,25 @@
 				<div class="navbar-start">
 					<a
 						class="navbar-item"
-						class:is-active={$page.url.pathname.startsWith('/board/free')}
+						class:is-active={$page.url.pathname.startsWith(
+							"/board/free"
+						)}
 						sveltekit:prefetch
 						href="/board/free/1">자유게시판</a
 					>
 					<a
 						class="navbar-item"
-						class:is-active={$page.url.pathname.startsWith('/board/qna')}
+						class:is-active={$page.url.pathname.startsWith(
+							"/board/qna"
+						)}
 						sveltekit:prefetch
 						href="/board/qna/1">질문게시판</a
 					>
 					<a
 						class="navbar-item"
-						class:is-active={$page.url.pathname.startsWith('/study')}
+						class:is-active={$page.url.pathname.startsWith(
+							"/study"
+						)}
 						sveltekit:prefetch
 						href="/study">문제</a
 					>
@@ -64,7 +80,7 @@
 				</div>
 				<div class="navbar-end">
 					<a class="navbar-item" sveltekit:prefetch href="/account"
-						>Login</a
+						>{loginBtnStr}</a
 					>
 				</div>
 			</div>

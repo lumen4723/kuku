@@ -4,9 +4,14 @@
 
 	let isLoading = false;
 	let email, password;
-	let message = browser
-		? new URLSearchParams(location.search).get("msg")
-		: "";
+	let message = "";
+
+	if (browser) {
+		let msg = new URLSearchParams(location.search).get("msg");
+		if (msg != null) {
+			message = url;
+		}
+	}
 
 	const login = async () => {
 		isLoading = true;
@@ -34,6 +39,10 @@
 							json["email"]
 						);
 						window.localStorage.setItem("user.id", json["userid"]);
+						window.localStorage.setItem(
+							"user.username",
+							json["username"]
+						);
 					}
 				});
 
