@@ -1,13 +1,13 @@
 <script>
-	import { page } from '$app/stores';
-	import List from '../../[page]/+page.svelte';
+	import { page } from "$app/stores";
+	import List from "../../[page]/+page.svelte";
 	// import Header from '$lib/header/HeaderBQC.svelte';
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/article/${article_id}`,
+			`http://api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
 			{
-				mode: 'cors'
+				mode: "cors",
 			}
 		);
 
@@ -20,12 +20,13 @@
 	};
 
 	let article = getArticle($page.params.id);
+
 	let isClicked = false;
 	const likeclick = () => {
 		isClicked = !isClicked;
 	};
 	const alt = () => {
-		alert('로그인이 필요합니다.');
+		alert("로그인이 필요합니다.");
 	};
 
 	let isClicked2 = false;
@@ -33,31 +34,32 @@
 		isClicked2 = !isClicked2;
 	};
 	const alt2 = () => {
-		alert('로그인이 필요합니다.');
+		alert("로그인이 필요합니다.");
 	};
 
 	let isLogin = true;
 </script>
 
-{#await article}
-	<p class="has-text-centered">Loading in progress...</p>
-{:then article}
+{#await article then article}
 	<header>
 		<div style="padding: 16px">
 			{#if isLogin}
 				<div class="edit" style="float: right; margin-top: 16px">
-					<a href="/board/qna/write/question/{article.id}"
-						><button class="button is-rounded is-light"> 수정 </button></a
+					<a href="/"
+						><button class="button is-rounded is-light">
+							수정
+						</button></a
 					><a href="/board/qna/1">
-						<button class="button is-rounded is-light"> 삭제 </button>
+						<button class="button is-rounded is-light">
+							삭제
+						</button>
 					</a>
 				</div>
 			{/if}
-
 			<div style="float:left;">
 				<span class="is-size-3">{article.title}</span>
-				{#if article.is_answered}
-					<span style="float: right;">
+				{#if article.answers == true}
+					<span style="float: inline-end;">
 						<span class="icon is-large ">
 							<i
 								class="fas fa-check-circle fas fa-2x"
@@ -66,7 +68,7 @@
 						</span>
 					</span>
 				{:else}
-					<span style="float: right;">
+					<span style="float: inline-end;">
 						<span class="icon is-large">
 							<i
 								class="fas fa-check-circle fas fa-2x"
@@ -78,7 +80,7 @@
 				<br />
 				<div style="float: left;">
 					<a class="author" href="/" style="color: #4A4A4A;"
-						>{article.author}</a
+						>{article.username}</a
 					>
 					<span style="color: #DBDBDB;">|</span>
 					{article.created}
@@ -90,7 +92,7 @@
 					<div class="icon is-medium" style="float: left;">
 						<i class="fa-solid fa-tag" />
 					</div>
-					<a href="/board/qna/tag/">
+					<a href="/">
 						<button
 							class="button is-rounded is-link is-light is-small is-responsive"
 						>
@@ -120,7 +122,9 @@
 		<span class="is-size-3">
 			{#if isLogin}
 				<i
-					class={isClicked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
+					class={isClicked
+						? "fa-solid fa-heart"
+						: "fa-regular fa-heart"}
 					on:click={likeclick}
 				/>
 			{:else}
@@ -159,7 +163,7 @@
 {#await article}
 	<p class="has-text-centered">Loading in progress...</p>
 {:then article}
-	{#each article.comments as comment}
+	{#each article["answers"] as answer}
 		<div class="comment">
 			<table class="table container is-fluid comment_table">
 				<tbody>
@@ -167,11 +171,13 @@
 						<td
 							style="text-align: left; width: 100px; border-right: 2px solid #dbdbdb; padding: 10px;"
 						>
-							<a class="comment_author" href="/" style="color: #4A4A4A;"
-								>{comment.author}</a
+							<a
+								class="comment_author"
+								href="/"
+								style="color: #4A4A4A;">{answer.author}</a
 							>
 						</td>
-						<td style="width: 900px;">{comment.created}</td>
+						<td style="width: 900px;">{answer.created}</td>
 						<td style="left: 100%;">
 							{#if isLogin}
 								<button
@@ -192,15 +198,18 @@
 								{#if isLogin}
 									<i
 										class={isClicked2
-											? 'fa-solid fa-heart'
-											: 'fa-regular fa-heart'}
+											? "fa-solid fa-heart"
+											: "fa-regular fa-heart"}
 										on:click={likeclick2}
 									/>
 								{:else}
-									<i class="fa-regular fa-heart" on:click={alt} />
+									<i
+										class="fa-regular fa-heart"
+										on:click={alt}
+									/>
 								{/if}
 							</span>
-							<span>추천 {comment.like}</span>
+							<span>추천 {answer.like}</span>
 						</div>
 					</tr>
 				</tbody>
@@ -208,7 +217,7 @@
 
 			<div class="comment_WordStyle">
 				<div class="comment_content">
-					{@html comment.content}<br />
+					{@html answer.content}<br />
 				</div>
 			</div>
 
