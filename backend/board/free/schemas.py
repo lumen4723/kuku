@@ -9,4 +9,3 @@ class board_free_create(BaseModel):
 
 class board_free_comment_create(BaseModel):
     content: str = ""
-

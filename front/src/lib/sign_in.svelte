@@ -15,7 +15,7 @@
 
 	const login = async () => {
 		isLoading = true;
-		const res = await fetch("http://api.eyo.kr:8081/user/login", {
+		const res = await fetch("//api.eyo.kr:8081/user/login", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
@@ -26,6 +26,7 @@
 				password,
 			}),
 			mode: "cors",
+			credentials: "include",
 		})
 			.then((res) => {
 				if (res.ok == false) throw new Error();

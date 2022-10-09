@@ -3,23 +3,24 @@
   let pageLimit = 10;
   let label = 1;
 
-	const getBoardList = async (pageIdx, pageLimit) => {
-		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
-			{
-				mode: 'cors'
-			}
-		);
-		const qnaBoard = await res.json();
-		//const freeBoard = await res.json();
-		if (res.ok) {
-			return qnaBoard;
-			//return freeBoard;
-		} else {
-			throw new Error(qnaBoard);
-			//throw new Error(freeBoard);
-		}
-	};
+  const getBoardList = async (pageIdx, pageLimit) => {
+    const res = await fetch(
+      `//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    const qnaBoard = await res.json();
+    //const freeBoard = await res.json();
+    if (res.ok) {
+      return qnaBoard;
+      //return freeBoard;
+    } else {
+      throw new Error(qnaBoard);
+      //throw new Error(freeBoard);
+    }
+  };
 
   $: boardList = getBoardList(currentPage, pageLimit, label); // 이거 뭐야 파라메터 안맞음
 </script>
@@ -92,10 +93,7 @@
           </select>
         </div>
         <div class="control is-expanded has-icons-left">
-          <input class="input"
-          type="text"
-          placeholder="검색어를 입력하세요."
-          />
+          <input class="input" type="text" placeholder="검색어를 입력하세요." />
           <span class="icon is-small is-left">
             <i class="fas fa-search" />
           </span>

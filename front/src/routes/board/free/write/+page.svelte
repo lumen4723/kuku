@@ -16,8 +16,8 @@
       });
   });
 
-  const postArticle = async () => {
-    const res = await fetch(`http://api.eyo.kr:8081/board/free/create`, {
+  const postArticle = () =>
+    fetch(`//api.eyo.kr:8081/board/free/create`, {
       method: "POST",
       headers: {
         Aceept: "application/json",
@@ -28,13 +28,37 @@
         content,
       }),
       mode: "cors",
-    });
-    const json = await res.json();
-    postResult = JSON.stringify(json);
-  };
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.ok == false) return Promise.reject(res);
+        return res.json();
+      })
+      .then((json) => {
+        postResult = JSON.stringify(json);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
   const upload = () => {
-    alert("업로드가 완료되었습니다.");
+    console.log(title);
+    console.log(
+      JSON.stringify({
+        title,
+        content,
+      })
+    );
+    postArticle()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+        err.text().then((text) => {
+          console.log(text);
+        });
+      });
   };
   const alt = () => {
     alert("제목 또는 내용을 입력해주세요.");
@@ -42,7 +66,7 @@
 </script>
 
 <br />
-<form method="POST" on:submit|preventDefault={postArticle}>
+<form method="POST" on:submit|preventDefault={upload}>
   <div class="contents">
     <input
       class="input mb-4"

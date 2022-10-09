@@ -4,9 +4,10 @@
 
   const getArticle = async (article_id) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/free/article_id/${article_id}`,
+      `//api.eyo.kr:8081/board/free/article_id/${article_id}`,
       {
         mode: "cors",
+        credentials: "include",
       }
     );
     const article = await res.json();
@@ -20,9 +21,10 @@
 
   const getComment = async (article_id) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/free/comment/${article_id}`,
+      `//api.eyo.kr:8081/board/free/comment/${article_id}`,
       {
         mode: "cors",
+        credentials: "include",
       }
     );
     const comment = await res.json();
@@ -36,7 +38,7 @@
 
   const Like = async (article_id) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/free/article/${article_id}/like`,
+      `//api.eyo.kr:8081/board/free/article/${article_id}/like`,
       {
         method: "POST",
         headers: {
@@ -44,6 +46,7 @@
           "Content-Type": "application/json",
         },
         mode: "cors",
+        credentials: "include",
       }
     );
     const json = await res.json();
@@ -52,7 +55,7 @@
 
   const disLike = async (article_id) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/free/article/${article_id}/dislike`,
+      `//api.eyo.kr:8081/board/free/article/${article_id}/dislike`,
       {
         method: "PUT",
         headers: {
@@ -60,6 +63,7 @@
           "Content-Type": "application/json",
         },
         mode: "cors",
+        credentials: "include",
       }
     );
     const json = await res.json();

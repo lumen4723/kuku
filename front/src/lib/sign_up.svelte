@@ -77,7 +77,7 @@
 	const postUser = async () => {
 		isLoading = true;
 
-		const res = await fetch("http://api.eyo.kr:8081/user/user", {
+		const res = await fetch("//api.eyo.kr:8081/user/user", {
 			method: "POST",
 			headers: {
 				Aceept: "application/json",
@@ -89,6 +89,7 @@
 				email,
 			}),
 			mode: "cors",
+			credentials: "include",
 		})
 			.then((res) => {
 				if (res.ok == false) return Promise.reject(res);

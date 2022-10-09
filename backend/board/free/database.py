@@ -8,6 +8,7 @@ from utils.exception import *
 from user.database import User
 from board.information.database import change_information, board_information
 from sqlalchemy import desc
+from .schemas import board_free_create, board_free_comment_create
 
 
 class board_free(SQLModel, table=True):
@@ -51,16 +52,16 @@ def _combine_username(articles: List["board_free"]) -> Dict:
 
 
 # create board_free aritcle
-def create_article(object_in: board_free, uid: int, db: Session) -> Result:
+def create_article(object_in: board_free_create, uid: int, db: Session) -> Result:
     try:
         article = board_free.from_orm(object_in)
         article.userid = uid
         db.add(article)
-        db.refresh(article)
 
         change_information("free", True, db, commit=False).map_err(throwMsg).unwrap()
 
         db.commit()
+        db.refresh(article)
         return Ok(article)
 
     except Exception as e:
@@ -104,7 +105,12 @@ def list_article(db: Session, all: bool = False, page=1, limit=20, like=False):
                 .all()
             )
 
-        return Ok({"list": list, "cnt": article_cnt,})
+        return Ok(
+            {
+                "list": list,
+                "cnt": article_cnt,
+            }
+        )
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:

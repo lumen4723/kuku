@@ -7,9 +7,10 @@
 
   const getBoardList = async (pageIdx, pageLimit) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
+      `//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
       {
         mode: "cors",
+        credentials: "include",
       }
     );
     const freeBoard = await res.json();
