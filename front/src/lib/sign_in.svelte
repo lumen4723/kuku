@@ -4,7 +4,9 @@
 
 	let isLoading = false;
 	let email, password;
-	let message = "";
+	let message = browser
+		? new URLSearchParams(location.search).get("msg")
+		: "";
 
 	const login = async () => {
 		isLoading = true;
