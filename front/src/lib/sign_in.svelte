@@ -1,8 +1,13 @@
 <script>
-	let loading = false;
+	import { browser } from "$app/env";
+	import { writable } from "svelte/store";
+
+	let isLoading = false;
 	let email, password;
+	let message = "";
 
 	const login = async () => {
+		isLoading = true;
 		const res = await fetch("http://api.eyo.kr:8081/user/login", {
 			method: "POST",
 			headers: {
@@ -14,14 +19,40 @@
 				password,
 			}),
 			mode: "cors",
-		});
-		const json = await res.json();
-		console.log(json);
-		localStorage.setItem("username", json.username);
+		})
+			.then((res) => {
+				if (res.ok == false) throw new Error();
+				return res.json();
+			})
+			.then((json) => {
+				writable(null).subscribe(function (value) {
+					if (browser) {
+						window.localStorage.setItem(
+							"user.email",
+							json["email"]
+						);
+						window.localStorage.setItem("user.id", json["userid"]);
+					}
+				});
+
+				location.href = "/";
+				isLoading = false;
+			})
+			.catch((e) => {
+				message = "로그인에 실패하였습니다.";
+				isLoading = false;
+			});
 	};
 </script>
 
 <form method="post" on:submit|preventDefault={login}>
+	{#if message != ""}
+		<article class="message is-danger">
+			<div class="message-body">
+				{message}
+			</div>
+		</article>
+	{/if}
 	<div class="field">
 		<label class="label" for="email">Email Address</label>
 		<div class="control">
@@ -48,8 +79,10 @@
 	</div>
 	<div class="field">
 		<div class="control">
-			<button class="button is-link" disabled={loading}
-				>{loading ? "Loading" : "Login"}</button
+			<button
+				class="button is-link"
+				class:is-loading={isLoading}
+				disabled={isLoading}>{isLoading ? "Loading" : "Login"}</button
 			>
 		</div>
 	</div>
