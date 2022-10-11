@@ -22,9 +22,61 @@
 
 	let article = getArticle($page.params.id);
 
+	const like_qna = async (article_id) => {
+		const res = await fetch(
+			`http://api.eyo.kr:8081/board/qna/article/${article_id}/like`,
+			{
+				method: "POST",
+				mode: "cors",
+
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					article_id: article_id,
+				}),
+			}
+		);
+		const like = await res.json();
+		if (res.ok) {
+			return like;
+		} else {
+			throw new Error(like);
+		}
+	};
+
+	//dislike_qna fetch 함수
+	const dislike_qna = async (article_id) => {
+		const res = await fetch(
+			`http://api.eyo.kr:8081/board/qna/article/${article_id}/dislike`,
+			{
+				method: "POST",
+				mode: "cors",
+
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					article_id: article_id,
+				}),
+			}
+		);
+		const dislike = await res.json();
+		if (res.ok) {
+			return dislike;
+		} else {
+			throw new Error(dislike);
+		}
+	};
+
 	let isClicked = false;
 	const likeclick = () => {
 		isClicked = !isClicked;
+		if (isClicked) {
+			like_qna($page.params.id);
+		} else {
+			dislike_qna($page.params.id);
+		}
 	};
 	const alt = () => {
 		alert("로그인이 필요합니다.");
