@@ -173,4 +173,3 @@ async def get_comment_by_article_id(
     article_id: int, session: Session = Depends(utils.database.get_db)
 ):
     return get_comment(article_id, session).map_err(throwMsg).unwrap()
-

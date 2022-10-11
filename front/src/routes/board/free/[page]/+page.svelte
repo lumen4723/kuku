@@ -1,12 +1,16 @@
 <script>
+  import { userIsLogged } from "$lib/user.js";
+
   let currentPage = 1;
   let pageLimit = 10;
+  let isLogged = userIsLogged();
 
   const getBoardList = async (pageIdx, pageLimit) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
+      `//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
       {
         mode: "cors",
+        credentials: "include",
       }
     );
     const freeBoard = await res.json();
@@ -88,18 +92,20 @@
           </select>
         </div>
         <div class="control is-expanded has-icons-left">
-          <input class="input"
-          type="text"
-          placeholder="검색어를 입력하세요."
-          />
+          <input class="input" type="text" placeholder="검색어를 입력하세요." />
           <span class="icon is-small is-left">
             <i class="fas fa-search" />
           </span>
         </div>
-        <p class="control">
+        <p class="control ml-2">
           <button class="button is-info"> 검색 </button>
         </p>
       </div>
     </div>
   </div>
+  <br />
+  {#if isLogged}
+    <a href="/board/free/write" class="button is-primary">글쓰기</a>
+    <br /><br />
+  {/if}
 </div>

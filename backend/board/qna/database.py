@@ -70,12 +70,15 @@ def create_question(object_in: Board_qna_question, uid: int, db: Session) -> Res
         article.content = object_in.content
         article.userid = uid
         db.add(article)
-        db.commit()
-        db.refresh(article)
-        change_information("qna", 0, db)
+
+        change_information("qna", True, db, commit=False)
         for tag in object_in.tags:
             tagid = get_id_by_slug(tag, db).unwrap()
-            create_tag_qna(article.article_id, tagid, db).unwrap()
+            create_tag_qna(article.article_id, tagid, db, commit=False).unwrap()
+
+        db.commit()
+        db.refresh(article)
+
         return Ok(article)
     except Exception as e:
         err_msg = str(e).lower()
@@ -86,16 +89,8 @@ def create_question(object_in: Board_qna_question, uid: int, db: Session) -> Res
         elif "change information error" in err_msg:
             return Err(DefaultException(detail="change information error"))
         elif "get id by slug error" in err_msg:
-            delete_all_tag_qna(article.article_id, db)
-            change_information("qna", -1, db)
-            db.delete(article)
-            db.commit()
             return Err(DefaultException(detail="get id by slug error"))
         elif "create tag qna error" in err_msg:
-            delete_all_tag_qna(article.article_id, db)
-            change_information("qna", -1, db)
-            db.delete(article)
-            db.commit()
             return Err(DefaultException(detail="create tag qna error"))
         return Err(DefaultException(detail=err_msg))
 
@@ -108,11 +103,15 @@ def create_answer(object_in: Board_qna_answer, uid: int, db: Session) -> Result:
         article.content = object_in.content
         article.userid = uid
         article.parentid = object_in.parentid
+
         db.add(article)
+        change_information("qna", True, db, commit=False)
+
         db.commit()
         db.refresh(article)
-        change_information("qna", 0, db)
+
         return Ok(article)
+
     except Exception as e:
         err_msg = str(e).lower()
         if "data too long" in err_msg:
@@ -120,26 +119,31 @@ def create_answer(object_in: Board_qna_answer, uid: int, db: Session) -> Result:
         elif "foreign key constraint fails" in err_msg:
             return Err(DefaultException(detail="user id is not a valid"))
         elif "change information error" in err_msg:
-            db.delete(article)
-            db.commit()
             return Err(DefaultException(detail="change information error"))
+
         return Err(DefaultException(detail=err_msg))
 
 
 # delete board_qna aritcle
-def delete_article(article_id: int, uid: int, db: Session) -> Result:
+def delete_article(
+    article_id: int, uid: int, db: Session
+) -> Result[None, HTTPException]:
     try:
         article = db.query(board_qna).filter_by(article_id=article_id).first()
         if article is None:
             return Err(NotFound())
         if article.userid != uid:
             return Err(NotAuthorized())
+
         article.state = 0
         db.add(article)
+
+        change_information("qna", False, db, commit=False)
+
         db.commit()
         db.refresh(article)
-        change_information("qna", -1, db)
-        return Ok(article)
+        return Ok(None)
+
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:
@@ -148,6 +152,7 @@ def delete_article(article_id: int, uid: int, db: Session) -> Result:
             return Err(DefaultException(detail="change information error"))
         elif "nonetype" in err_msg:
             return Err(NotFound())
+
         return Err(DefaultException(detail="unknown error"))
 
 
@@ -283,6 +288,7 @@ def get_article(article_id: int, db: Session) -> Result:
         article.views += 1
         db.add(article)
         db.commit()
+
         article = _combine_username_tags(article)
         answers = _combine_username_tags(
             db.query(board_qna)
@@ -313,16 +319,22 @@ def update_article(
             return Err(NotFound())
         elif article.userid != uid:
             return Err(NotAuthorized())
+
         article.title = object_in.title
         article.content = object_in.content
         db.add(article)
-        db.commit()
-        db.refresh(article)
-        delete_all_tag_qna(article_id, db)
+
+        delete_all_tag_qna(article_id, db, commit=False).unwrap()
+
         for getTag in object_in.tags:
             tagid = get_id_by_slug(getTag, db).unwrap()
-            create_tag_qna(article_id, tagid, db).unwrap()
+            create_tag_qna(article_id, tagid, db, commit=False).unwrap()
+
+        db.commit()
+        db.refresh(article)
+
         return Ok(article)
+
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:

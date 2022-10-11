@@ -1,15 +1,15 @@
 <script>
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	let title = '',
-		content = '';
+	import { onMount } from "svelte";
+	import { page } from "$app/stores";
+	let title = "",
+		content = "";
 
 	let ClassicEditor;
 	let ckeditorInstance;
 	onMount(async () => {
-		const module = await import('@ckeditor/ckeditor5-build-classic');
+		const module = await import("@ckeditor/ckeditor5-build-classic");
 		ClassicEditor = module.default;
-		ClassicEditor.create(document.querySelector('#editor'))
+		ClassicEditor.create(document.querySelector("#editor"))
 			.then((editor) => {
 				ckeditorInstance = editor;
 			})
@@ -19,9 +19,10 @@
 	});
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/free/article/${article_id}`,
+			`//api.eyo.kr:8081/board/free/article/${article_id}`,
 			{
-				mode: 'cors'
+				mode: "cors",
+				credentials: "include",
 			}
 		);
 		const article = await res.json();
@@ -37,32 +38,33 @@
 		}
 	};
 	let article = getArticle($page.params.id);
-	let article_data = { title: '', content: '' };
+	let article_data = { title: "", content: "" };
 
 	const putArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/free/update/${article_id}`,
+			`//api.eyo.kr:8081/board/free/update/${article_id}`,
 			{
-				method: 'PUT',
+				method: "PUT",
 				headers: {
-					Aceept: 'application/json',
-					'Content-Type': 'application/json'
+					Aceept: "application/json",
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
 					title,
-					content
+					content,
 				}),
-				mode: 'cors'
+				mode: "cors",
+				credentials: "include",
 			}
 		);
 		const json = await res.json();
 		putResult = JSON.stringify(json);
 	};
 	const upload = () => {
-		alert('수정되었습니다.');
+		alert("수정되었습니다.");
 	};
 	const alt = () => {
-		alert('제목 또는 내용을 입력해주세요.');
+		alert("제목 또는 내용을 입력해주세요.");
 	};
 </script>
 

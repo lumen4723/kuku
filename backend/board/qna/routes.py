@@ -108,11 +108,11 @@ async def delete_article_by_id(
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
 ):
-    return (
-        database.delete_article(article_id, session_data.uid, session)
+    return {
+        "isOk": database.delete_article(article_id, session_data.uid, session)
         .map_err(throwMsg)
         .unwrap()
-    )
+    }
 
 
 # update article by id router
@@ -145,11 +145,11 @@ async def like_article_by_id(
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
 ):
-    return (
-        create_qna_like(article_id, session_data.uid, session)
+    return {
+        "isOk": create_qna_like(article_id, session_data.uid, session)
         .map_err(throwMsg)
         .unwrap()
-    )
+    }
 
 
 @router.put(

@@ -1,10 +1,10 @@
 <script>
-	import { is_empty } from 'svelte/internal';
+	import { is_empty } from "svelte/internal";
 
-	let username = '',
-		email = '',
-		password = '',
-		confirmpassword = '';
+	let username = "",
+		email = "",
+		password = "",
+		confirmpassword = "";
 
 	let valid_email =
 		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -19,7 +19,7 @@
 	let passwordThis;
 	let confirmpasswordThis;
 	let usernameFailed = true;
-	let usernameExcepts = ['ㅅㅂ', 'kuku'];
+	let usernameExcepts = ["ㅅㅂ", "kuku"];
 
 	/**checking user name is available
 	이후 제한 사항들을 추가해야 합니다.
@@ -39,7 +39,8 @@
 	};
 
 	let timer = 0;
-	let loading = false;
+	let isLoading = false;
+	let message = "";
 	/*backend api 생성 후 이걸로 변경*/
 	//sleep 함수 제거 후
 	// await sleep(1000).then((value)=>{
@@ -56,7 +57,7 @@
 	const setTimeoutFun = async () => {
 		await sleep(1000).then((value) => {
 			usernameFailed = false;
-			loading = false;
+			isLoading = false;
 		});
 	};
 	/**
@@ -64,35 +65,67 @@
 	 */
 	const checkUsername = () => {
 		clearTimeout(timer);
-		loading = true;
+		isLoading = true;
 		if (filterUsername()) {
 			timer = setTimeout(setTimeoutFun, 2000);
 		} else {
 			usernameFailed = true;
-			loading = false;
+			isLoading = false;
 		}
 	};
 
 	const postUser = async () => {
-		const res = await fetch('http://api.eyo.kr:8081/user/user', {
-			method: 'POST',
+		isLoading = true;
+
+		const res = await fetch("//api.eyo.kr:8081/user/user", {
+			method: "POST",
 			headers: {
-				Aceept: 'application/json',
-				'Content-Type': 'application/json'
+				Aceept: "application/json",
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
 				username,
 				password,
-				email
+				email,
 			}),
-			mode: 'cors'
-		});
-		const json = await res.json();
-		postResult = JSON.stringify(json);
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((res) => {
+				if (res.ok == false) return Promise.reject(res);
+				return res.json();
+			})
+			.then((json) => {
+				writable(null).subscribe(function (value) {
+					if (browser) {
+						window.localStorage.setItem(
+							"user.email",
+							json["email"]
+						);
+						window.localStorage.setItem("user.id", json["userid"]);
+					}
+				});
+
+				location.href = "?msg=회원가입 되었습니다. 로그인 해주세요.";
+				isLoading = false;
+			})
+			.catch((e) => {
+				e.json().then((json) => {
+					message = "회원가입에 실패하였습니다: " + json["detail"];
+					isLoading = false;
+				});
+			});
 	};
 </script>
 
 <form method="post" on:submit|preventDefault={postUser}>
+	{#if message != ""}
+		<article class="message is-danger">
+			<div class="message-body">
+				{message}
+			</div>
+		</article>
+	{/if}
 	<div class="field">
 		<label class="label" for="username">Username</label>
 		<div class="control has-icons-left has-icons-right">
@@ -110,15 +143,17 @@
 			<span class="icon is-small is-left ">
 				<i
 					class="fa-regular fa-user"
-					class:has-text-danger={usernameFailed && !is_empty(username)}
+					class:has-text-danger={usernameFailed &&
+						!is_empty(username)}
 					class:has-text-success={!usernameFailed}
 				/>
 			</span>
-			{#if loading}
+			{#if isLoading}
 				<span class="icon fa-sm is-right ">
 					<i
 						class="fa-solid fa-circle-notch fa-spin"
-						class:has-text-danger={usernameFailed && !is_empty(username)}
+						class:has-text-danger={usernameFailed &&
+							!is_empty(username)}
 						class:has-text-success={!usernameFailed}
 					/>
 				</span>
@@ -126,7 +161,8 @@
 				<span class="icon is-small is-right">
 					<i
 						class="fas fa-check"
-						class:has-text-danger={usernameFailed && !is_empty(username)}
+						class:has-text-danger={usernameFailed &&
+							!is_empty(username)}
 						class:has-text-success={!usernameFailed}
 					/>
 				</span>
@@ -179,11 +215,13 @@
 			<div class="control">
 				<input
 					class="input"
-					class:is-danger={(!is_empty(password) && password.length < 8) ||
+					class:is-danger={(!is_empty(password) &&
+						password.length < 8) ||
 						password.length > 128}
-					class:is-success={password.length > 7 && password.length < 129}
+					class:is-success={password.length > 7 &&
+						password.length < 129}
 					name="password"
-					type={show_password ? 'text' : 'password'}
+					type={show_password ? "text" : "password"}
 					placeholder="Set your new password"
 					bind:this={passwordThis}
 					on:input={() => (password = passwordThis.value)}
@@ -202,8 +240,8 @@
 				<span class="icon is-small is-right">
 					<i
 						class={show_password
-							? 'fas fa-eye password_icon'
-							: 'fas fa-eye-slash password_icon'}
+							? "fas fa-eye password_icon"
+							: "fas fa-eye-slash password_icon"}
 						on:click={passwordShow_button}
 						class:has-text-danger={(!is_empty(password) &&
 							password.length < 8) ||
@@ -228,7 +266,7 @@
 					password.length > 7 &&
 					password.length < 129}
 				name="confirmpassword"
-				type={show_confirmpassword ? 'text' : 'password'}
+				type={show_confirmpassword ? "text" : "password"}
 				placeholder="Confirm your new password"
 				bind:this={confirmpasswordThis}
 				on:input={() => (confirmpassword = confirmpasswordThis.value)}
@@ -247,8 +285,8 @@
 			<span class="icon is-small is-right">
 				<i
 					class={show_confirmpassword
-						? 'fas fa-eye confirmpassword_icon'
-						: 'fas fa-eye-slash confirmpassword_icon'}
+						? "fas fa-eye confirmpassword_icon"
+						: "fas fa-eye-slash confirmpassword_icon"}
 					on:click={confirmpasswordShow_button}
 					class:has-text-danger={!is_empty(confirmpassword) &&
 						password !== confirmpassword}
@@ -262,10 +300,16 @@
 
 	<div class="field is-grouped">
 		<div class="control">
-			<button class="button is-link" type="submit">Signup</button>
+			<button
+				class="button is-link"
+				class:is-loading={isLoading}
+				disabled={isLoading}
+				type="submit">Signup</button
+			>
 		</div>
 		<div class="control">
-			<button class="button is-link is-light" type="button">Cancel</button>
+			<button class="button is-link is-light" type="button">Cancel</button
+			>
 		</div>
 	</div>
 </form>

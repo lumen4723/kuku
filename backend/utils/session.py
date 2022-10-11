@@ -11,7 +11,7 @@ class SessionData(BaseModel):
     uid: int
 
 
-cookie_params = CookieParameters()
+cookie_params = CookieParameters(samesite="none")
 
 # Uses UUID
 cookie = SessionCookie(

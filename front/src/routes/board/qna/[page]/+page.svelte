@@ -5,9 +5,10 @@
 
   const getBoardList = async (pageIdx, pageLimit) => {
     const res = await fetch(
-      `http://api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+      `//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
       {
         mode: "cors",
+        credentials: "include",
       }
     );
     const qnaBoard = await res.json();
@@ -92,10 +93,7 @@
           </select>
         </div>
         <div class="control is-expanded has-icons-left">
-          <input class="input"
-          type="text"
-          placeholder="검색어를 입력하세요."
-          />
+          <input class="input" type="text" placeholder="검색어를 입력하세요." />
           <span class="icon is-small is-left">
             <i class="fas fa-search" />
           </span>

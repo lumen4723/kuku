@@ -5,9 +5,10 @@
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
+			`//api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
 			{
 				mode: "cors",
+				credentials: "include",
 			}
 		);
 

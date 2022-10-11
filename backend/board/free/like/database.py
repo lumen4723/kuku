@@ -21,7 +21,7 @@ class board_free_like(SQLModel, table=True):
 
 def _like_free(article_id: int, db: Session, commit: bool = True) -> Result:
     try:
-        article = (
+        count = (
             db.query(board_free)
             .filter_by(article_id=article_id)
             .update({"like": board_free.like + 1})
@@ -30,7 +30,7 @@ def _like_free(article_id: int, db: Session, commit: bool = True) -> Result:
         if commit:
             db.commit()
 
-        return Ok(article)
+        return Ok(count)
     except Exception as e:
         return Err("like_free error")
 
@@ -40,7 +40,7 @@ def _dislike_free(
     article_id: int, db: Session, commit: bool = True
 ) -> Result[None, str]:
     try:
-        article = (
+        count = (
             db.query(board_free)
             .filter_by(article_id=article_id)
             .filter(board_free.like > 0)
@@ -50,10 +50,10 @@ def _dislike_free(
         if commit:
             db.commit()
 
-        if article == 1:
+        if count == 1:
             return Ok(None)
-        else:
-            return Err("dislike_free error")
+
+        return Err("dislike_free error")
 
     except Exception as e:
         return Err("dislike_free error")
@@ -72,8 +72,7 @@ def create_free_like(article_id: int, userid: int, db: Session) -> Result[None, 
         if is_user_already_like:
             return Err(AlreadyExists())
 
-        if _like_free(article_id, db, commit=False).is_err:
-            return Err("like_free error")
+        _like_free(article_id, db, commit=False).unwrap()
 
         is_user_liked_before = (
             db.query(board_free_like)
@@ -93,10 +92,10 @@ def create_free_like(article_id: int, userid: int, db: Session) -> Result[None, 
             if is_state_change_success is False:
                 return Err("state change error")
         else:
-            article = board_free_like()
-            article.article_id = article_id
-            article.userid = userid
-            db.add(article)
+            like = board_free_like()
+            like.article_id = article_id
+            like.userid = userid
+            db.add(like)
 
         db.commit()
         return Ok(None)
@@ -121,11 +120,10 @@ def cancel_free_like(article_id: int, userid: int, db: Session) -> Result[None, 
             == 1
         )
 
-        if update_and_check_success == False:
+        if update_and_check_success is False:
             return Err(NotFound())
 
-        if _dislike_free(article_id, db, commit=False).is_err:
-            return Err("dislike_free error")
+        _dislike_free(article_id, db, commit=False).unwrap()
 
         db.commit()
         return Ok(None)
