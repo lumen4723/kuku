@@ -1,4 +1,5 @@
 <script>
+	import { page } from "$app/stores";
   let currentPage = 1;
   let pageLimit = 10;
   let label = 1;
@@ -43,7 +44,11 @@
       {#await boardList then qnaBoard}
         {#each qnaBoard["list"] as qna}
           <tr>
-            <td><a href="../article/{qna.article_id}">{qna.title}</a></td>
+            {#if $page.url.pathname.startsWith("/board/qna/article")}
+            	<td><a href="../{qna.article_id}">{qna.title}</a></td>
+            {:else}
+              <td><a href="../article/{qna.article_id}">{qna.title}</a></td>
+            {/if}
             <td>{qna.username}</td>
             <td>{qna.created}</td>
             <td>{qna.like}</td>
