@@ -19,7 +19,7 @@
 	<nav class="navbar is-primary is-fixed-top">
 		<div class="container">
 			<div class="navbar-brand">
-				<a class="navbar-item" sveltekit:prefetch href="/">KUKU</a>
+				<a class="navbar-item" sveltekit:prefetch on:click={() => navbarStatus = false} href="/">KUKU</a>
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<a
 					role="button"
@@ -46,7 +46,9 @@
 							"/board/free"
 						)}
 						sveltekit:prefetch
-						href="/board/free/1">자유게시판</a
+						href="/board/free/1"
+						on:click={() => navbarStatus = false}
+						>자유게시판</a
 					>
 					<a
 						class="navbar-item"
@@ -54,7 +56,9 @@
 							"/board/qna"
 						)}
 						sveltekit:prefetch
-						href="/board/qna/1">질문게시판</a
+						href="/board/qna/1"
+						on:click={() => navbarStatus = false}
+						>질문게시판</a
 					>
 					<a
 						class="navbar-item"
@@ -62,7 +66,9 @@
 							"/study"
 						)}
 						sveltekit:prefetch
-						href="/study">문제</a
+						href="/study"
+						on:click={() => navbarStatus = false}
+						>문제</a
 					>
 					<!-- <div class="navbar-item has-dropdown">
 								<a class="navbar-link">뭐하지</a>
@@ -79,7 +85,7 @@
 							</div> -->
 				</div>
 				<div class="navbar-end">
-					<a class="navbar-item" sveltekit:prefetch href="/account"
+					<a class="navbar-item" sveltekit:prefetch href="/account" on:click={() => navbarStatus = false}
 						>{loginBtnStr}</a
 					>
 				</div>
