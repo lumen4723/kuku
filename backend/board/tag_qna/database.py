@@ -60,7 +60,7 @@ def delete_tag_qna(
 # delete all board_tag_qna with article_id
 def delete_all_tag_qna(
     article_id: int, db: Session, commit: bool = True
-) -> Result[True, str]:
+) -> Result[bool, str]:
     try:
         article = (
             db.query(board_qna_tag)
