@@ -7,12 +7,46 @@
 	let navbarStatus = false;
 
 	let loginBtnStr = "Login";
+	let loginBtnactivate = true;
+	let username = null;
 	if (browser) {
-		let username = window.localStorage.getItem("user.username");
+		username = window.localStorage.getItem("user.username");
+		console.log(username);
 		if (username != null) {
 			loginBtnStr = username;
+			loginBtnactivate = false;
 		}
 	}
+
+	const logout = async () => {
+		if(username != null){
+			const res = await fetch(
+      			`//127.0.0.1:8081/user/logout`,// 이거 api.eyo.kr:8081하면 쿠키 안지워짐
+				{
+					method: "POST",
+					headers: {
+		  				Accept: "application/json",
+					},
+					mode: "cors",
+					credentials: "include",
+	  			}
+    		)
+			.then((res) => {
+				if (res.ok == false) throw new Error();
+			})
+    		.then(() => {
+				if (browser) {
+					window.localStorage.removeItem("user.email");
+					window.localStorage.removeItem("user.id");
+					window.localStorage.removeItem("user.username");
+				}
+				location.href = "/";
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+		}
+	};
 </script>
 
 <header class="header">
@@ -64,24 +98,19 @@
 						sveltekit:prefetch
 						href="/study">문제</a
 					>
-					<!-- <div class="navbar-item has-dropdown">
-								<a class="navbar-link">뭐하지</a>
-								<div class="navbar-dropdown ">
-									<a class="navbar-item"> Overview </a>
-									<a class="navbar-item"> Modifiers </a>
-									<a class="navbar-item"> Columns </a>
-									<a class="navbar-item"> Layout </a>
-									<a class="navbar-item"> Form </a>
-									<hr class="navbar-divider" />
-									<a class="navbar-item"> Elements </a>
-									<a class="navbar-item"> Components </a>
-								</div>
-							</div> -->
 				</div>
 				<div class="navbar-end">
-					<a class="navbar-item" sveltekit:prefetch href="/account"
-						>{loginBtnStr}</a
-					>
+					<a class="navbar-item"
+						sveltekit:prefetch href = {
+						loginBtnactivate ? "/account" : "/mypage"
+						}>{loginBtnStr}</a>
+					
+					{#if !loginBtnactivate}
+						<a class="navbar-item"
+						sveltekit:prefetch href="/"
+						on:click={logout}
+						>Logout</a>
+					{/if}
 				</div>
 			</div>
 		</div>
