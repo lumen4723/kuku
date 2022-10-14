@@ -33,3 +33,6 @@ class changeuser(BaseModel):
     username: str = ""
     password: str = ""
     email: str = ""
+
+class originuser(BaseModel):
+    password: str = ""

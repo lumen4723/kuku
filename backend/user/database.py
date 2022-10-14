@@ -106,23 +106,21 @@ def login(object_in: loginuser, db: Session) -> Result:
 
 
 # update_user
-def update_user(
-    object_in: User, originpd: str, originuid: str, db: Session
-) -> Result:
+def update_user(change: User, origin: User, originuid: str, db: Session) -> Result:
     try:
         user = db.query(User).filter_by(uid=originuid).first()
         if user is None:
             return Err(NotFound())
-        if not verify_password(originpd, user.password):
+        if not verify_password(origin.password, user.password):
             return Err(NotAuthorized())
-        
-        if object_in.email != "":
-            user.email = object_in.email
-        if object_in.username != "":
-            user.username = object_in.username
-        if object_in.password != "":
-            user.password = get_password_hash(object_in.password)
-        
+
+        if change.email != "":
+            user.email = change.email
+        if change.username != "":
+            user.username = change.username
+        if change.password != "":
+            user.password = get_password_hash(change.password)
+
         db.add(user)
         db.commit()
         db.refresh(user)
