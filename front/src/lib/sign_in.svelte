@@ -13,8 +13,7 @@
 	}
 	const login = async () => {
 		isLoading = true;
-		await fetch("//127.0.0.1:8081/user/login", {
-			// 이거 api.eyo.kr:8081하면 쿠키 안들어옴
+		const res = await fetch("//api.eyo.kr:8081/user/login", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
