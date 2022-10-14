@@ -3,16 +3,14 @@ from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 from option import *
 import utils
-from .schemas import createuser, loginuser
+from .schemas import changeuser, createuser, loginuser, originuser
 from utils.exception import throwMsg
 from fastapi import Response, Depends
 from uuid import UUID, uuid4
 from utils.session import *
 
 router = APIRouter(
-    prefix="/user",
-    tags=["user"],
-    responses={404: {"description": "Not found"}},
+    prefix="/user", tags=["user"], responses={404: {"description": "Not found"}},
 )
 
 
@@ -63,13 +61,13 @@ async def whoami(
 
 @router.put("/update", dependencies=[Depends(cookie)])
 async def update_user(
-    changeuser: createuser,
-    verifypd: str,
+    changeUser: changeuser,
+    originUser: originuser,
     session_data: SessionData = Depends(verifier),
     session: Session = Depends(utils.database.get_db),
 ):
     return (
-        database.update_user(changeuser, verifypd, session_data.uid, session)
+        database.update_user(changeUser, originUser, session_data.uid, session)
         .map_err(throwMsg)
         .unwrap()
     )
