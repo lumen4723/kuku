@@ -103,3 +103,48 @@ def login(object_in: loginuser, db: Session) -> Result:
     if not verify_password(object_in.password, user.password):
         return Err(NotFound())
     return Ok(user.uid)
+
+
+# update_user
+def update_user(
+    object_in: User, originemail: str, originpd: str, db: Session
+) -> Result:
+    try:
+        user = db.query(User).filter_by(email=originemail).first()
+        if user is None:
+            return Err(NotFound())
+        if not verify_password(originpd, user.password):
+            return Err(NotAuthorized())
+        
+        if object_in.email != "":
+            user.email = object_in.email
+        if object_in.username != "":
+            user.username = object_in.username
+        if object_in.password != "":
+            user.password = get_password_hash(object_in.password)
+        
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return Ok(user.uid)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "data too long" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        if "is not a valid" in err_msg:
+            return Err(DefaultException(detail="form data is not a valid"))
+        return Err(DefaultException(detail="unknown error"))
+
+
+# delete user
+def delete_user(object_in: loginuser, db: Session) -> Result:
+    user = db.query(User).filter_by(email=object_in.email).first()
+    if user is None:
+        return Err(NotFound())
+    if not verify_password(object_in.password, user.password):
+        return Err(NotFound())
+    user.state = 0
+    db.commit()
+    db.refresh(user)
+    return Ok(user.state)

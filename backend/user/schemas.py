@@ -27,3 +27,9 @@ class UserInformation(BaseModel):
     username: str = ""
     email: str = ""
     created: datetime
+
+
+class changeuser(BaseModel):
+    username: str = ""
+    password: str = ""
+    email: str = ""
