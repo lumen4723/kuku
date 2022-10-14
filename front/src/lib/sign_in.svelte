@@ -13,7 +13,7 @@
 	}
 	const login = async () => {
 		isLoading = true;
-		const res = await fetch("//api.eyo.kr:8081/user/login", {
+		await fetch("//api.eyo.kr:8081/user/login", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
@@ -27,7 +27,7 @@
 			credentials: "include",
 		})
 			.then((res) => {
-				if (res.ok == false) throw new Error();
+				if (res.ok == false) return Promise.reject(res);
 				return res.json();
 			})
 			.then((json) => {
@@ -57,7 +57,7 @@
 
 <form method="post" on:submit|preventDefault={login}>
 	{#if message != ""}
-		<article class="message is-success">
+		<article class="message is-danger">
 			<div class="message-body">
 				{message}
 			</div>
