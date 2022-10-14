@@ -1,21 +1,19 @@
 <script>
 	import { browser } from "$app/env";
 	import { writable } from "svelte/store";
+	import { page } from "$app/stores";
 
 	let isLoading = false;
 	let email, password;
 	let message = "";
-
-	if (browser) {
-		let msg = new URLSearchParams(location.search).get("msg");
-		if (msg != null) {
-			message = url;
-		}
+	if ($page.url.searchParams.has("msg")) {
+		message = $page.url.searchParams.get("msg");
+	} else {
+		message = "";
 	}
-
 	const login = async () => {
 		isLoading = true;
-		const res = await fetch("//api.eyo.kr:8081/user/login", {
+		await fetch("//api.eyo.kr:8081/user/login", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
@@ -29,7 +27,7 @@
 			credentials: "include",
 		})
 			.then((res) => {
-				if (res.ok == false) throw new Error();
+				if (res.ok == false) return Promise.reject(res);
 				return res.json();
 			})
 			.then((json) => {

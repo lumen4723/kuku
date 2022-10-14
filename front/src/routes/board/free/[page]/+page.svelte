@@ -101,11 +101,10 @@
           <button class="button is-info"> 검색 </button>
         </p>
       </div>
+      {#if isLogged}
+        <a href="/board/free/write" class="button is-primary">글쓰기</a>
+      {/if}
     </div>
   </div>
   <br />
-  {#if isLogged}
-    <a href="/board/free/write" class="button is-primary">글쓰기</a>
-    <br /><br />
-  {/if}
 </div>
