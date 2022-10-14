@@ -61,6 +61,27 @@ async def whoami(
     )
 
 
+@router.put("/update", dependencies=[Depends(cookie)])
+async def update_user(
+    changeuser: createuser,
+    verifyemail: str,
+    verifypd: str,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.update_user(changeuser, verifyemail, verifypd, session)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+@router.delete("/delete", dependencies=[Depends(cookie)])
+async def delete_user(
+    user: loginuser, session: Session = Depends(utils.database.get_db)
+):
+    return database.delete_user(user, session).map_err(throwMsg).unwrap()
+
+
 @router.post("/logout")
 async def del_session(response: Response, session_id: UUID = Depends(cookie)):
     await backend.delete(session_id)
