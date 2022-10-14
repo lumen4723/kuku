@@ -78,6 +78,39 @@
     alert("로그인이 필요합니다.");
   };
   let isLogin = true;
+  
+  let comment_content="";
+  const create_comment = async (article_id) => {
+		return await fetch(
+			`http://api.eyo.kr:8081/board/free/comment/create/${article_id}`,
+			{
+				method: 'POST',
+				headers: {
+					Aceept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					content: comment_content
+				}),
+				mode: "cors",
+				credentials: "include",
+			}
+		)
+	};
+	const upload = () => {
+		create_comment($page.params.id).then((res) => {
+			console.log(res);
+			if (res.ok==false) {
+				return Promise.reject(res);
+			} else {
+				return res.json();
+			}
+		})
+		.then(alert("댓글이 등록되었습니다."))
+		.then(location.reload(true))
+		.catch((err) => { console.error(err); })
+
+  };
 </script>
 
 {#await article}
@@ -166,14 +199,6 @@
 							is-responsive
 							"
               >
-                수정
-              </button>
-              <button
-                class="button is-rounded
-							is-link is-light is-small
-							is-responsive
-							"
-              >
                 삭제
               </button>
             {/if}
@@ -183,8 +208,14 @@
     </tbody>
   </table>
   {#if isLogin}
-    <textarea class="textarea" placeholder="댓글을 입력하세요" />
-    <button class="button">등록</button>
+    <form method="POST" on:submit|preventDefault={upload}>
+		<div class="contents" contenteditable="true">
+			<textarea class="input" bind:value={comment_content} placeholder="댓글을 입력하세요" required />
+	    	
+		</div>
+		<button class="button" type="submit">등록</button>
+
+	</form>
   {/if}
 </div>
 
@@ -206,9 +237,5 @@
     width: 100%;
     background-color: rgba(239, 235, 235, 0.805);
   }
-  textarea {
-    width: 100%;
-    height: 5.25em;
-    resize: none;
-  }
+
 </style>

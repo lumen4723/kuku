@@ -18,32 +18,29 @@
 	}
 
 	const logout = async () => {
-		if(username != null){
-			const res = await fetch(
-      			`//api.eyo.kr:8081/user/logout`,
-				{
-					method: "POST",
-					headers: {
-		  				Accept: "application/json",
-					},
-					mode: "cors",
-					credentials: "include",
-	  			}
-    		)
-			.then((res) => {
-				if (res.ok == false) throw new Error();
+		if (username != null) {
+			await fetch(`//api.eyo.kr:8081/user/logout`, {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+				},
+				mode: "cors",
+				credentials: "include",
 			})
-    		.then(() => {
-				if (browser) {
-					window.localStorage.removeItem("user.email");
-					window.localStorage.removeItem("user.id");
-					window.localStorage.removeItem("user.username");
-				}
-				location.href = "/";
-			})
-			.catch((e) => {
-				console.log(e);
-			});
+				.then((res) => {
+					if (res.ok == false) return Promise.reject(res);
+				})
+				.then(() => {
+					if (browser) {
+						window.localStorage.removeItem("user.email");
+						window.localStorage.removeItem("user.id");
+						window.localStorage.removeItem("user.username");
+					}
+					location.href = "/";
+				})
+				.catch((e) => {
+					console.log(e);
+				});
 		}
 	};
 </script>
@@ -52,7 +49,12 @@
 	<nav class="navbar is-primary is-fixed-top">
 		<div class="container">
 			<div class="navbar-brand">
-				<a class="navbar-item" sveltekit:prefetch on:click={() => navbarStatus = false} href="/">KUKU</a>
+				<a
+					class="navbar-item"
+					sveltekit:prefetch
+					on:click={() => (navbarStatus = false)}
+					href="/">KUKU</a
+				>
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<a
 					role="button"
@@ -80,8 +82,7 @@
 						)}
 						sveltekit:prefetch
 						href="/board/free/1"
-						on:click={() => navbarStatus = false}
-						>자유게시판</a
+						on:click={() => (navbarStatus = false)}>자유게시판</a
 					>
 					<a
 						class="navbar-item"
@@ -90,8 +91,7 @@
 						)}
 						sveltekit:prefetch
 						href="/board/qna/1"
-						on:click={() => navbarStatus = false}
-						>질문게시판</a
+						on:click={() => (navbarStatus = false)}>질문게시판</a
 					>
 					<a
 						class="navbar-item"
@@ -100,22 +100,25 @@
 						)}
 						sveltekit:prefetch
 						href="/study"
-						on:click={() => navbarStatus = false}
-						>문제</a
+						on:click={() => (navbarStatus = false)}>문제</a
 					>
 				</div>
 				<div class="navbar-end">
-					<a class="navbar-item"
-						on:click={() => navbarStatus = false}
-						sveltekit:prefetch href = {
-						loginBtnactivate ? "/account" : "/mypage"
-						}>{loginBtnStr}</a>
-					
+					<a
+						class="navbar-item"
+						on:click={() => (navbarStatus = false)}
+						sveltekit:prefetch
+						href={loginBtnactivate ? "/account" : "/mypage"}
+						>{loginBtnStr}</a
+					>
+
 					{#if !loginBtnactivate}
-						<a class="navbar-item"
-						sveltekit:prefetch href="/"
-						on:click={logout}
-						>Logout</a>
+						<a
+							class="navbar-item"
+							sveltekit:prefetch
+							href="/"
+							on:click={logout}>Logout</a
+						>
 					{/if}
 				</div>
 			</div>
