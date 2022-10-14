@@ -11,7 +11,6 @@
 	let username = null;
 	if (browser) {
 		username = window.localStorage.getItem("user.username");
-		console.log(username);
 		if (username != null) {
 			loginBtnStr = username;
 			loginBtnactivate = false;
