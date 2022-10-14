@@ -1,21 +1,20 @@
 <script>
 	import { browser } from "$app/env";
 	import { writable } from "svelte/store";
+	import { page } from "$app/stores";
 
 	let isLoading = false;
 	let email, password;
 	let message = "";
-
-	if (browser) {
-		let msg = new URLSearchParams(location.search).get("msg");
-		if (msg != null) {
-			message = url;
-		}
+	if ($page.url.searchParams.has("msg")) {
+		message = $page.url.searchParams.get("msg");
+	} else {
+		message = "";
 	}
-
 	const login = async () => {
 		isLoading = true;
-		const res = await fetch("//127.0.0.1:8081/user/login", { // 이거 api.eyo.kr:8081하면 쿠키 안들어옴
+		await fetch("//127.0.0.1:8081/user/login", {
+			// 이거 api.eyo.kr:8081하면 쿠키 안들어옴
 			method: "POST",
 			headers: {
 				Accept: "application/json",
@@ -59,7 +58,7 @@
 
 <form method="post" on:submit|preventDefault={login}>
 	{#if message != ""}
-		<article class="message is-danger">
+		<article class="message is-success">
 			<div class="message-body">
 				{message}
 			</div>

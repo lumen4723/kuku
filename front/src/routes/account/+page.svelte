@@ -1,12 +1,17 @@
 <script>
+	import { page } from '$app/stores';
 	import Login from '$lib/sign_in.svelte';
 	import Signup from '$lib/sign_up.svelte';
 
 	let currentTab = 'Login';
-
+	const isSignup = $page.url.searchParams.has('msg');
+	const afterSignup = () => {
+		currentTab = 'Login';
+	};
 	const changeTab = (tab) => {
 		currentTab = tab;
 	};
+	$: if (isSignup) afterSignup;
 </script>
 
 <section class="hero is-primary is-halfheight">
