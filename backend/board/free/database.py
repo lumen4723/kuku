@@ -200,7 +200,7 @@ def delete_article(
 
 
 # update article by id
-def update_article(article_id: int, uid: int, object_in: board_free, db: Session):
+def update_article(article_id: int, uid: int, object_in: board_free, db: Session) -> Result:
     try:
         article = db.query(board_free).filter_by(article_id=article_id, state=1).first()
         if article is None:

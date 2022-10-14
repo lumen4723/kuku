@@ -69,12 +69,32 @@ def get_comment(aid: int, db: Session) -> Result:
     try:
         comments = _combine_username(
             db.query(board_free_comment)
-            .filter(board_free_comment.article_id == aid)
+            .filter(board_free_comment.article_id == aid, board_free_comment.state == 1)
             .join(User)
             .all()
         )
 
         return Ok({"list": comments})
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
+
+#delete comment
+def delete_comment(cid: int, uid: int,db: Session) -> Result:
+    try:
+        comment = db.query(board_free_comment).filter(board_free_comment.cid == cid).first()
+        if comment is None:
+            return Err(NotFound())
+        elif comment.userid != uid: 
+            return Err(NotAuthorized())
+        comment.state = 0
+        db.commit()
+        return Ok(comment)
 
     except Exception as e:
         err_msg = str(e).lower()
