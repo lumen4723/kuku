@@ -1,7 +1,8 @@
-<script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11">
   import { page } from "$app/stores";
   import List from "../../[page]/+page.svelte";
-
+  import Swal from 'sweetalert2'
+  import { onMount } from "svelte";
   const getArticle = async (article_id) => {
     const res = await fetch(
       `//api.eyo.kr:8081/board/free/article_id/${article_id}`,
@@ -75,7 +76,12 @@
     isClicked = !isClicked;
   };
   const alt = () => {
-    alert("로그인이 필요합니다.");
+    Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: '로그인이 필요합니다!',
+  footer: ''
+})
   };
   let isLogin = true;
   
@@ -106,11 +112,61 @@
 				return res.json();
 			}
 		})
-		.then(alert("댓글이 등록되었습니다."))
-		.then(location.reload(true))
+		.then(Swal.fire(
+    'Good job!',
+    '댓글이 생성되었습니다!',
+    'success'
+  ).then(
+        function (isConfirm) {
+            location.reload(isConfirm);
+        }
+  ))
 		.catch((err) => { console.error(err); })
 
   };
+  const delete_comment = async(comment_id) => {
+    await fetch(
+      `http://api.eyo.kr:8081/board/free/comment/delete/${comment_id}`,
+      {
+        method: 'PUT',
+        headers: {
+          Aceept: "application/json"
+        },
+        mode: "cors",
+        credentials: "include",
+      }
+    ).then((res) => {
+			console.log(res);
+			if (res.ok==false) {
+				return Promise.reject(res);
+			} else {
+				return res.json();
+			}
+		})
+    .then(Swal.fire(
+      'Good job!',
+      '댓글이 삭제되었습니다!',
+      'success'
+    ).then(
+          function (isConfirm) {
+              location.reload(isConfirm);
+          }
+    ))
+		.catch((err) => { 
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: '본인의 글만 삭제할 수 있습니다!',
+        })
+      })
+  }
+  onMount(
+    async () => {
+      if (window.localStorage["user.username"] == null) {
+        isLogin = false;
+      }
+    }
+  )
 </script>
 
 {#await article}
@@ -197,7 +253,8 @@
                 class="button is-rounded
 							is-link is-light is-small
 							is-responsive
-							"
+							" 
+                on:click={delete_comment(comment.cid)}
               >
                 삭제
               </button>
