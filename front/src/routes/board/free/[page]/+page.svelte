@@ -112,7 +112,7 @@
 			{#if isLogged}
 				<a href="/board/free/write" class="button is-primary">글쓰기</a>
 			{/if}
-			<div class="select " bind:value={}>
+			<div class="select">
 				<select>
 					<option>10개씩 보기</option>
 					<option>15개씩 보기</option>

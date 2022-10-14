@@ -3,28 +3,7 @@
 	import Changeuser from "./Changeuser.svelte";
 	import Withdrawal from "./Withdrawal.svelte";
 	let currentPage = "Myprofile";
-	let username = "";
-	let useremail = "";
-
-	const getuserdata = async () => {
-		await fetch("//api.eyo.kr:8081/user/whoami", {
-			method: "GET",
-			headers: {
-				Accept: "application/json",
-			},
-			mode: "cors",
-			credentials: "include",
-		})
-			.then((res) => {
-				if (res.ok == false) throw new Error();
-				return res.json();
-			})
-			.then((json) => {
-				console.log(json);
-				username = json["username"];
-				useremail = json["email"];
-			});
-	};
+	
 </script>
 
 <div class="container">

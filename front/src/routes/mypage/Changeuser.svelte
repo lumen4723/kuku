@@ -1,9 +1,9 @@
 <script>
 	let username, useremail, password;
 
-	const user_change = async () => {
-		await fetch("//api.eyo.kr:8081/user/change", {
-			method: "POST",
+	const user_update = async () => {
+		await fetch("//api.eyo.kr:8081/user/update", {
+			method: "PUT",
 			headers: {
 				Accept: "application/json",
 				"Content-Type": "application/json",
@@ -34,13 +34,13 @@
 </script>
 
 <div class="container">
-	<form method="post">
+	<form method="PUT" on:submit|preventDefault={user_update}>
 		<div class="field">
-			<label class="label">Username</label>
+			<label class="label" for="username">Username</label>
 			<div class="control has-icons-left has-icons-right">
 				<input
 					class="input"
-					type="text"
+					type="username"
 					placeholder="Username"
 					bind:value={username}
 				/>
@@ -51,7 +51,7 @@
 		</div>
 
 		<div class="field">
-			<label class="label">Email</label>
+			<label class="label" for="email">Email</label>
 			<div class="control has-icons-left has-icons-right">
 				<input
 					class="input"
@@ -66,7 +66,7 @@
 		</div>
 
 		<div class="field">
-			<label class="label">Password</label>
+			<label class="label" for="password">Password</label>
 			<div class="control has-icons-left has-icons-right">
 				<input
 					class="input"
@@ -80,11 +80,11 @@
 			</div>
 		</div>
 		<div class="field">
-			<label class="label">Confirm Password</label>
+			<label class="label" for="confirmpassword">Confirm Password</label>
 			<div class="control has-icons-left has-icons-right">
 				<input
 					class="input"
-					type="password"
+					type="confirmpassword"
 					placeholder="Password"
 					bind:value={password}
 				/>
@@ -96,7 +96,7 @@
 
 		<div class="field">
 			<div class="control">
-				<button class="button is-link" type="submit">Submit</button>
+				<button class="button is-link" type="submit">수정하기</button>
 			</div>
 		</div>
 	</form>
