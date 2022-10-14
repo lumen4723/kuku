@@ -64,12 +64,12 @@ async def whoami(
 @router.put("/update", dependencies=[Depends(cookie)])
 async def update_user(
     changeuser: createuser,
-    verifyemail: str,
     verifypd: str,
+    session_data: SessionData = Depends(verifier),
     session: Session = Depends(utils.database.get_db),
 ):
     return (
-        database.update_user(changeuser, verifyemail, verifypd, session)
+        database.update_user(changeuser, verifypd, session_data.uid, session)
         .map_err(throwMsg)
         .unwrap()
     )

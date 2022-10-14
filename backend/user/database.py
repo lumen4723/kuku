@@ -107,10 +107,10 @@ def login(object_in: loginuser, db: Session) -> Result:
 
 # update_user
 def update_user(
-    object_in: User, originemail: str, originpd: str, db: Session
+    object_in: User, originpd: str, originuid: str, db: Session
 ) -> Result:
     try:
-        user = db.query(User).filter_by(email=originemail).first()
+        user = db.query(User).filter_by(uid=originuid).first()
         if user is None:
             return Err(NotFound())
         if not verify_password(originpd, user.password):
