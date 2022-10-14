@@ -175,7 +175,7 @@ async def get_comment_by_article_id(
     return get_comment(article_id, session).map_err(throwMsg).unwrap()
 
 # change comment state to delete
-@router.delete("/comment/delete/{comment_id}", dependencies=[Depends(cookie)])
+@router.put("/comment/delete/{comment_id}", dependencies=[Depends(cookie)])
 async def delete_comment_by_comment_id(
     comment_id: int,
     session: Session = Depends(utils.database.get_db),
