@@ -102,8 +102,8 @@
         </p>
       </div>
       {#if isLogged}
-    <a href="/board/free/write" class="button is-primary">글쓰기</a>
-  {/if}
+        <a href="/board/free/write" class="button is-primary">글쓰기</a>
+      {/if}
     </div>
   </div>
   <br />
