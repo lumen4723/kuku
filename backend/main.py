@@ -14,7 +14,7 @@ app.include_router(board.free.router)
 app.include_router(board.qna.router)
 app.include_router(board.tag.router)
 
-origins = ["http://127.0.0.1:5173", "http://ksu-527.eyo.kr:5173"]
+origins = ["http://local.eyo.kr:5173", "http://ksu-527.eyo.kr:5173"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

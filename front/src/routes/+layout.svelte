@@ -21,7 +21,7 @@
 	const logout = async () => {
 		if(username != null){
 			const res = await fetch(
-      			`//127.0.0.1:8081/user/logout`,// 이거 api.eyo.kr:8081하면 쿠키 안지워짐
+      			`//api.eyo.kr:8081/user/logout`,// 이거 api.eyo.kr:8081하면 쿠키 안지워짐
 				{
 					method: "POST",
 					headers: {
