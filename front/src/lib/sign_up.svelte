@@ -91,20 +91,20 @@
 			mode: "cors",
 			credentials: "include",
 		})
-		.then((res) => {
-			if (res.ok == false) return Promise.reject(res);
-			return res.json();
-		})
-		.then(() => {
-			location.href = "?msg=회원가입 되었습니다. 로그인 해주세요.";
-			isLoading = false;
-		})
-		.catch((e) => {
-			e.json().then((json) => {
-				message = "회원가입에 실패하였습니다: " + json["detail"];
+			.then((res) => {
+				if (res.ok == false) return Promise.reject(res);
+				return res.json();
+			})
+			.then(() => {
+				location.href = "?msg=회원가입 되었습니다. 로그인 해주세요.";
 				isLoading = false;
+			})
+			.catch((e) => {
+				e.json().then((json) => {
+					message = "회원가입에 실패하였습니다: " + json["detail"];
+					isLoading = false;
+				});
 			});
-		});
 	};
 </script>
 
