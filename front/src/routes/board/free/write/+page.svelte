@@ -2,14 +2,14 @@
   import { onMount } from "svelte";
   let title = "",
     content = "";
-
+  let ckeditorInstance;
   let ClassicEditor;
   onMount(async () => {
     const module = await import("@ckeditor/ckeditor5-build-classic");
     ClassicEditor = module.default;
     ClassicEditor.create(document.querySelector("#editor"))
       .then((editor) => {
-        console.log(editor);
+        ckeditorInstance = editor;
       })
       .catch((error) => {
         console.error(error);
@@ -25,7 +25,7 @@
       },
       body: JSON.stringify({
         title,
-        content,
+        content: ckeditorInstance.getData(),
       }),
       mode: "cors",
       credentials: "include",
@@ -46,7 +46,7 @@
     console.log(
       JSON.stringify({
         title,
-        content,
+        content: ckeditorInstance.getData(),
       })
     );
     postArticle()
@@ -60,9 +60,9 @@
         });
       });
   };
-  const alt = () => {
-    alert("제목 또는 내용을 입력해주세요.");
-  };
+  // const alt = () => {
+  //   alert("제목 또는 내용을 입력해주세요.");
+  // };
 </script>
 
 <br />
@@ -83,30 +83,6 @@
     >
     <hr />
   </div>
-  <!-- <div class="file has-name">
-		<label class="file-label">
-			<input class="file-input" type="file" name="resume" />
-			<span class="file-cta">
-				<span class="file-icon">
-					<i class="fas fa-upload" />
-				</span>
-				<span class="file-label"> Choose a file… </span>
-			</span>
-			<span class="file-name" />
-		</label>
-	</div>
-	<br /> -->
-  <!-- {#if title != '' && content != ''}
-		<button class="button is-link" type="submit" on:click={alt}
-			>완료</button
-		>
-	{:else}
-		<a href="/board/free/1"
-			><button class="button is-link" type="submit" on:click={upload}
-				>완료</button
-			>
-		</a>
-	{/if} -->
   <a href="/board/free/1"
     ><button class="button is-link" type="submit" on:click={upload}>완료</button
     >

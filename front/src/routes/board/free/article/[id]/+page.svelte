@@ -1,7 +1,7 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11">
   import { page } from "$app/stores";
   import List from "../../[page]/+page.svelte";
-  import Swal from 'sweetalert2'
+  import Swal from "sweetalert2";
   import { onMount } from "svelte";
   const getArticle = async (article_id) => {
     const res = await fetch(
@@ -77,96 +77,93 @@
   };
   const alt = () => {
     Swal.fire({
-  icon: 'error',
-  title: 'Oops...',
-  text: '로그인이 필요합니다!',
-  footer: ''
-})
+      icon: "error",
+      title: "Oops...",
+      text: "로그인이 필요합니다!",
+      footer: "",
+    });
   };
   let isLogin = true;
-  
-  let comment_content="";
-  const create_comment = async (article_id) => {
-		return await fetch(
-			`http://api.eyo.kr:8081/board/free/comment/create/${article_id}`,
-			{
-				method: 'POST',
-				headers: {
-					Aceept: "application/json",
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					content: comment_content
-				}),
-				mode: "cors",
-				credentials: "include",
-			}
-		)
-	};
-	const upload = () => {
-		create_comment($page.params.id).then((res) => {
-			console.log(res);
-			if (res.ok==false) {
-				return Promise.reject(res);
-			} else {
-				return res.json();
-			}
-		})
-		.then(Swal.fire(
-    'Good job!',
-    '댓글이 생성되었습니다!',
-    'success'
-  ).then(
-        function (isConfirm) {
-            location.reload(isConfirm);
-        }
-  ))
-		.catch((err) => { console.error(err); })
 
+  let comment_content = "";
+  const create_comment = async (article_id) => {
+    return await fetch(
+      `http://api.eyo.kr:8081/board/free/comment/create/${article_id}`,
+      {
+        method: "POST",
+        headers: {
+          Aceept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: comment_content,
+        }),
+        mode: "cors",
+        credentials: "include",
+      }
+    );
   };
-  const delete_comment = async(comment_id) => {
+  const upload = () => {
+    create_comment($page.params.id)
+      .then((res) => {
+        console.log(res);
+        if (res.ok == false) {
+          return Promise.reject(res);
+        } else {
+          return res.json();
+        }
+      })
+      .then(
+        Swal.fire("Good job!", "댓글이 생성되었습니다!", "success").then(
+          function (isConfirm) {
+            location.reload(isConfirm);
+          }
+        )
+      )
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+  const delete_comment = async (comment_id) => {
     await fetch(
       `http://api.eyo.kr:8081/board/free/comment/delete/${comment_id}`,
       {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          Aceept: "application/json"
+          Aceept: "application/json",
         },
         mode: "cors",
         credentials: "include",
       }
-    ).then((res) => {
-			console.log(res);
-			if (res.ok==false) {
-				return Promise.reject(res);
-			} else {
-				return res.json();
-			}
-		})
-    .then(Swal.fire(
-      'Good job!',
-      '댓글이 삭제되었습니다!',
-      'success'
-    ).then(
-          function (isConfirm) {
-              location.reload(isConfirm);
-          }
-    ))
-		.catch((err) => { 
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: '본인의 글만 삭제할 수 있습니다!',
-        })
+    )
+      .then((res) => {
+        console.log(res);
+        if (res.ok == false) {
+          return Promise.reject(res);
+        } else {
+          return res.json();
+        }
       })
-  }
-  onMount(
-    async () => {
-      if (window.localStorage["user.username"] == null) {
-        isLogin = false;
-      }
+      .then(
+        Swal.fire("Good job!", "댓글이 삭제되었습니다!", "success").then(
+          function (isConfirm) {
+            location.reload(isConfirm);
+          }
+        )
+      )
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "본인의 글만 삭제할 수 있습니다!",
+        });
+      });
+  };
+  onMount(async () => {
+    if (window.localStorage["user.username"] == null) {
+      isLogin = false;
     }
-  )
+  });
 </script>
 
 {#await article}
@@ -176,7 +173,7 @@
     <div style="padding: 16px">
       {#if isLogin}
         <div class="edit" style="float: right; margin-top: 16px">
-          <a href="/board/free/write/update/{article.article_id}"
+          <a href="/board/free/write/{article.article_id}"
             ><button class="button is-rounded is-light"> 수정 </button></a
           >
           <a href="/board/free/1"
@@ -253,7 +250,7 @@
                 class="button is-rounded
 							is-link is-light is-small
 							is-responsive
-							" 
+							"
                 on:click={delete_comment(comment.cid)}
               >
                 삭제
@@ -266,13 +263,16 @@
   </table>
   {#if isLogin}
     <form method="POST" on:submit|preventDefault={upload}>
-		<div class="contents" contenteditable="true">
-			<textarea class="input" bind:value={comment_content} placeholder="댓글을 입력하세요" required />
-	    	
-		</div>
-		<button class="button" type="submit">등록</button>
-
-	</form>
+      <div class="contents" contenteditable="true">
+        <textarea
+          class="input"
+          bind:value={comment_content}
+          placeholder="댓글을 입력하세요"
+          required
+        />
+      </div>
+      <button class="button" type="submit">등록</button>
+    </form>
   {/if}
 </div>
 
@@ -294,5 +294,4 @@
     width: 100%;
     background-color: rgba(239, 235, 235, 0.805);
   }
-
 </style>
