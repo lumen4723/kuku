@@ -2,10 +2,11 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import Swal from "sweetalert2";
-  let article_data = { title: "", content: "" };
 
   let ClassicEditor;
   let ckeditorInstance;
+  let article_data = { title: "", content: "", tags: [] };
+
   onMount(async () => {
     const module = await import("@ckeditor/ckeditor5-build-classic");
     ClassicEditor = module.default;
@@ -20,7 +21,7 @@
 
   const getArticle = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/article_id/${article_id}`,
+      `//api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -41,7 +42,7 @@
 
   const putArticle = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/update/${article_id}`,
+      `//api.eyo.kr:8081/board/qna/article/${article_id}`,
       {
         method: "PUT",
         headers: {
@@ -50,6 +51,7 @@
         body: JSON.stringify({
           title: article_data.title,
           content: ckeditorInstance.getData(),
+          tags: article_data.tags,
         }),
         mode: "cors",
         credentials: "include",
@@ -60,25 +62,18 @@
         return res.json();
       })
       .then((json) => {
-<<<<<<< HEAD
         putResult = JSON.stringify(json);
-=======
-        postResult = JSON.stringify(json);
->>>>>>> 137456ca9ba65efa745ef74416578f5ad293d05e
       })
       .catch((err) => {
-        console.log(err);
+        putResult = JSON.stringify(err);
       });
-
-    // const json = await res.json();
-    // putResult = JSON.stringify(json);
   };
-
   const upload = () => {
     console.log(
       JSON.stringify({
         title: article_data.title,
         content: ckeditorInstance.getData(),
+        tags: article_data.tags,
       })
     );
     putArticle($page.params.id)
@@ -100,7 +95,7 @@
             Swal.fire("Motified!", "글이 수정되었습니다.", "success").then(
               (result) => {
                 if (result.isConfirmed)
-                  location.href = "/board/free/article/" + $page.params.id;
+                  location.href = "/board/qna/article/" + $page.params.id;
               }
             );
           }
@@ -115,40 +110,77 @@
   };
 </script>
 
-<br />
-
-<form method="PUT" on:submit|preventDefault={upload}>
-  <div class="contents">
-    <input
-      class="input mb-4"
-      type="text"
-      placeholder="제목을 입력해주세요"
-      bind:value={article_data.title}
-      required
-    />
-    <textarea
-      class="textarea"
-      id="editor"
-      placeholder="내용을 입력하세요."
-      required>{article_data.content}</textarea
-    >
-    <hr />
+<!-- 글작성 페이지-->
+<form action="PUT" on:submit|preventDefault={upload}>
+  <div class="content">
+    <div class="write__title" style="text-align: left; font-size: 30px;" />
+    <form>
+      <div class="write__form__title" style="margin-top: 2px;">
+        <h1>Q</h1>
+        <input
+          class="input mb-4"
+          id="title"
+          placeholder="제목을 입력해주세요."
+          bind:value={article_data.title}
+          required
+        />
+      </div>
+      <div class="write__form__content">
+        <textarea
+          class="textarea"
+          id="editor"
+          placeholder="내용을 입력해주세요."
+          required>{article_data.content}</textarea
+        >
+      </div>
+    </form>
   </div>
 
-  <button class="button is-link" type="submit" on:click={upload}>완료</button>
-  <a href="/board/free/article/{$page.params.id}">
-    <button class="button is-link is-light" type="button">취소</button>
+  <div class="dropdown is-hoverable">
+    <div class="dropdown-trigger">
+      <button
+        class="button"
+        aria-haspopup="true"
+        aria-controls="dropdown-menu4"
+      >
+        <span>태그 선택</span>
+        <span class="icon is-medium">
+          <i class="fas fa-angle-down" aria-hidden="true" />
+        </span>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+      <div class="dropdown-content">
+        <a href="#" class="dropdown-item">1tag</a>
+        <a href="#" class="dropdown-item">2tag</a>
+        <a href="#" class="dropdown-item">3tag</a>
+        <a href="#" class="dropdown-item">4tag</a>
+        <a href="#" class="dropdown-item">5tag</a>
+      </div>
+    </div>
+
+    <div class="tags has-addons tag-add">
+      <span class="tag is-info">1tag</span>
+      <a href="#" class="tag is-delete" />
+    </div>
+  </div>
+
+  <br /><br /><br />
+
+  <button class="button is-success" type="submit" on:click={upload}>작성</button
+  >
+  <a href="/board/qna/1">
+    <button class="button is-danger">삭제</button>
   </a>
 </form>
-<br /> <br />
+<br /><br />
 
 <style>
-  textarea {
-    width: 100%;
-    height: 50em;
-    resize: none;
-  }
   :global(.ck-editor__editable_inline) {
     min-height: 400px;
+  }
+  .tag-add {
+    margin: 0, 0, 0, 10px;
+    padding: 5px;
   }
 </style>
