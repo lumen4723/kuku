@@ -1,6 +1,5 @@
 <script>
 	import Carousel from "$lib/carousel.svelte";
-	import { page } from "$app/stores";
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(

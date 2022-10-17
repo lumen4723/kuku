@@ -77,7 +77,7 @@
 	const postUser = async () => {
 		isLoading = true;
 
-		const res = await fetch("//api.eyo.kr:8081/user/user", {
+		await fetch("//api.eyo.kr:8081/user/user", {
 			method: "POST",
 			headers: {
 				Aceept: "application/json",
@@ -95,17 +95,7 @@
 				if (res.ok == false) return Promise.reject(res);
 				return res.json();
 			})
-			.then((json) => {
-				writable(null).subscribe(function (value) {
-					if (browser) {
-						window.localStorage.setItem(
-							"user.email",
-							json["email"]
-						);
-						window.localStorage.setItem("user.id", json["userid"]);
-					}
-				});
-
+			.then(() => {
 				location.href = "?msg=회원가입 되었습니다. 로그인 해주세요.";
 				isLoading = false;
 			})
