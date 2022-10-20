@@ -29,41 +29,44 @@
         mode: "cors",
         credentials: "include",
       }
-    )
-      .then((res) => {
-        console.log(res);
-        if (res.ok == false) {
-          return Promise.reject(res);
-        } else {
-          return res.json();
-        }
-      })
-      .then(
-        Swal.fire({
-          title: "삭제하시겠습니까?",
-          text: "다시 되돌릴 수 없습니다.",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "RGB(067, 085, 189)",
-          cancelButtonColor: "RGB(219, 224, 255)",
-          confirmButtonText: "삭제",
-          cancelButtonText: "취소",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
-              (result) => {
-                if (result.isConfirmed) location.href = "/board/free/1";
-              }
-            );
+    ).then((res) => {
+      console.log(res);
+      if (res.ok == false) {
+        return Promise.reject(res);
+      } else {
+        return res.json();
+      }
+    });
+  };
+  const del = () => {
+    Swal.fire({
+      title: "삭제하시겠습니까?",
+      text: "다시 되돌릴 수 없습니다.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "rgb(067, 085, 189)",
+      cancelButtonColor: "rgb(219, 224, 255)",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
+          (result) => {
+            delArticle($page.params.id)
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+                err.text().then((text) => {
+                  console.log(text);
+                });
+              });
+            if (result.isConfirmed) location.href = "/board/free/1";
           }
-        })
-      )
-      .catch((err) => {
-        console.log(err);
-        // err.text().then((text) => {
-        //   console.log(text);
-        // });
-      });
+        );
+      }
+    });
   };
   const getComment = async (article_id) => {
     const res = await fetch(
@@ -224,7 +227,7 @@
           <button
             class="button is-rounded is-light"
             type="submit"
-            on:click={() => delArticle(article.article_id)}
+            on:click={del}
           >
             삭제
           </button>
