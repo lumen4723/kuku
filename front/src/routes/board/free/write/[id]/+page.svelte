@@ -60,11 +60,7 @@
         return res.json();
       })
       .then((json) => {
-<<<<<<< HEAD
         putResult = JSON.stringify(json);
-=======
-        postResult = JSON.stringify(json);
->>>>>>> 137456ca9ba65efa745ef74416578f5ad293d05e
       })
       .catch((err) => {
         console.log(err);
