@@ -1,10 +1,12 @@
 <script>
   import { userIsLogged } from "$lib/user.js";
+  import { onMount } from "svelte";
 
   let currentPage = 1;
   let pageLimit = 10;
   let label = 1;
   const isLogged = userIsLogged();
+  let message = "message";
 
   const getBoardList = async (pageIdx, pageLimit) => {
     const res = await fetch(
@@ -13,19 +15,19 @@
         mode: "cors",
         credentials: "include",
       }
-    );
-    const qnaBoard = await res.json();
-    //const freeBoard = await res.json();
-    if (res.ok) {
-      return qnaBoard;
-      //return freeBoard;
-    } else {
-      throw new Error(qnaBoard);
-      //throw new Error(freeBoard);
-    }
+    )
+      .then((res) => {
+        if (res.ok == false) return Promise.reject(res);
+        {
+          return res.json();
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
-  $: boardList = getBoardList(currentPage, pageLimit, label); // 이거 뭐야 파라메터 안맞음
+  $: boardList = getBoardList(currentPage, pageLimit); // 이거 뭐야 파라메터 안맞음
 </script>
 
 <div class="container">
