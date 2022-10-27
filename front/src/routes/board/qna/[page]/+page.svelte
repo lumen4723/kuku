@@ -12,19 +12,19 @@
     const res = await fetch(
       `//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
       {
+        method: "GET",
         mode: "cors",
         credentials: "include",
       }
-    )
-      .then((res) => {
-        if (res.ok == false) return Promise.reject(res);
-        {
-          return res.json();
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    ).catch((err) => {
+      console.log(err);
+    });
+    const qnaBoard = await res.json();
+    if (res.ok) {
+      return qnaBoard;
+    } else {
+      throw new Error(qnaBoard);
+    }
   };
 
   $: boardList = getBoardList(currentPage, pageLimit); // 이거 뭐야 파라메터 안맞음

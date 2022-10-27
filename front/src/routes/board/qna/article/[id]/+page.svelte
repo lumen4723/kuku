@@ -1,11 +1,12 @@
 <script>
 	import { page } from "$app/stores";
 	import List from "../../[page]/+page.svelte";
-	// import Header from '$lib/header/HeaderBQC.svelte';
+	import { onMount } from "svelte";
+	import Swal from "sweetalert2";
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`//127.0.0.1:8081/board/qna/article/${article_id}?article_id=${article_id}`,
+			`//api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -18,6 +19,55 @@
 		} else {
 			throw new Error(qnaboard);
 		}
+	};
+
+	const delArticle = async (article_id) => {
+		const res = await fetch(
+			`//api.eyo.kr:8081/board/qna/article/${article_id}`,
+			{
+				method: "DELETE",
+				mode: "cors",
+				credentials: "include",
+			}
+		).then((res) => {
+			console.log(res);
+			if (res.ok == false) {
+				return Promise.reject(res);
+			} else {
+				return res.json();
+			}
+		});
+	};
+
+	const del = () => {
+		Swal.fire({
+			title: "삭제하시겠습니까?",
+			text: "다시 되돌릴 수 없습니다.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "RGB(067, 085, 189)",
+			cancelButtonColor: "RGB(219, 224, 255)",
+			confirmButtonText: "삭제",
+			cancelButtonText: "취소",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
+					(result) => {
+						delArticle($page.params.id)
+							.then((res) => {
+								console.log(res);
+							})
+							.catch((err) => {
+								console.log(err);
+								err.text().then((text) => {
+									console.log(text);
+								});
+							});
+						if (result.isConfirmed) location.href = "/board/free/1";
+					}
+				);
+			}
+		});
 	};
 
 	let article = getArticle($page.params.id);
@@ -46,7 +96,6 @@
 		}
 	};
 
-	//dislike_qna fetch 함수
 	const dislike_qna = async (article_id) => {
 		const res = await fetch(
 			`//127.0.0.1:8081/board/qna/article/${article_id}/dislike`,
@@ -93,6 +142,11 @@
 	};
 
 	let isLogin = true;
+	onMount(async () => {
+		if (window.localStorage["user.username"] == null) {
+			isLogin = false;
+		}
+	});
 </script>
 
 {#await article then article}
@@ -100,12 +154,16 @@
 		<div style="padding: 16px">
 			{#if isLogin}
 				<div class="edit" style="float: right; margin-top: 16px">
-					<a href="/"
+					<a href="/board/qna/write/question/{article.article_id}"
 						><button class="button is-rounded is-light">
 							수정
 						</button></a
 					><a href="/board/qna/1">
-						<button class="button is-rounded is-light">
+						<button
+							class="button is-rounded is-light"
+							type="submit"
+							on:click={del}
+						>
 							삭제
 						</button>
 					</a>
@@ -165,14 +223,11 @@
 
 	<div class="content">
 		{@html article.content}
-		<!--이 부분은 질문의 내용 부분입니다. <br />
-	양식에 맞게 질문을 작성해주세요. <br /><br />
-	ex) 여기 링크가 있습니다. <a href="/">기술 블로그</a> <br />
-	,등등-->
 	</div>
 	<form>
 		<div
 			style="margin: 0 0 0 100%; width: auto%; text-align: center; float: right"
+			on:submit|preventDefault={isClicked ? like_qna : dislike_qna}
 		>
 			<span class="is-size-3">
 				{#if isLogin}
