@@ -46,6 +46,7 @@
         method: "PUT",
         headers: {
           Aceept: "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: article_data.title,
@@ -86,20 +87,22 @@
       cancelButtonColor: "rgb(219, 224, 255)",
       confirmButtonText: "수정",
       cancelButtonText: "취소",
+      preConfirm: () => {
+        putArticle($page.params.id)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            err.text().then((text) => {
+              console.log(text);
+            });
+          });
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire("Motified!", "글이 수정되었습니다.", "success").then(
           (result) => {
-            putArticle($page.params.id)
-              .then((res) => {
-                console.log(res);
-              })
-              .catch((err) => {
-                console.log(err);
-                err.text().then((text) => {
-                  console.log(text);
-                });
-              });
             if (result.isConfirmed)
               location.href = "/board/free/article/" + $page.params.id;
           }
