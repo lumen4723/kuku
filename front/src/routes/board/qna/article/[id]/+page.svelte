@@ -63,7 +63,7 @@
 									console.log(text);
 								});
 							});
-						if (result.isConfirmed) location.href = "/board/free/1";
+						if (result.isConfirmed) location.href = "/board/qna/1";
 					}
 				);
 			}

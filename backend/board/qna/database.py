@@ -157,7 +157,7 @@ def delete_article(
 
 
 def list_article(
-    db: Session, all: bool = False, page=1, limit=20, like: bool = False
+    db: Session, all: bool = False, aid=-1, page=1, limit=20, like: bool = False
 ) -> Result:
     try:
         article_cnt = db.query(board_information).filter_by(description="qna").first()
@@ -180,7 +180,7 @@ def list_article(
         start = (page - 1) * limit
         list = _combine_username_tags(
             db.query(board_qna)
-            .filter_by(state=1)
+            .filter_by(state=1, parentid=(None if aid == -1 else aid))
             .join(User)
             .outerjoin(board_qna_tag)
             .outerjoin(tag)
@@ -192,12 +192,7 @@ def list_article(
 
         article_cnt = db.query(board_information).filter_by(description="qna").first()
 
-        return Ok(
-            {
-                "list": list,
-                "cnt": article_cnt.size,
-            }
-        )
+        return Ok({"list": list, "cnt": article_cnt.size,})
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:

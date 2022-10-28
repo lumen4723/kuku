@@ -36,6 +36,14 @@ async def create_question(
     )
 
 
+# get article question router
+@router.get("/list/answer/{parent_id}")
+async def get_question(
+    parent_id: int, session: Session = Depends(utils.database.get_db),
+):
+    return database.list_article(session, aid=parent_id).map_err(throwMsg).unwrap()
+
+
 # create article router
 @router.post(
     "/answer", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED

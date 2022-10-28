@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
+  let content = "";
   let ClassicEditor;
 
   onMount(async () => {
@@ -26,8 +27,7 @@
         <textarea
           class="textarea"
           id="editor"
-          placeholder="답변을 입력해주세요."
-        />
+          placeholder="답변을 입력해주세요.">{content}</textarea>
       </div>
     </div>
   </form>
