@@ -38,6 +38,41 @@
 		}
 	};
 
+	const check_username = async () =>
+		await fetch(`http://api.eyo.kr:8081/user/check/?username=${username}`, {
+			method: "GET",
+			headers: {
+				Aceept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((res) => {
+				if (res.ok) return res.json();
+			})
+			.then((data) => {
+				if (data === true) {
+					usernameFailed = false;
+					isLoading = false;
+				} else {
+					usernameFailed = true;
+					isLoading = false;
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+
+	const checkUsername = () => {
+		isLoading = true;
+		if (filterUsername()) {
+			check_username();
+		} else {
+			usernameFailed = true;
+			isLoading = false;
+		}
+	};
+
 	let timer = 0;
 	let isLoading = false;
 	let message = "";
@@ -47,32 +82,6 @@
 	//		usernameFailed = false;
 	//		loading = false;
 	//	}) 이걸 await fetch ('http://~') 이걸로 변경하면 됩니다.
-	const sleep = (ms) => {
-		return new Promise((resolve, reject) => {
-			setTimeout(function () {
-				resolve(true);
-			}, ms);
-		});
-	};
-	const setTimeoutFun = async () => {
-		await sleep(1000).then((value) => {
-			usernameFailed = false;
-			isLoading = false;
-		});
-	};
-	/**
-	 * Checking user name is exist
-	 */
-	const checkUsername = () => {
-		clearTimeout(timer);
-		isLoading = true;
-		if (filterUsername()) {
-			timer = setTimeout(setTimeoutFun, 2000);
-		} else {
-			usernameFailed = true;
-			isLoading = false;
-		}
-	};
 
 	const postUser = async () => {
 		isLoading = true;

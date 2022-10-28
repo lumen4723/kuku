@@ -10,7 +10,9 @@ from uuid import UUID, uuid4
 from utils.session import *
 
 router = APIRouter(
-    prefix="/user", tags=["user"], responses={404: {"description": "Not found"}},
+    prefix="/user",
+    tags=["user"],
+    responses={404: {"description": "Not found"}},
 )
 
 
@@ -85,3 +87,12 @@ async def del_session(response: Response, session_id: UUID = Depends(cookie)):
     await backend.delete(session_id)
     cookie.delete_from_response(response)
     return "deleted session"
+
+
+# username 중복 검사
+@router.get("/check")
+async def user(username: str, session: Session = Depends(utils.database.get_db)):
+    if database.check_username(username, session):
+        return True
+    else:
+        return False
