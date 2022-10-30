@@ -95,7 +95,7 @@ def create_question(object_in: Board_qna_question, uid: int, db: Session) -> Res
         return Err(DefaultException(detail=err_msg))
 
 
-# create board_free aritcle
+# create board_qna answer
 def create_answer(object_in: Board_qna_answer, uid: int, db: Session) -> Result:
     try:
         article = board_qna()
@@ -121,6 +121,33 @@ def create_answer(object_in: Board_qna_answer, uid: int, db: Session) -> Result:
         elif "change information error" in err_msg:
             return Err(DefaultException(detail="change information error"))
 
+        return Err(DefaultException(detail=err_msg))
+
+
+# update board_qna answer
+def update_answer(
+    object_in: Board_qna_answer, aid: int, uid: int, db: Session
+) -> Result:
+    try:
+        article = db.query(board_qna).filter_by(article_id=aid).first()
+        if article.userid != uid:
+            return Err(
+                DefaultException(detail="you are not the author of this article")
+            )
+        article.title = object_in.title
+        article.content = object_in.content
+        db.add(article)
+
+        db.commit()
+        db.refresh(article)
+        return Ok(article)
+        
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "data too long" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "foreign key constraint fails" in err_msg:
+            return Err(DefaultException(detail="user id is not a valid"))
         return Err(DefaultException(detail=err_msg))
 
 

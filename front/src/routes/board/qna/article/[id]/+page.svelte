@@ -6,7 +6,7 @@
 
   const getArticle = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
+      `//api.eyo.kr:8081/board/qna/list/article/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -20,26 +20,26 @@
       throw new Error(qnaboard);
     }
   };
+  let article = getArticle($page.params.id);
 
   const delArticle = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/article/${article_id}`,
+      `//api.eyo.kr:8081/board/qna/delete/${article_id}`,
       {
         method: "DELETE",
         mode: "cors",
         credentials: "include",
       }
-    ).then((res) => {
-      console.log(res);
-      if (res.ok == false) {
-        return Promise.reject(res);
-      } else {
-        return res.json();
-      }
-    });
+    );
+    const article = await res.json();
+    if (res.ok) {
+      return article;
+    } else {
+      throw new Error(article);
+    }
   };
 
-  const del = () => {
+  function delA(article_id) {
     Swal.fire({
       title: "삭제하시겠습니까?",
       text: "다시 되돌릴 수 없습니다.",
@@ -50,36 +50,33 @@
       confirmButtonText: "삭제",
       cancelButtonText: "취소",
       preConfirm: () => {
-        delArticle($page.params.id)
+        delArticle(article_id)
           .then((res) => {
             console.log(res);
           })
           .catch((err) => {
             console.log(err);
+            Swal.fire({
+              title: "본인이 작성한 글만 삭제\n할 수 있습니다.",
+              text: "",
+              icon: "error",
+              confirmButtonColor: "rgb(067, 085, 189)",
+            });
+            err.text().then((text) => {
+              // console.log(text);
+            });
           });
       },
-    })
-      .then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
-            (result) => {
-              if (result.isConfirmed) location.href = "/board/qna/1";
-            }
-          );
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        Swal.fire({
-          title: "본인이 작성한 글만 삭제할 수 있습니다.",
-          icon: "error",
-          confirmButtonColor: "RGB(067, 085, 189)",
-          confirmButtonText: "확인",
-        });
-      });
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
+          (result) => {
+            if (result.isConfirmed) location.href = "/board/free/1";
+          }
+        );
+      }
+    });
   };
-
-  let article = getArticle($page.params.id);
 
   const like_qna = async (article_id) => {
     const res = await fetch(`//127.0.0.1:8081/board/qna/${article_id}/like`, {
@@ -155,7 +152,9 @@
   });
 </script>
 
-{#await article then article}
+{#await article}
+  <p class="has-text-centered">Loading in progress...</p>
+{:then article}
   <header>
     <div style="padding: 16px">
       {#if isLogin}
@@ -165,8 +164,7 @@
           >
           <button
             class="button is-rounded is-light"
-            type="submit"
-            on:click={del}
+            on:click={delA($page.params.id)}
           >
             삭제
           </button>
@@ -256,7 +254,7 @@
     >
   </div>
   <div style="float: right;">
-    <a href="/board/qna/write/answer"
+    <a href="/board/qna/write/answer/{$page.params.id}"
       ><button class="button is-rounded is-light">답글 작성</button></a
     >
   </div>
@@ -284,20 +282,24 @@
               style="text-align: left; width: 100px; border-right: 2px solid #dbdbdb; padding: 10px;"
             >
               <a class="comment_author" href="/" style="color: #4A4A4A;"
-                >{answer.author}</a
+                >{answer.username}</a
               >
             </td>
-            <td style="width: 900px;">{answer.created}</td>
+            <td style="width: 200px; border-right: 2px solid #dbdbdb;">{answer.title}</td>
+            <td style="width: 600px;">{answer.created}</td>
             <td style="left: 100%;">
               {#if isLogin}
+              <a href="/board/qna/write/answer/{$page.params.id}/{answer.article_id}">
                 <button
                   class="button is-rounded is-link is-light is-small is-responsive"
                 >
                   수정
                 </button>
+              </a>
                 <button
                   class="button is-rounded is-link is-light is-small is-responsive"
-                >
+                  on:click= {() => delA(answer.article_id)}
+                  >
                   삭제
                 </button>
               {/if}
