@@ -12,28 +12,31 @@ class board_information(SQLModel, table=True):
 
 
 # create board information if type is 0 add size else sub size
-def change_information(description: str, type: int, db: Session) -> Result:
+def change_information(
+    description: str, increase: bool, db: Session, commit: bool = True
+) -> Result[None, str]:
     try:
-        get_board = (
+        is_update_succss = (
             db.query(board_information)
             .filter(board_information.description == description)
-            .first()
+            .update(
+                {
+                    "size": board_information.size + 1
+                    if increase
+                    else board_information.size - 1
+                }
+            )
+            > 0
         )
-        if get_board is None:
-            board = board_information(description=description)
-            db.add(board)
+
+        if is_update_succss is False:
+            db.add(
+                board_information(description=description, size=1 if increase else 0)
+            )
+
+        if commit:
             db.commit()
-            db.refresh(board)
-            return Ok(board)
-        elif type == 0:
-            get_board.size += 1
-        elif get_board.size > 0:
-            get_board.size -= 1
-        else:
-            return Err("form data is not valid")
-        db.add(get_board)
-        db.commit()
-        db.refresh(get_board)
-        return Ok(get_board)
+
+        return Ok(True)
     except Exception as e:
         return Err("change information error")

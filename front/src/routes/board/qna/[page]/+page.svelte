@@ -1,27 +1,31 @@
 <script>
+  import { userIsLogged } from "$lib/user.js";
+
   let currentPage = 1;
   let pageLimit = 10;
   let label = 1;
+  const isLogged = userIsLogged();
 
-	const getBoardList = async (pageIdx, pageLimit) => {
-		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
-			{
-				mode: 'cors'
-			}
-		);
-		const qnaBoard = await res.json();
-		//const freeBoard = await res.json();
-		if (res.ok) {
-			return qnaBoard;
-			//return freeBoard;
-		} else {
-			throw new Error(qnaBoard);
-			//throw new Error(freeBoard);
-		}
-	};
+  const getBoardList = async (pageIdx, pageLimit) => {
+    const res = await fetch(
+      `//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    const qnaBoard = await res.json();
+    //const freeBoard = await res.json();
+    if (res.ok) {
+      return qnaBoard;
+      //return freeBoard;
+    } else {
+      throw new Error(qnaBoard);
+      //throw new Error(freeBoard);
+    }
+  };
 
-  $: boardList = getBoardList(currentPage, pageLimit, label);
+  $: boardList = getBoardList(currentPage, pageLimit, label); // 이거 뭐야 파라메터 안맞음
 </script>
 
 <div class="container">
@@ -33,16 +37,18 @@
       <tr>
         <th class="has-text-centered">제목</th>
         <th class="has-text-centered">작성자</th>
-        <th class="has-text-centered" on:click={() => (label = 1)}>작성일자</th>
-        <th class="has-text-centered" on:click={() => (label = 3)}>추천</th>
-        <th class="has-text-centered" on:click={() => (label = 2)}>조회수</th>
+        <th class="has-text-centered">작성일자</th>
+        <th class="has-text-centered">추천</th>
+        <th class="has-text-centered">조회수</th>
       </tr>
     </thead>
     <tbody>
       {#await boardList then qnaBoard}
         {#each qnaBoard["list"] as qna}
           <tr>
-            <td><a href="../article/{qna.article_id}">{qna.title}</a></td>
+            <td
+              ><a href="/board/qna/article/{qna.article_id}">{qna.title}</a></td
+            >
             <td>{qna.username}</td>
             <td>{qna.created}</td>
             <td>{qna.like}</td>
@@ -101,6 +107,17 @@
           <button class="button is-info"> 검색 </button>
         </p>
       </div>
+      {#if isLogged}
+        <a href="/board/qna/write/question" class="button is-primary">글쓰기</a>
+      {/if}
+      <div class="select">
+        <select>
+          <option>10개씩 보기</option>
+          <option>15개씩 보기</option>
+          <option>20개씩 보기</option>
+        </select>
+      </div>
     </div>
   </div>
+  <br />
 </div>

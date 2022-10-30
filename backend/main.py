@@ -13,7 +13,8 @@ app.include_router(user.router)
 app.include_router(board.free.router)
 app.include_router(board.qna.router)
 app.include_router(board.tag.router)
-origins = ["*"]
+
+origins = ["http://local.eyo.kr:5173", "http://ksu-527.eyo.kr:5173"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -27,8 +28,9 @@ app.add_middleware(
 async def main():
     return {"message": "Hello!! fastapi"}
 
+
 if __name__ == "__main__":
     import uvicorn
 
     print("port -> ", Config.HTTP["port"])
-    uvicorn.run("main:app", host="127.0.0.1", port=Config.HTTP["port"], reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=Config.HTTP["port"], reload=True)

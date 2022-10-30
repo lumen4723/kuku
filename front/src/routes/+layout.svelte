@@ -1,15 +1,60 @@
 <script>
-	import 'bulma/css/bulma.css';
-	import '@fortawesome/fontawesome-free/css/all.css';
-	import { page } from '$app/stores';
+	import "bulma/css/bulma.css";
+	import "@fortawesome/fontawesome-free/css/all.css";
+	import { page } from "$app/stores";
+	import { browser } from "$app/env";
+
 	let navbarStatus = false;
+
+	let loginBtnStr = "Login";
+	let loginBtnactivate = true;
+	let username = null;
+	if (browser) {
+		username = window.localStorage.getItem("user.username");
+		if (username != null) {
+			loginBtnStr = username;
+			loginBtnactivate = false;
+		}
+	}
+
+	const logout = async () => {
+		if (username != null) {
+			await fetch(`//api.eyo.kr:8081/user/logout`, {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+				},
+				mode: "cors",
+				credentials: "include",
+			})
+				.then((res) => {
+					if (res.ok == false) return Promise.reject(res);
+				})
+				.then(() => {
+					if (browser) {
+						window.localStorage.removeItem("user.email");
+						window.localStorage.removeItem("user.id");
+						window.localStorage.removeItem("user.username");
+					}
+					location.href = "/";
+				})
+				.catch((e) => {
+					console.log(e);
+				});
+		}
+	};
 </script>
 
 <header class="header">
 	<nav class="navbar is-primary is-fixed-top">
 		<div class="container">
 			<div class="navbar-brand">
-				<a class="navbar-item" sveltekit:prefetch href="/">KUKU</a>
+				<a
+					class="navbar-item"
+					sveltekit:prefetch
+					on:click={() => (navbarStatus = false)}
+					href="/">KUKU</a
+				>
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<a
 					role="button"
@@ -32,40 +77,49 @@
 				<div class="navbar-start">
 					<a
 						class="navbar-item"
-						class:is-active={$page.url.pathname.startsWith('/board/free')}
+						class:is-active={$page.url.pathname.startsWith(
+							"/board/free"
+						)}
 						sveltekit:prefetch
-						href="/board/free/1">자유게시판</a
+						href="/board/free/1"
+						on:click={() => (navbarStatus = false)}>자유게시판</a
 					>
 					<a
 						class="navbar-item"
-						class:is-active={$page.url.pathname.startsWith('/board/qna')}
+						class:is-active={$page.url.pathname.startsWith(
+							"/board/qna"
+						)}
 						sveltekit:prefetch
-						href="/board/qna/1">질문게시판</a
+						href="/board/qna/1"
+						on:click={() => (navbarStatus = false)}>질문게시판</a
 					>
 					<a
 						class="navbar-item"
-						class:is-active={$page.url.pathname.startsWith('/study')}
+						class:is-active={$page.url.pathname.startsWith(
+							"/study"
+						)}
 						sveltekit:prefetch
-						href="/study">문제</a
+						href="/study"
+						on:click={() => (navbarStatus = false)}>문제</a
 					>
-					<!-- <div class="navbar-item has-dropdown">
-								<a class="navbar-link">뭐하지</a>
-								<div class="navbar-dropdown ">
-									<a class="navbar-item"> Overview </a>
-									<a class="navbar-item"> Modifiers </a>
-									<a class="navbar-item"> Columns </a>
-									<a class="navbar-item"> Layout </a>
-									<a class="navbar-item"> Form </a>
-									<hr class="navbar-divider" />
-									<a class="navbar-item"> Elements </a>
-									<a class="navbar-item"> Components </a>
-								</div>
-							</div> -->
 				</div>
 				<div class="navbar-end">
-					<a class="navbar-item" sveltekit:prefetch href="/account"
-						>Login</a
+					<a
+						class="navbar-item"
+						on:click={() => (navbarStatus = false)}
+						sveltekit:prefetch
+						href={loginBtnactivate ? "/account" : "/mypage"}
+						>{loginBtnStr}</a
 					>
+
+					{#if !loginBtnactivate}
+						<a
+							class="navbar-item"
+							sveltekit:prefetch
+							href="/"
+							on:click={logout}>Logout</a
+						>
+					{/if}
 				</div>
 			</div>
 		</div>

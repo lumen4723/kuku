@@ -1,13 +1,12 @@
 <script>
-	import Carousel from '$lib/carousel.svelte';
-	import { page } from '$app/stores';
-    import { xlink_attr } from 'svelte/internal';
+	import Carousel from "$lib/carousel.svelte";
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
+			`//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
 			{
-				mode: 'cors'
+				mode: "cors",
+				credentials: "include",
 			}
 		);
 		const freeBoard = await res.json();
@@ -18,7 +17,7 @@
 		}
 	};
 
-	let boardList = getBoardList($page.params.page || 1, 10);
+	let boardList = getBoardList(1, 10);
 	let date = (date) => {
 		let year = date.slice(0, 4);
 		let month = date.slice(5, 7);
@@ -37,7 +36,8 @@
 					style="align-items: center;
                 justify-content: center;
                 display: flex;
-                padding-bottom: 5%;"
+                padding-bottom: 5%;
+				"
 				>
 					<div>
 						<h1 class="title" style="word-break: keep-all;">
@@ -117,13 +117,15 @@
 		<div class="columns">
 			<div class="column">
 				<div class="table-container">
-					<table class="table
+					<table
+						class="table
 					is-bordered
         			is-hoverable"
-					style="
+						style="
         			text-align: center;
         			table-layout: fixed;
-        			">
+        			"
+					>
 						<thead>
 							<tr>
 								<th colspan="2">새로운 내용</th>
@@ -131,30 +133,37 @@
 						</thead>
 						<tbody>
 							{#await boardList then freeBoard}
-       							{#each freeBoard["list"] as free}
+								{#each freeBoard["list"] as free}
 									<tr>
-										<td><a href="/board/free/article/{free.article_id}">{free.title}</a></td>
+										<td
+											><a
+												href="/board/free/article/{free.article_id}"
+												>{free.title}</a
+											></td
+										>
 										<td>{free.username}</td>
 									</tr>
 								{/each}
-      						{:catch error}
-        						<tr>
-          							<td colspan="2">{error.message}</td>
-        						</tr>
-      						{/await}
+							{:catch error}
+								<tr>
+									<td colspan="2">{error.message}</td>
+								</tr>
+							{/await}
 						</tbody>
 					</table>
 				</div>
 			</div>
 			<div class="column">
 				<div class="table-container">
-					<table class="table
+					<table
+						class="table
 					is-bordered
         			is-hoverable"
-					style="
+						style="
         			text-align: center;
         			table-layout: fixed;
-        			">
+        			"
+					>
 						<thead>
 							<tr>
 								<th colspan="2">공지사항</th>
@@ -162,32 +171,39 @@
 						</thead>
 						<tbody>
 							{#await boardList then freeBoard}
-       							{#each freeBoard["list"] as free}
+								{#each freeBoard["list"] as free}
 									<tr>
-										<td><a href="/board/free/article/{free.article_id}">{free.title}</a></td>
+										<td
+											><a
+												href="/board/free/article/{free.article_id}"
+												>{free.title}</a
+											></td
+										>
 										<td>
 											{date(free.created)}
 										</td>
 									</tr>
 								{/each}
-      						{:catch error}
-        						<tr>
-          							<td colspan="2">{error.message}</td>
-        						</tr>
-      						{/await}
+							{:catch error}
+								<tr>
+									<td colspan="2">{error.message}</td>
+								</tr>
+							{/await}
 						</tbody>
 					</table>
 				</div>
 			</div>
 			<div class="column">
 				<div class="table-container">
-					<table class="table
+					<table
+						class="table
 					is-bordered
         			is-hoverable"
-					style="
+						style="
         			text-align: center;
         			table-layout: fixed;
-        			">
+        			"
+					>
 						<thead>
 							<tr>
 								<th colspan="2">새로운 질문과 답변</th>
@@ -195,17 +211,22 @@
 						</thead>
 						<tbody>
 							{#await boardList then freeBoard}
-       							{#each freeBoard["list"] as free}
+								{#each freeBoard["list"] as free}
 									<tr>
-										<td><a href="/board/free/article/{free.article_id}">{free.title}</a></td>
+										<td
+											><a
+												href="/board/free/article/{free.article_id}"
+												>{free.title}</a
+											></td
+										>
 										<td>{free.state}</td>
 									</tr>
 								{/each}
-      						{:catch error}
-        						<tr>
-          							<td colspan="2">{error.message}</td>
-        						</tr>
-      						{/await}
+							{:catch error}
+								<tr>
+									<td colspan="2">{error.message}</td>
+								</tr>
+							{/await}
 						</tbody>
 					</table>
 				</div>
@@ -222,7 +243,7 @@
 		text-align: center;
 		color: #ffffff;
 	}
-	.table-container table {
+	table.table {
 		width: -webkit-fill-available;
 	}
 </style>
