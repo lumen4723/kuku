@@ -7,14 +7,21 @@ import user
 import board.free
 import board.qna
 import board.tag
+import study
 
 app = FastAPI(title="kuku-api")
 app.include_router(user.router)
 app.include_router(board.free.router)
 app.include_router(board.qna.router)
 app.include_router(board.tag.router)
+app.include_router(study.router)
 
-origins = ["http://local.eyo.kr:5173", "http://ksu-527.eyo.kr:5173"]
+origins = [
+    "http://local.eyo.kr:5173",
+    "http://ksu-527.eyo.kr:5173",
+    "https://eyo.kr:8081",
+    "http://eyo.kr:8081",
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
