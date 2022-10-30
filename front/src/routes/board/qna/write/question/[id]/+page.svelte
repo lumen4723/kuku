@@ -47,6 +47,7 @@
         method: "PUT",
         headers: {
           Aceept: "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: article_data.title,
