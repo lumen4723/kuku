@@ -32,7 +32,7 @@
 				credentials: "include",
 			}
 		);
-		const article = await res.json();
+
 		if (res.ok) {
 			return article;
 		} else {
@@ -40,7 +40,7 @@
 		}
 	};
 
-	function delA(article_id) {
+	function del(article_id, isquestion) {
 		Swal.fire({
 			title: "삭제하시겠습니까?",
 			text: "다시 되돌릴 수 없습니다.",
@@ -63,16 +63,14 @@
 							icon: "error",
 							confirmButtonColor: "rgb(067, 085, 189)",
 						});
-						err.text().then((text) => {
-							// console.log(text);
-						});
 					});
 			},
 		}).then((result) => {
 			if (result.isConfirmed) {
 				Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
 					(result) => {
-						if (result.isConfirmed) location.href = "/board/free/1";
+						if (result.isConfirmed)
+							location.href = isquestion ? "/board/qna/1" : "./";
 					}
 				);
 			}
@@ -209,7 +207,7 @@
 					>
 					<button
 						class="button is-rounded is-light"
-						on:click={delA($page.params.id)}
+						on:click={function a() {return del($page.params.id, true)}}
 					>
 						삭제
 					</button>
@@ -353,7 +351,7 @@
 								</a>
 								<button
 									class="button is-rounded is-link is-light is-small is-responsive"
-									on:click={() => delA(answer.article_id)}
+									on:click={function a() {return del(answer.article_id, false)}}
 								>
 									삭제
 								</button>
