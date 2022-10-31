@@ -20,7 +20,7 @@
       });
   });
 
-  const postArticle = () => {
+  const postArticle = () => 
     fetch(`//api.eyo.kr:8081/board/qna/question`, {
       method: "POST",
       headers: {
@@ -45,7 +45,6 @@
       .catch((err) => {
         console.log(err);
       });
-  };
 
   const upload = () => {
     console.log(title);
@@ -81,6 +80,7 @@
           id="title"
           placeholder="제목을 입력해주세요."
           bind:value={title}
+          required
         />
       </div>
       <div class="write__form__content">
@@ -126,9 +126,9 @@
 
   <div class="buttons">
     <a href="/board/qna/1">
-      <button class="button is-success" type="submit" on:click={upload}
-        >작성</button
-      >
+      <button class="button is-success" type="submit" on:click={upload}>
+        작성
+      </button>
     </a>
     <a href="/board/qna/1">
       <button class="button is-danger">삭제</button>

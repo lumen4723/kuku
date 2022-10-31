@@ -30,7 +30,7 @@ class board_qna(SQLModel, table=True):
     tagRel: List["board_qna_tag"] = Relationship(back_populates="boardRel")
 
 
-def _combine_username_tags(articles: List["board_qna"]) -> dict:
+def _combine_username_tags(articles: List["board_qna"]) -> Dict:
     # if articles is board_free, then add username
     tagList = []
     if type(articles) is board_qna:
@@ -141,7 +141,7 @@ def update_answer(
         db.commit()
         db.refresh(article)
         return Ok(article)
-        
+
     except Exception as e:
         err_msg = str(e).lower()
         if "data too long" in err_msg:
@@ -389,3 +389,94 @@ def clear_article(article_id: int, uid: int, db: Session) -> Result:
         elif "nonetype" in err_msg:
             return Err(NotFound())
         return Err(DefaultException(detail="unknown error"))
+
+
+# search article by title
+def get_article_by_title(findtitle: str, db: Session, page=1, limit=20) -> Result:
+    try:
+        start = (page - 1) * limit
+        article = _combine_username_tags(
+            db.query(board_qna)
+            .filter_by(state=1)
+            .order_by(board_qna.created.desc())
+            .join(User)
+            .offset(start)
+            .limit(limit)
+            .all()
+        )
+
+        result = []
+        for a in article:
+            if findtitle in a["title"]:
+                result.append(a)
+
+        return Ok(result)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
+
+
+# search article by username
+def get_article_by_username(finduser: str, db: Session, page=1, limit=20) -> Result:
+    try:
+        start = (page - 1) * limit
+        article = _combine_username_tags(
+            db.query(board_qna)
+            .filter_by(state=1)
+            .order_by(board_qna.created.desc())
+            .join(User)
+            .offset(start)
+            .limit(limit)
+            .all()
+        )
+
+        result = []
+        for a in article:
+            if finduser in a["username"]:
+                result.append(a)
+
+        return Ok(result)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
+
+
+# search article by content
+def get_article_by_content(findcontent: str, db: Session, page=1, limit=20) -> Result:
+    try:
+        start = (page - 1) * limit
+        article = _combine_username_tags(
+            db.query(board_qna)
+            .filter_by(state=1)
+            .order_by(board_qna.created.desc())
+            .join(User)
+            .offset(start)
+            .limit(limit)
+            .all()
+        )
+
+        result = []
+        for a in article:
+            if findcontent in a["content"]:
+                result.append(a)
+
+        return Ok(result)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
+
