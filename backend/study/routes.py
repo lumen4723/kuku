@@ -23,6 +23,33 @@ async def list_all_course(session: Session = Depends(utils.database.get_db)):
     return database.list_course(session).map_err(throwMsg).unwrap()
 
 
+@router.get("/head-chapters")
+async def list_head_chapter(session: Session = Depends(utils.database.get_db)):
+    def flatten_course(article: List[database.lecture_article]):
+        return tuple(
+            map(
+                lambda x: {
+                    "no": x.no,
+                    "title": x.title,
+                    "content": x.content,
+                    "category": x.category,
+                    "parent_id": x.parent_id,
+                    "course_id": x.course_id,
+                    "course_title": x.lectureRel.title,
+                    "course_slug": x.lectureRel.slug,
+                },
+                article,
+            )
+        )
+
+    return (
+        database.list_head_chapter(session)
+        .map(flatten_course)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
 @router.get("/{course}/list")
 async def list_course_chapter(
     course: str, session: Session = Depends(utils.database.get_db)
