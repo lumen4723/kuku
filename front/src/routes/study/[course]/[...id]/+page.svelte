@@ -68,6 +68,8 @@
 	aside {
 		width: 250px;
 		float: left;
+		max-height: calc(100vh - 52px);
+		overflow-y: scroll;
 	}
 	article {
 		width: calc(100% - 250px);
