@@ -8,7 +8,7 @@
 	let article_tree = [];
 	let article_list = {};
 	const async_chapter_list = fetch(
-		`//api.eyo.kr:8081/study/${course_id}/list`,
+		`//api.eyo.kr:8090/study/${course_id}/list`,
 		{
 			method: "GET",
 			headers: {
@@ -57,7 +57,9 @@
 			{/each}
 		</aside>
 		<article class="p-2">
-			{@html print_article(chapter_id)}
+			<div class="content">
+				{@html print_article(chapter_id)}
+			</div>
 		</article>
 	</main>
 {/await}
@@ -72,6 +74,10 @@
 		float: right;
 		background: white;
 		min-height: calc(100vh - 220px);
+	}
+	article .content {
+		max-width: 768px;
+		margin: 0 auto;
 	}
 
 	main {
