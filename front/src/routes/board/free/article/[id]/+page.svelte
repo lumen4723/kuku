@@ -30,14 +30,6 @@
         credentials: "include",
       }
     );
-    // .then((res) => {
-    //   console.log(res);
-    //   if (res.ok == false) {
-    //     return Promise.reject(res);
-    //   } else {
-    //     return res.json();
-    //   }
-    // });
     const article = await res.json();
     if (res.ok) {
       return article;

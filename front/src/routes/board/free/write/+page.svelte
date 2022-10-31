@@ -1,5 +1,7 @@
 <script>
   import { onMount } from "svelte";
+  import { is_empty } from "svelte/internal";
+  import Swal from "sweetalert2";
   let title = "",
     content = "";
   let ckeditorInstance;
@@ -61,9 +63,13 @@
         });
       });
   };
-  // const alt = () => {
-  //   alert("제목 또는 내용을 입력해주세요.");
-  // };
+  const alt = () => {
+    Swal.fire({
+      title: "제목을 입력해주세요",
+      icon: "error",
+      confirmButtonText: "확인",
+    });
+  };
 </script>
 
 <br />
@@ -84,11 +90,18 @@
     >
     <hr />
   </div>
+  {#if is_empty(title)}
+    <button class="button is-link" on:click={alt}>완료</button>
+  {:else}
+    <a href="/board/free/1"
+      ><button class="button is-link" type="submit" on:click={upload}
+        >완료</button
+      >
+    </a>
+  {/if}
   <a href="/board/free/1"
-    ><button class="button is-link" type="submit" on:click={upload}>완료</button
-    >
-  </a>
-  <button class="button is-link is-light" type="button">취소</button>
+    ><button class="button is-link is-light" type="button">취소</button></a
+  >
 </form>
 <br /> <br />
 
