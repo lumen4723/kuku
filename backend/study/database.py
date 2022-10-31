@@ -1,5 +1,5 @@
 from option import *
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlmodel import Field, SQLModel
 from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
@@ -51,11 +51,23 @@ def list_course(db: Session):
         return Err(str(e))
 
 
+def list_head_chapter(db: Session):
+    try:
+        return Ok(
+            db.query(lecture_article)
+            .filter(lecture_article.parent_id == None)
+            .options(joinedload(lecture_article.lectureRel))
+            .all()
+        )
+    except Exception as e:
+        return Err(str(e))
+
+
 def list_chapter(course: str, db: Session):
     try:
         # get course id from lecture
         course_data = db.query(lecture).filter(lecture.slug == course).first()
-        if course_data is None:  
+        if course_data is None:
             return Err("Course not found")
 
         course_id = course_data.course_id
