@@ -99,7 +99,9 @@
       >
     </a>
   {/if}
-  <button class="button is-link is-light" type="button">취소</button>
+  <a href="/board/free/1"
+    ><button class="button is-link is-light" type="button">취소</button></a
+  >
 </form>
 <br /> <br />
 
