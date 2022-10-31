@@ -354,7 +354,7 @@
   }
   .content {
     width: 100%;
-    height: 300px;
+    min-height: 300px;
     padding: 16px;
   }
   .comment table {
