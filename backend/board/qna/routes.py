@@ -238,3 +238,49 @@ async def get_article(
         .map_err(throwMsg)
         .unwrap()
     )
+
+
+# get article by title
+@router.get("/search/title/{title}")
+async def search_article_by_title(
+    title: str,
+    page: int,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_title(title, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# get article by username
+@router.get("/search/username/{username}")
+async def search_article_by_username(
+    username: str,
+    page: int,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_username(username, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# get article by content
+@router.get("/search/content/{content}")
+async def search_article_by_content(
+    content: str,
+    page: int,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_content(content, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+

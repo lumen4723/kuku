@@ -20,7 +20,7 @@
       });
   });
 
-  const postArticle = () => {
+  const postArticle = () => 
     fetch(`//api.eyo.kr:8081/board/qna/answer`, {
       method: "POST",
       headers: {
@@ -45,7 +45,6 @@
       .catch((err) => {
         console.log(err);
       });
-  };
 
   const upload = () => {
     console.log(title);

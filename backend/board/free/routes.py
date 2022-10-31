@@ -174,6 +174,7 @@ async def get_comment_by_article_id(
 ):
     return get_comment(article_id, session).map_err(throwMsg).unwrap()
 
+
 # change comment state to delete
 @router.put("/comment/delete/{comment_id}", dependencies=[Depends(cookie)])
 async def delete_comment_by_comment_id(
@@ -182,7 +183,50 @@ async def delete_comment_by_comment_id(
     session_data: SessionData = Depends(verifier),
 ):
     return (
-        delete_comment(comment_id, session_data.uid, session)
+        delete_comment(comment_id, session_data.uid, session).map_err(throwMsg).unwrap()
+    )
+
+
+# get article by title
+@router.get("/search/title/{title}")
+async def search_article_by_title(
+    page: int,
+    title: str,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_title(title, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# get article by username
+@router.get("/search/username/{username}")
+async def search_article_by_username(
+    page: int,
+    username: str,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_user(username, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# get article by content
+@router.get("/search/content/{content}")
+async def search_article_by_content(
+    page: int,
+    content: str,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_content(content, session, page, limit)
         .map_err(throwMsg)
         .unwrap()
     )
