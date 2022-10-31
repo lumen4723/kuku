@@ -1,5 +1,7 @@
 <script>
   import { onMount } from "svelte";
+  import { is_empty } from "svelte/internal";
+  import Swal from "sweetalert2";
 
   let title = "",
     content = "",
@@ -67,30 +69,32 @@
         });
       });
   };
+  const alt = () => {
+    Swal.fire({
+      title: "제목을 입력해주세요",
+      icon: "error",
+      confirmButtonText: "확인",
+    });
+  };
 </script>
 
 <!-- 글작성 페이지-->
 <form action="POST" on:submit|preventDefault={upload}>
   <div class="content">
-    <div class="write__title" style="text-align: left; font-size: 30px;" />
-    <form>
-      <div class="write__form__title" style="margin-top: 2px;">
-        <h1>Q</h1>
-        <input
-          class="input mb-4"
-          id="title"
-          placeholder="제목을 입력해주세요."
-          bind:value={title}
-        />
-      </div>
-      <div class="write__form__content">
-        <textarea
-          class="textarea"
-          id="editor"
-          placeholder="내용을 입력해주세요.">{content}</textarea
-        >
-      </div>
-    </form>
+    <h1>Q</h1>
+    <input
+      class="input mb-4"
+      id="title"
+      placeholder="제목을 입력해주세요."
+      bind:value={title}
+      required
+    />
+    <textarea
+      class="textarea"
+      id="editor"
+      placeholder="내용을 입력해주세요."
+      required>{content}</textarea
+    >
   </div>
 
   <div class="dropdown is-hoverable">
@@ -124,16 +128,18 @@
 
   <br /><br /><br />
 
-  <div class="buttons">
+  {#if is_empty(title)}
+    <button class="button is-success" on:click={alt}>작성</button>
+  {:else}
     <a href="/board/qna/1">
       <button class="button is-success" type="submit" on:click={upload}
         >작성</button
       >
     </a>
-    <a href="/board/qna/1">
-      <button class="button is-danger">삭제</button>
-    </a>
-  </div>
+  {/if}
+  <a href="/board/qna/1">
+    <button class="button is-danger">삭제</button>
+  </a>
 </form>
 <br /><br />
 
