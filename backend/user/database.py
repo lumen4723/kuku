@@ -146,3 +146,12 @@ def delete_user(object_in: loginuser, db: Session) -> Result:
     db.commit()
     db.refresh(user)
     return Ok(user.state)
+
+
+# check username
+def check_username(username: str, db: Session) -> Result:
+    user = db.query(User).filter_by(username=username).first()
+    if user is not None:
+        return Err(AlreadyExists())
+    else:
+        return Ok(True)

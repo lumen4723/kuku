@@ -27,7 +27,7 @@
     }
   };
 
-  $: boardList = getBoardList(currentPage, pageLimit); // 이거 뭐야 파라메터 안맞음
+  $: boardList = getBoardList(currentPage, pageLimit);
 </script>
 
 <div class="container">

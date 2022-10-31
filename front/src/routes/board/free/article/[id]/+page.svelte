@@ -29,14 +29,21 @@
         mode: "cors",
         credentials: "include",
       }
-    ).then((res) => {
-      console.log(res);
-      if (res.ok == false) {
-        return Promise.reject(res);
-      } else {
-        return res.json();
-      }
-    });
+    );
+    // .then((res) => {
+    //   console.log(res);
+    //   if (res.ok == false) {
+    //     return Promise.reject(res);
+    //   } else {
+    //     return res.json();
+    //   }
+    // });
+    const article = await res.json();
+    if (res.ok) {
+      return article;
+    } else {
+      throw new Error(article);
+    }
   };
   const del = () => {
     Swal.fire({
@@ -48,20 +55,28 @@
       cancelButtonColor: "rgb(219, 224, 255)",
       confirmButtonText: "삭제",
       cancelButtonText: "취소",
+      preConfirm: () => {
+        delArticle($page.params.id)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              title: "본인이 작성한 글만 삭제\n할 수 있습니다.",
+              text: "",
+              icon: "error",
+              confirmButtonColor: "rgb(067, 085, 189)",
+            });
+            err.text().then((text) => {
+              // console.log(text);
+            });
+          });
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
           (result) => {
-            delArticle($page.params.id)
-              .then((res) => {
-                console.log(res);
-              })
-              .catch((err) => {
-                console.log(err);
-                err.text().then((text) => {
-                  console.log(text);
-                });
-              });
             if (result.isConfirmed) location.href = "/board/free/1";
           }
         );
@@ -327,7 +342,7 @@
     </form>
   {/if}
 </div>
-
+<List />
 <br /><br /><br />
 
 <style>

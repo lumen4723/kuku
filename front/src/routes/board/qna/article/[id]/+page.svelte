@@ -6,7 +6,7 @@
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
+			`//api.eyo.kr:8081/board/qna/list/article/${article_id}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -21,25 +21,26 @@
 		}
 	};
 
+	let article = getArticle($page.params.id);
+
 	const delArticle = async (article_id) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/article/${article_id}`,
+			`//api.eyo.kr:8081/board/qna/delete/${article_id}`,
 			{
 				method: "DELETE",
 				mode: "cors",
 				credentials: "include",
 			}
-		).then((res) => {
-			console.log(res);
-			if (res.ok == false) {
-				return Promise.reject(res);
-			} else {
-				return res.json();
-			}
-		});
+		);
+		const article = await res.json();
+		if (res.ok) {
+			return article;
+		} else {
+			throw new Error(article);
+		}
 	};
 
-	const del = () => {
+	function delA(article_id) {
 		Swal.fire({
 			title: "삭제하시겠습니까?",
 			text: "다시 되돌릴 수 없습니다.",
@@ -49,56 +50,66 @@
 			cancelButtonColor: "RGB(219, 224, 255)",
 			confirmButtonText: "삭제",
 			cancelButtonText: "취소",
+			preConfirm: () => {
+				delArticle(article_id)
+					.then((res) => {
+						console.log(res);
+					})
+					.catch((err) => {
+						console.log(err);
+						Swal.fire({
+							title: "본인이 작성한 글만 삭제\n할 수 있습니다.",
+							text: "",
+							icon: "error",
+							confirmButtonColor: "rgb(067, 085, 189)",
+						});
+						err.text().then((text) => {
+							// console.log(text);
+						});
+					});
+			},
 		}).then((result) => {
 			if (result.isConfirmed) {
 				Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
 					(result) => {
-						delArticle($page.params.id)
-							.then((res) => {
-								console.log(res);
-							})
-							.catch((err) => {
-								console.log(err);
-								err.text().then((text) => {
-									console.log(text);
-								});
-							});
 						if (result.isConfirmed) location.href = "/board/free/1";
 					}
 				);
 			}
 		});
-	};
-
-	let article = getArticle($page.params.id);
+	}
 
 	const like_qna = async (article_id) => {
-		const res = await fetch(
-			`//127.0.0.1:8081/board/qna/${article_id}/like`,
-			{
-				method: "POST",
-				mode: "cors",
-				credentials: "include",
+		await fetch(`//api.eyo.kr:8081/board/qna/${article_id}/like`, {
+			method: "POST",
+			mode: "cors",
+			credentials: "include",
 
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					article_id,
-				}),
-			}
-		);
-		const like = await res.json();
-		if (res.ok) {
-			return like;
-		} else {
-			throw new Error(like);
-		}
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				userid: whoami(),
+			}),
+		})
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					return Promise.reject(res);
+				}
+			})
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
 
 	const dislike_qna = async (article_id) => {
 		const res = await fetch(
-			`//127.0.0.1:8081/board/qna/article/${article_id}/dislike`,
+			`//api.eyo.kr:8081/board/qna/article/${article_id}/dislike`,
 			{
 				method: "POST",
 				mode: "cors",
@@ -108,17 +119,52 @@
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					article_id,
+					userid: whoami(),
 				}),
 			}
-		);
-		const dislike = await res.json();
-		if (res.ok) {
-			return dislike;
-		} else {
-			throw new Error(dislike);
-		}
+		)
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					return Promise.reject(res);
+				}
+			})
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
+
+	const whoami = async () => {
+		await fetch("//api.eyo.kr:8081/user/whoami", {
+			method: "GET",
+			headers: {
+				Aceept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((res) => {
+				if (res.ok) return res.json();
+			})
+			.then((data) => {
+				const uid = data.userid;
+				userid = uid;
+				console.log(userid);
+			});
+	};
+
+	let userid;
+	console.log(userid);
+	//console.log(userid);
+
+	//console.log(user.userid); // undefined
+	//console.log(user);
+	//let who = whoami($page.params.userid);
+	//console.log(userid);
 
 	let isClicked = false;
 	const likeclick = () => {
@@ -149,7 +195,9 @@
 	});
 </script>
 
-{#await article then article}
+{#await article}
+	<p class="has-text-centered">Loading in progress...</p>
+{:then article}
 	<header>
 		<div style="padding: 16px">
 			{#if isLogin}
@@ -158,15 +206,13 @@
 						><button class="button is-rounded is-light">
 							수정
 						</button></a
-					><a href="/board/qna/1">
-						<button
-							class="button is-rounded is-light"
-							type="submit"
-							on:click={del}
-						>
-							삭제
-						</button>
-					</a>
+					>
+					<button
+						class="button is-rounded is-light"
+						on:click={delA($page.params.id)}
+					>
+						삭제
+					</button>
 				</div>
 			{/if}
 			<div style="float:left;">
@@ -255,7 +301,7 @@
 		>
 	</div>
 	<div style="float: right;">
-		<a href="/board/qna/write/answer"
+		<a href="/board/qna/write/answer/{$page.params.id}"
 			><button class="button is-rounded is-light">답글 작성</button></a
 		>
 	</div>
@@ -285,19 +331,29 @@
 							<a
 								class="comment_author"
 								href="/"
-								style="color: #4A4A4A;">{answer.author}</a
+								style="color: #4A4A4A;">{answer.username}</a
 							>
 						</td>
-						<td style="width: 900px;">{answer.created}</td>
+						<td
+							style="width: 200px; border-right: 2px solid #dbdbdb;"
+							>{answer.title}</td
+						>
+						<td style="width: 600px;">{answer.created}</td>
 						<td style="left: 100%;">
 							{#if isLogin}
-								<button
-									class="button is-rounded is-link is-light is-small is-responsive"
+								<a
+									href="/board/qna/write/answer/{$page.params
+										.id}/{answer.article_id}"
 								>
-									수정
-								</button>
+									<button
+										class="button is-rounded is-link is-light is-small is-responsive"
+									>
+										수정
+									</button>
+								</a>
 								<button
 									class="button is-rounded is-link is-light is-small is-responsive"
+									on:click={() => delA(answer.article_id)}
 								>
 									삭제
 								</button>
@@ -339,17 +395,17 @@
 
 <br /><br />
 <!--
-{#if isLogin}
-	<textarea class="textarea" placeholder="댓글을 입력하세요." />
-	<button class="button">댓글 쓰기</button>
-{:else}
-	<textarea
-		class="textarea"
-		placeholder="댓글을 쓰려면 로그인이 필요합니다."
-	/>
-	<button class="button" on:click={alt}>댓글 쓰기</button>
-{/if}
--->
+  {#if isLogin}
+	  <textarea class="textarea" placeholder="댓글을 입력하세요." />
+	  <button class="button">댓글 쓰기</button>
+  {:else}
+	  <textarea
+		  class="textarea"
+		  placeholder="댓글을 쓰려면 로그인이 필요합니다."
+	  />
+	  <button class="button" on:click={alt}>댓글 쓰기</button>
+  {/if}
+  -->
 <br /><br /><br />
 <List />
 
@@ -378,6 +434,6 @@
 		border-left: solid 2px #dbdbdb;
 		border-right: solid 2px #dbdbdb;
 		/*		border-bottom-right-radius: 10px;
-		border-bottom-left-radius: 10px; */
+		  border-bottom-left-radius: 10px; */
 	}
 </style>
