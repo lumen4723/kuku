@@ -105,12 +105,7 @@ def list_article(db: Session, all: bool = False, page=1, limit=20, like=False):
                 .all()
             )
 
-        return Ok(
-            {
-                "list": list,
-                "cnt": article_cnt,
-            }
-        )
+        return Ok({"list": list, "cnt": article_cnt,})
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:
@@ -169,6 +164,105 @@ def get_article_by_uid(uid: int, db: Session):
         return Err(DefaultException(detail="unknown error"))
 
 
+# get article by title similar
+def get_article_by_title(findtitle: str, db: Session, page=1, limit=20):
+    # findtitle을 한글자씩 끊어서 title 을 비교하고
+    # title안에 findtitle이 포함되어있으면
+    # 그 article을 반환
+    try:
+        start = (page - 1) * limit
+        article = _combine_username(
+            db.query(board_free)
+            .filter_by(state=1)
+            .order_by(board_free.created.desc())
+            .join(User)
+            .offset(start)
+            .limit(limit)
+            .all()
+        )
+
+        result = []
+        for a in article:
+            if findtitle in a["title"]:
+                result.append(a)
+
+        return Ok(result)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
+
+
+# get article by user similar
+def get_article_by_user(finduser: str, db: Session, page=1, limit=20):
+    # finduser을 한글자씩 끊어서 title 을 비교하고
+    # title안에 finduser이 포함되어있으면
+    # 그 article을 반환
+    try:
+        start = (page - 1) * limit
+        article = _combine_username(
+            db.query(board_free)
+            .filter_by(state=1)
+            .order_by(board_free.created.desc())
+            .join(User)
+            .offset(start)
+            .limit(limit)
+            .all()
+        )
+
+        result = []
+        for a in article:
+            if finduser in a["username"]:
+                result.append(a)
+
+        return Ok(result)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
+
+
+# get article by content similar
+def get_article_by_content(findcontent: str, db: Session, page=1, limit=20):
+    # findcontent을 한글자씩 끊어서 title 을 비교하고
+    # title안에 findcontent이 포함되어있으면
+    # 그 article을 반환
+    try:
+        start = (page - 1) * limit
+        article = _combine_username(
+            db.query(board_free)
+            .filter_by(state=1)
+            .order_by(board_free.created.desc())
+            .join(User)
+            .offset(start)
+            .limit(limit)
+            .all()
+        )
+
+        result = []
+        for a in article:
+            if findcontent in a["content"]:
+                result.append(a)
+
+        return Ok(result)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        elif "nonetype" in err_msg:
+            return Err(NotFound())
+        return Err(DefaultException(detail="unknown error"))
+        
+
 # delete article by id
 def delete_article(
     article_id: int, uid: int, db: Session
@@ -200,7 +294,9 @@ def delete_article(
 
 
 # update article by id
-def update_article(article_id: int, uid: int, object_in: board_free, db: Session) -> Result:
+def update_article(
+    article_id: int, uid: int, object_in: board_free, db: Session
+) -> Result:
     try:
         article = db.query(board_free).filter_by(article_id=article_id, state=1).first()
         if article is None:

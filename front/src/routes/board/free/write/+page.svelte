@@ -1,19 +1,29 @@
 <script>
   import { onMount } from "svelte";
+  import { browser } from "$app/env";
+  import { is_empty } from "svelte/internal";
+  import Swal from "sweetalert2";
   let title = "",
     content = "";
   let ckeditorInstance;
-  let ClassicEditor;
+  // let ClassicEditor;
   onMount(async () => {
-    const module = await import("@ckeditor/ckeditor5-build-classic");
-    ClassicEditor = module.default;
-    ClassicEditor.create(document.querySelector("#editor"))
-      .then((editor) => {
-        ckeditorInstance = editor;
+    if (browser)
+      ClassicEditor.create(document.querySelector("#editor"), {
+        simpleUpload: {
+          // The URL that the images are uploaded to.
+          uploadUrl: "//api.eyo.kr:8081/upload",
+
+          // Enable the XMLHttpRequest.withCredentials property.
+          withCredentials: true,
+        },
       })
-      .catch((error) => {
-        console.error(error);
-      });
+        .then((editor) => {
+          ckeditorInstance = editor;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
   });
 
   const postArticle = () =>
@@ -39,6 +49,7 @@
       })
       .catch((err) => {
         console.log(err);
+        return err;
       });
 
   const upload = () => {
@@ -60,10 +71,18 @@
         });
       });
   };
-  // const alt = () => {
-  //   alert("제목 또는 내용을 입력해주세요.");
-  // };
+  const alt = () => {
+    Swal.fire({
+      title: "제목을 입력해주세요",
+      icon: "error",
+      confirmButtonText: "확인",
+    });
+  };
 </script>
+
+<svelte:head>
+  <script src="/ckeditor.js"></script>
+</svelte:head>
 
 <br />
 <form method="POST" on:submit|preventDefault={upload}>
@@ -83,11 +102,18 @@
     >
     <hr />
   </div>
+  {#if is_empty(title)}
+    <button class="button is-link" on:click={alt}>완료</button>
+  {:else}
+    <a href="/board/free/1"
+      ><button class="button is-link" type="submit" on:click={upload}
+        >완료</button
+      >
+    </a>
+  {/if}
   <a href="/board/free/1"
-    ><button class="button is-link" type="submit" on:click={upload}>완료</button
-    >
-  </a>
-  <button class="button is-link is-light" type="button">취소</button>
+    ><button class="button is-link is-light" type="button">취소</button></a
+  >
 </form>
 <br /> <br />
 

@@ -26,8 +26,8 @@
 		</div>
 	{:then list}
 		<div class="columns">
-			<div class="column is-one-quarter">
-				{#each list as item}
+			{#each list as item}
+				<div class="column is-one-quarter">
 					<a href="/study/{item.course_slug}/{item.no}">
 						<div class="card">
 							<header class="card-header">
@@ -46,8 +46,8 @@
 							</div>
 						</div></a
 					>
-				{/each}
-			</div>
+				</div>
+			{/each}
 		</div>
 	{/await}
 </div>

@@ -9,7 +9,15 @@
   onMount(async () => {
     const module = await import("@ckeditor/ckeditor5-build-classic");
     ClassicEditor = module.default;
-    ClassicEditor.create(document.querySelector("#editor"))
+    ClassicEditor.create(document.querySelector("#editor"), {
+      simpleUpload: {
+        // The URL that the images are uploaded to.
+        uploadUrl: "//api.eyo.kr:8081/upload",
+
+        // Enable the XMLHttpRequest.withCredentials property.
+        withCredentials: true,
+      },
+    })
       .then((editor) => {
         ckeditorInstance = editor;
       })
@@ -19,6 +27,7 @@
   });
 
   const getArticle = async (article_id) => {
+    if (isNaN(article_id)) return false;
     const res = await fetch(
       `//api.eyo.kr:8081/board/free/article_id/${article_id}`,
       {
