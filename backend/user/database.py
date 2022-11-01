@@ -67,6 +67,8 @@ def create_user(object_in: User, db: Session) -> Result:
         object_in.password = get_password_hash(object_in.password)
         user = User.from_orm(object_in)
         db.add(user)
+        if isinstance(emailCertificationByEmail(db, object_in.email), Err):
+            return Err(DefaultException(detail="email send error"))
         db.commit()
         db.refresh(user)
         return Ok(
@@ -115,7 +117,7 @@ def emailCertification(db : Session,uid : int) -> Result:
         sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
         from_email = Email("noreply@eyo.kr")  # Change to your verified sender
         to_email = To(email.email)  # Change to your recipient
-        subject = "Sending with SendGrid is Fun"
+        subject = "KUKU 회원가입 인증 메일입니다."
         if isinstance(token_generator_by_email(email.email), Ok):
             token = str(token_generator_by_email(email.email).unwrap())
         else:
@@ -136,13 +138,10 @@ def emailCertification(db : Session,uid : int) -> Result:
 
 def emailCertificationByEmail(db : Session,email : str) -> Result:
     try:
-        check = db.query(User).filter_by(email = email).first()
-        if check is None:
-            return Err(NotFound())
         sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
         from_email = Email("noreply@eyo.kr")  # Change to your verified sender
         to_email = To(email)  # Change to your recipient
-        subject = "Sending with SendGrid is Fun"
+        subject = "KUKU 회원가입 인증 메일입니다."
         if isinstance(token_generator_by_email(email), Ok):
             token = str(token_generator_by_email(email).unwrap())
         else:
