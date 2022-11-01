@@ -134,7 +134,6 @@
 		>
 	</table>
 	{#await boardList then freeBoard}
-		{console.log(freeBoard)}
 		<nav class="pagination is-centered" aria-label="pagination">
 			<ul class="pagination-list">
 				{#each Array(Math.ceil(Math.abs(freeBoard["cnt"]) / currentLimit)) as n, i}
