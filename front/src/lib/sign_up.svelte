@@ -39,7 +39,7 @@
 	};
 
 	const check_username = async () =>
-		await fetch(`http://api.eyo.kr:8081/user/check/?username=${username}`, {
+		await fetch(`//api.eyo.kr:8081/user/check?username=${username}`, {
 			method: "GET",
 			headers: {
 				Aceept: "application/json",
