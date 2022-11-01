@@ -11,19 +11,84 @@
 	let currentLimit = pageLimits[0].value;
 
 	const getBoardList = async (pageIdx, pageLimit) => {
-		const res = await fetch(
+		await fetch(
 			`//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
 			}
-		);
-		const freeBoard = await res.json();
-		if (res.ok) {
-			return freeBoard;
-		} else {
-			throw new Error(freeBoard);
-		}
+		)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.ok) {
+					return freeBoard;
+				} else {
+					throw new Error(freeBoard);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+	const searchTitle = async (title, pageIdx, pageLimit) => {
+		await fetch(
+			`//api.eyo.kr:8081/board/free/search/title/${title}?page=${pageIdx}&limit=${pageLimit}`,
+			{
+				mode: "cors",
+				credentials: "include",
+			}
+		)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.ok) {
+					return freeBoard;
+				} else {
+					throw new Error(freeBoard);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+	const searchUser = async (user, pageIdx, pageLimit) => {
+		await fetch(
+			`//api.eyo.kr:8081/board/free/search/title/${user}?page=${pageIdx}&limit=${pageLimit}`,
+			{
+				mode: "cors",
+				credentials: "include",
+			}
+		)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.ok) {
+					return freeBoard;
+				} else {
+					throw new Error(freeBoard);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+	const searchContent = async (content, pageIdx, pageLimit) => {
+		await fetch(
+			`//api.eyo.kr:8081/board/free/search/title/${content}?page=${pageIdx}&limit=${pageLimit}`,
+			{
+				mode: "cors",
+				credentials: "include",
+			}
+		)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.ok) {
+					return freeBoard;
+				} else {
+					throw new Error(freeBoard);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
 
 	$: boardList = getBoardList(currentPage, currentLimit);
