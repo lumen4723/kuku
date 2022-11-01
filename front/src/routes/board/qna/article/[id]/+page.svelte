@@ -1,11 +1,12 @@
 <script>
 	import { page } from "$app/stores";
 	import List from "../../[page]/+page.svelte";
-	// import Header from '$lib/header/HeaderBQC.svelte';
+	import { onMount } from "svelte";
+	import Swal from "sweetalert2";
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
+			`//api.eyo.kr:8081/board/qna/list/article/${article_id}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -22,52 +23,148 @@
 
 	let article = getArticle($page.params.id);
 
-	const like_qna = async (article_id) => {
+	const delArticle = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/article/${article_id}/like`,
+			`//api.eyo.kr:8081/board/qna/delete/${article_id}`,
 			{
-				method: "POST",
+				method: "DELETE",
 				mode: "cors",
-
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					article_id: article_id,
-				}),
+				credentials: "include",
 			}
 		);
-		const like = await res.json();
+		const article = await res.json();
 		if (res.ok) {
-			return like;
+			return article;
 		} else {
-			throw new Error(like);
+			throw new Error(article);
 		}
 	};
 
-	//dislike_qna fetch 함수
+	function delA(article_id) {
+		Swal.fire({
+			title: "삭제하시겠습니까?",
+			text: "다시 되돌릴 수 없습니다.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "RGB(067, 085, 189)",
+			cancelButtonColor: "RGB(219, 224, 255)",
+			confirmButtonText: "삭제",
+			cancelButtonText: "취소",
+			preConfirm: () => {
+				delArticle(article_id)
+					.then((res) => {
+						console.log(res);
+					})
+					.catch((err) => {
+						console.log(err);
+						Swal.fire({
+							title: "본인이 작성한 글만 삭제\n할 수 있습니다.",
+							text: "",
+							icon: "error",
+							confirmButtonColor: "rgb(067, 085, 189)",
+						});
+						err.text().then((text) => {
+							// console.log(text);
+						});
+					});
+			},
+		}).then((result) => {
+			if (result.isConfirmed) {
+				Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
+					(result) => {
+						if (result.isConfirmed) location.href = "/board/free/1";
+					}
+				);
+			}
+		});
+	}
+
+	const like_qna = async (article_id) => {
+		await fetch(`//api.eyo.kr:8081/board/qna/${article_id}/like`, {
+			method: "POST",
+			mode: "cors",
+			credentials: "include",
+
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				userid: whoami(),
+			}),
+		})
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					return Promise.reject(res);
+				}
+			})
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
 	const dislike_qna = async (article_id) => {
 		const res = await fetch(
-			`http://api.eyo.kr:8081/board/qna/article/${article_id}/dislike`,
+			`//api.eyo.kr:8081/board/qna/article/${article_id}/dislike`,
 			{
 				method: "POST",
 				mode: "cors",
+				credentials: "include",
 
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					article_id: article_id,
+					userid: whoami(),
 				}),
 			}
-		);
-		const dislike = await res.json();
-		if (res.ok) {
-			return dislike;
-		} else {
-			throw new Error(dislike);
-		}
+		)
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					return Promise.reject(res);
+				}
+			})
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
+
+	const whoami = async () => {
+		await fetch("//api.eyo.kr:8081/user/whoami", {
+			method: "GET",
+			headers: {
+				Aceept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((res) => {
+				if (res.ok) return res.json();
+			})
+			.then((data) => {
+				const uid = data.userid;
+				userid = uid;
+				console.log(userid);
+			});
+	};
+
+	let userid;
+	console.log(userid);
+	//console.log(userid);
+
+	//console.log(user.userid); // undefined
+	//console.log(user);
+	//let who = whoami($page.params.userid);
+	//console.log(userid);
 
 	let isClicked = false;
 	const likeclick = () => {
@@ -91,22 +188,31 @@
 	};
 
 	let isLogin = true;
+	onMount(async () => {
+		if (window.localStorage["user.username"] == null) {
+			isLogin = false;
+		}
+	});
 </script>
 
-{#await article then article}
+{#await article}
+	<p class="has-text-centered">Loading in progress...</p>
+{:then article}
 	<header>
 		<div style="padding: 16px">
 			{#if isLogin}
 				<div class="edit" style="float: right; margin-top: 16px">
-					<a href="/"
+					<a href="/board/qna/write/question/{article.article_id}"
 						><button class="button is-rounded is-light">
 							수정
 						</button></a
-					><a href="/board/qna/1">
-						<button class="button is-rounded is-light">
-							삭제
-						</button>
-					</a>
+					>
+					<button
+						class="button is-rounded is-light"
+						on:click={delA($page.params.id)}
+					>
+						삭제
+					</button>
 				</div>
 			{/if}
 			<div style="float:left;">
@@ -163,29 +269,27 @@
 
 	<div class="content">
 		{@html article.content}
-		<!--이 부분은 질문의 내용 부분입니다. <br />
-	양식에 맞게 질문을 작성해주세요. <br /><br />
-	ex) 여기 링크가 있습니다. <a href="/">기술 블로그</a> <br />
-	,등등-->
 	</div>
-
-	<div
-		style="margin: 0 0 0 100%; width: auto%; text-align: center; float: right"
-	>
-		<span class="is-size-3">
-			{#if isLogin}
-				<i
-					class={isClicked
-						? "fa-solid fa-heart"
-						: "fa-regular fa-heart"}
-					on:click={likeclick}
-				/>
-			{:else}
-				<i class="fa-regular fa-heart" on:click={alt} />
-			{/if}
-		</span>
-		<span>추천 {article.like}</span>
-	</div>
+	<form>
+		<div
+			style="margin: 0 0 0 100%; width: auto%; text-align: center; float: right"
+			on:submit|preventDefault={isClicked ? like_qna : dislike_qna}
+		>
+			<span class="is-size-3">
+				{#if isLogin}
+					<i
+						class={isClicked
+							? "fa-solid fa-heart"
+							: "fa-regular fa-heart"}
+						on:click={likeclick}
+					/>
+				{:else}
+					<i class="fa-regular fa-heart" on:click={alt} />
+				{/if}
+			</span>
+			<span>추천 {article.like}</span>
+		</div>
+	</form>
 {/await}
 
 <hr style="margin-top: 0;" />
@@ -197,7 +301,7 @@
 		>
 	</div>
 	<div style="float: right;">
-		<a href="/board/qna/write/answer"
+		<a href="/board/qna/write/answer/{$page.params.id}"
 			><button class="button is-rounded is-light">답글 작성</button></a
 		>
 	</div>
@@ -227,19 +331,29 @@
 							<a
 								class="comment_author"
 								href="/"
-								style="color: #4A4A4A;">{answer.author}</a
+								style="color: #4A4A4A;">{answer.username}</a
 							>
 						</td>
-						<td style="width: 900px;">{answer.created}</td>
+						<td
+							style="width: 200px; border-right: 2px solid #dbdbdb;"
+							>{answer.title}</td
+						>
+						<td style="width: 600px;">{answer.created}</td>
 						<td style="left: 100%;">
 							{#if isLogin}
-								<button
-									class="button is-rounded is-link is-light is-small is-responsive"
+								<a
+									href="/board/qna/write/answer/{$page.params
+										.id}/{answer.article_id}"
 								>
-									수정
-								</button>
+									<button
+										class="button is-rounded is-link is-light is-small is-responsive"
+									>
+										수정
+									</button>
+								</a>
 								<button
 									class="button is-rounded is-link is-light is-small is-responsive"
+									on:click={() => delA(answer.article_id)}
 								>
 									삭제
 								</button>
@@ -281,17 +395,17 @@
 
 <br /><br />
 <!--
-{#if isLogin}
-	<textarea class="textarea" placeholder="댓글을 입력하세요." />
-	<button class="button">댓글 쓰기</button>
-{:else}
-	<textarea
-		class="textarea"
-		placeholder="댓글을 쓰려면 로그인이 필요합니다."
-	/>
-	<button class="button" on:click={alt}>댓글 쓰기</button>
-{/if}
--->
+  {#if isLogin}
+	  <textarea class="textarea" placeholder="댓글을 입력하세요." />
+	  <button class="button">댓글 쓰기</button>
+  {:else}
+	  <textarea
+		  class="textarea"
+		  placeholder="댓글을 쓰려면 로그인이 필요합니다."
+	  />
+	  <button class="button" on:click={alt}>댓글 쓰기</button>
+  {/if}
+  -->
 <br /><br /><br />
 <List />
 
@@ -320,6 +434,6 @@
 		border-left: solid 2px #dbdbdb;
 		border-right: solid 2px #dbdbdb;
 		/*		border-bottom-right-radius: 10px;
-		border-bottom-left-radius: 10px; */
+		  border-bottom-left-radius: 10px; */
 	}
 </style>

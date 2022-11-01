@@ -42,7 +42,10 @@
       {#await boardList then freeBoard}
         {#each freeBoard["list"] as free}
           <tr>
-            <td><a href="../article/{free.article_id}">{free.title}</a></td>
+            <td
+              ><a href="/board/free/article/{free.article_id}">{free.title}</a
+              ></td
+            >
             <td>{free.username}</td>
             <td>{free.created}</td>
             <td>{free.like}</td>
@@ -104,6 +107,13 @@
       {#if isLogged}
         <a href="/board/free/write" class="button is-primary">글쓰기</a>
       {/if}
+      <div class="select">
+        <select>
+          <option>10개씩 보기</option>
+          <option>15개씩 보기</option>
+          <option>20개씩 보기</option>
+        </select>
+      </div>
     </div>
   </div>
   <br />

@@ -22,14 +22,14 @@
 					<div class="columns has-text-centered">
 						<div
 							class="column"
-							class:has-text-danger={currentTab === "Login"}
+							class:has-text-link={currentTab === "Login"}
 							on:click={() => changeTab("Login")}
 						>
 							<p>Login</p>
 						</div>
 						<div
 							class="column"
-							class:has-text-danger={currentTab === "Signup"}
+							class:has-text-link={currentTab === "Signup"}
 							on:click={() => changeTab("Signup")}
 						>
 							<p>Create Account</p>

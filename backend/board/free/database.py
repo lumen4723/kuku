@@ -182,7 +182,7 @@ def delete_article(
 
         article.state = 0
         db.add(article)
-        db.refresh(article)
+        # db.refresh(article)
 
         change_information("free", False, db, commit=False).map_err(throwMsg).unwrap()
         db.commit()

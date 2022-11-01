@@ -1,6 +1,8 @@
-<script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11">
   import { page } from "$app/stores";
   import List from "../../[page]/+page.svelte";
+  import Swal from "sweetalert2";
+  import { onMount } from "svelte";
 
   const getArticle = async (article_id) => {
     const res = await fetch(
@@ -19,6 +21,68 @@
   };
   let article = getArticle($page.params.id);
 
+  const delArticle = async (article_id) => {
+    const res = await fetch(
+      `//api.eyo.kr:8081/board/free/delete/${article_id}`,
+      {
+        method: "DELETE",
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    // .then((res) => {
+    //   console.log(res);
+    //   if (res.ok == false) {
+    //     return Promise.reject(res);
+    //   } else {
+    //     return res.json();
+    //   }
+    // });
+    const article = await res.json();
+    if (res.ok) {
+      return article;
+    } else {
+      throw new Error(article);
+    }
+  };
+  const del = () => {
+    Swal.fire({
+      title: "삭제하시겠습니까?",
+      text: "다시 되돌릴 수 없습니다.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "rgb(067, 085, 189)",
+      cancelButtonColor: "rgb(219, 224, 255)",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+      preConfirm: () => {
+        delArticle($page.params.id)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              title: "본인이 작성한 글만 삭제\n할 수 있습니다.",
+              text: "",
+              icon: "error",
+              confirmButtonColor: "rgb(067, 085, 189)",
+            });
+            err.text().then((text) => {
+              // console.log(text);
+            });
+          });
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
+          (result) => {
+            if (result.isConfirmed) location.href = "/board/free/1";
+          }
+        );
+      }
+    });
+  };
   const getComment = async (article_id) => {
     const res = await fetch(
       `//api.eyo.kr:8081/board/free/comment/${article_id}`,
@@ -75,42 +139,94 @@
     isClicked = !isClicked;
   };
   const alt = () => {
-    alert("로그인이 필요합니다.");
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "로그인이 필요합니다!",
+      footer: "",
+    });
   };
   let isLogin = true;
-  
-  let comment_content="";
-  const create_comment = async (article_id) => {
-		return await fetch(
-			`http://api.eyo.kr:8081/board/free/comment/create/${article_id}`,
-			{
-				method: 'POST',
-				headers: {
-					Aceept: "application/json",
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					content: comment_content
-				}),
-				mode: "cors",
-				credentials: "include",
-			}
-		)
-	};
-	const upload = () => {
-		create_comment($page.params.id).then((res) => {
-			console.log(res);
-			if (res.ok==false) {
-				return Promise.reject(res);
-			} else {
-				return res.json();
-			}
-		})
-		.then(alert("댓글이 등록되었습니다."))
-		.then(location.reload(true))
-		.catch((err) => { console.error(err); })
 
+  let comment_content = "";
+  const create_comment = async (article_id) => {
+    return await fetch(
+      `http://api.eyo.kr:8081/board/free/comment/create/${article_id}`,
+      {
+        method: "POST",
+        headers: {
+          Aceept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: comment_content,
+        }),
+        mode: "cors",
+        credentials: "include",
+      }
+    );
   };
+  const upload = () => {
+    create_comment($page.params.id)
+      .then((res) => {
+        console.log(res);
+        if (res.ok == false) {
+          return Promise.reject(res);
+        } else {
+          return res.json();
+        }
+      })
+      .then(
+        Swal.fire("Good job!", "댓글이 생성되었습니다!", "success").then(
+          function (isConfirm) {
+            location.reload(isConfirm);
+          }
+        )
+      )
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+  const delete_comment = async (comment_id) => {
+    await fetch(
+      `http://api.eyo.kr:8081/board/free/comment/delete/${comment_id}`,
+      {
+        method: "PUT",
+        headers: {
+          Aceept: "application/json",
+        },
+        mode: "cors",
+        credentials: "include",
+      }
+    )
+      .then((res) => {
+        console.log(res);
+        if (res.ok == false) {
+          return Promise.reject(res);
+        } else {
+          return res.json();
+        }
+      })
+      .then(
+        Swal.fire("Good job!", "댓글이 삭제되었습니다!", "success").then(
+          function (isConfirm) {
+            location.reload(isConfirm);
+          }
+        )
+      )
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "본인의 글만 삭제할 수 있습니다!",
+        });
+      });
+  };
+  onMount(async () => {
+    if (window.localStorage["user.username"] == null) {
+      isLogin = false;
+    }
+  });
 </script>
 
 {#await article}
@@ -120,12 +236,16 @@
     <div style="padding: 16px">
       {#if isLogin}
         <div class="edit" style="float: right; margin-top: 16px">
-          <a href="/board/free/write/update/{article.article_id}"
+          <a href="/board/free/write/{article.article_id}"
             ><button class="button is-rounded is-light"> 수정 </button></a
           >
-          <a href="/board/free/1"
-            ><button class="button is-rounded is-light"> 삭제 </button></a
+          <button
+            class="button is-rounded is-light"
+            type="submit"
+            on:click={del}
           >
+            삭제
+          </button>
         </div>
       {/if}
       <div style="float:left;">
@@ -198,6 +318,7 @@
 							is-link is-light is-small
 							is-responsive
 							"
+                on:click={delete_comment(comment.cid)}
               >
                 삭제
               </button>
@@ -209,16 +330,19 @@
   </table>
   {#if isLogin}
     <form method="POST" on:submit|preventDefault={upload}>
-		<div class="contents" contenteditable="true">
-			<textarea class="input" bind:value={comment_content} placeholder="댓글을 입력하세요" required />
-	    	
-		</div>
-		<button class="button" type="submit">등록</button>
-
-	</form>
+      <div class="contents" contenteditable="true">
+        <textarea
+          class="input"
+          bind:value={comment_content}
+          placeholder="댓글을 입력하세요"
+          required
+        />
+      </div>
+      <button class="button" type="submit">등록</button>
+    </form>
   {/if}
 </div>
-
+<List />
 <br /><br /><br />
 
 <style>
@@ -237,5 +361,4 @@
     width: 100%;
     background-color: rgba(239, 235, 235, 0.805);
   }
-
 </style>

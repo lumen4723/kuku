@@ -1,9 +1,9 @@
 <script>
+  import { page } from "$app/stores";
   import { onMount } from "svelte";
 
-  let title = "",
-    content = "",
-    tags = [];
+  let title = "";
+  let content = "";
   let ClassicEditor;
   let ckeditorInstance;
 
@@ -21,7 +21,7 @@
   });
 
   const postArticle = () => {
-    fetch(`//api.eyo.kr:8081/board/qna/question`, {
+    fetch(`//api.eyo.kr:8081/board/qna/answer`, {
       method: "POST",
       headers: {
         Aceept: "application/json",
@@ -30,7 +30,7 @@
       body: JSON.stringify({
         title,
         content: ckeditorInstance.getData(),
-        tags,
+        parentid: $page.params.id,
       }),
       mode: "cors",
       credentials: "include",
@@ -53,7 +53,7 @@
       JSON.stringify({
         title,
         content: ckeditorInstance.getData(),
-        tags,
+        parentid: $page.params.id,
       })
     );
     postArticle()
@@ -71,78 +71,47 @@
 
 <!-- 글작성 페이지-->
 <form action="POST" on:submit|preventDefault={upload}>
-  <div class="content">
+  <div class="contents">
     <div class="write__title" style="text-align: left; font-size: 30px;" />
     <form>
       <div class="write__form__title" style="margin-top: 2px;">
-        <h1>Q</h1>
+        <h1>A</h1>
         <input
-          class="input mb-4"
-          id="title"
-          placeholder="제목을 입력해주세요."
-          bind:value={title}
-        />
-      </div>
-      <div class="write__form__content">
-        <textarea
-          class="textarea"
-          id="editor"
-          placeholder="내용을 입력해주세요.">{content}</textarea
-        >
+            class="input mb-4"
+            id="title"
+            placeholder="제목을 입력해주세요."
+            bind:value={title}
+            required
+          />
+        <div class="write__form__content">
+          <textarea
+            class="textarea"
+            id="editor"
+            placeholder="답변을 입력해주세요."
+            required>{content}</textarea>
+        </div>
       </div>
     </form>
   </div>
-
-  <div class="dropdown is-hoverable">
-    <div class="dropdown-trigger">
-      <button
-        class="button"
-        aria-haspopup="true"
-        aria-controls="dropdown-menu4"
-      >
-        <span>태그 선택</span>
-        <span class="icon is-medium">
-          <i class="fas fa-angle-down" aria-hidden="true" />
-        </span>
-      </button>
-    </div>
-    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-      <div class="dropdown-content">
-        <a href="#" class="dropdown-item">1tag</a>
-        <a href="#" class="dropdown-item">2tag</a>
-        <a href="#" class="dropdown-item">3tag</a>
-        <a href="#" class="dropdown-item">4tag</a>
-        <a href="#" class="dropdown-item">5tag</a>
-      </div>
-    </div>
-
-    <div class="tags has-addons tag-add">
-      <span class="tag is-info">1tag</span>
-      <a href="#" class="tag is-delete" />
-    </div>
-  </div>
-
-  <br /><br /><br />
-
-  <div class="buttons">
-    <a href="/board/qna/1">
-      <button class="button is-success" type="submit" on:click={upload}
-        >작성</button
-      >
-    </a>
-    <a href="/board/qna/1">
-      <button class="button is-danger">삭제</button>
-    </a>
-  </div>
 </form>
+
+<br /><br /><br />
+
+<div class="buttons">
+  <a href="/board/qna/article/{$page.params.id}">
+    <button class="button is-success" type="submit" on:click={upload}>
+      작성
+    </button>
+  </a>
+  <a href="/board/qna/article/{$page.params.id}">
+    <button class="button is-danger">취소</button>
+  </a>
+</div>
+
 <br /><br />
 
 <style>
   :global(.ck-editor__editable_inline) {
     min-height: 400px;
-  }
-  .tag-add {
-    margin: 0, 0, 0, 10px;
-    padding: 5px;
   }
 </style>

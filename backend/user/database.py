@@ -103,3 +103,55 @@ def login(object_in: loginuser, db: Session) -> Result:
     if not verify_password(object_in.password, user.password):
         return Err(NotFound())
     return Ok(user.uid)
+
+
+# update_user
+def update_user(change: User, origin: User, originuid: str, db: Session) -> Result:
+    try:
+        user = db.query(User).filter_by(uid=originuid).first()
+        if user is None:
+            return Err(NotFound())
+        if not verify_password(origin.password, user.password):
+            return Err(NotAuthorized())
+
+        if change.email != "":
+            user.email = change.email
+        if change.username != "":
+            user.username = change.username
+        if change.password != "":
+            user.password = get_password_hash(change.password)
+
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return Ok(user.uid)
+
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "data too long" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+        if "is not a valid" in err_msg:
+            return Err(DefaultException(detail="form data is not a valid"))
+        return Err(DefaultException(detail="unknown error"))
+
+
+# delete user
+def delete_user(object_in: loginuser, db: Session) -> Result:
+    user = db.query(User).filter_by(email=object_in.email).first()
+    if user is None:
+        return Err(NotFound())
+    if not verify_password(object_in.password, user.password):
+        return Err(NotFound())
+    user.state = 0
+    db.commit()
+    db.refresh(user)
+    return Ok(user.state)
+
+
+# check username
+def check_username(username: str, db: Session) -> Result:
+    user = db.query(User).filter_by(username=username).first()
+    if user is not None:
+        return Err(AlreadyExists())
+    else:
+        return Ok(True)

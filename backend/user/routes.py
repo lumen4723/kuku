@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 from option import *
 import utils
-from .schemas import createuser, loginuser
+from .schemas import changeuser, createuser, loginuser, originuser
 from utils.exception import throwMsg
 from fastapi import Response, Depends
 from uuid import UUID, uuid4
@@ -61,8 +61,38 @@ async def whoami(
     )
 
 
+@router.put("/update", dependencies=[Depends(cookie)])
+async def update_user(
+    changeUser: changeuser,
+    originUser: originuser,
+    session_data: SessionData = Depends(verifier),
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.update_user(changeUser, originUser, session_data.uid, session)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+@router.delete("/delete", dependencies=[Depends(cookie)])
+async def delete_user(
+    user: loginuser, session: Session = Depends(utils.database.get_db)
+):
+    return database.delete_user(user, session).map_err(throwMsg).unwrap()
+
+
 @router.post("/logout")
 async def del_session(response: Response, session_id: UUID = Depends(cookie)):
     await backend.delete(session_id)
     cookie.delete_from_response(response)
     return "deleted session"
+
+
+# username 중복 검사
+@router.get("/check")
+async def user(username: str, session: Session = Depends(utils.database.get_db)):
+    if database.check_username(username, session):
+        return True
+    else:
+        return False
