@@ -25,9 +25,9 @@
 			>
 		</div>
 	{:then list}
-		<div class="columns">
+		<div class="columns is-flex-wrap-wrap">
 			{#each list as item}
-				<div class="column is-one-quarter">
+				<div class="column is-one-quarter mb-4">
 					<a href="/study/{item.course_slug}/{item.no}">
 						<div class="card">
 							<header class="card-header">

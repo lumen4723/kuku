@@ -12,7 +12,7 @@
       ClassicEditor.create(document.querySelector("#editor"), {
         simpleUpload: {
           // The URL that the images are uploaded to.
-          uploadUrl: "//api.eyo.kr:8081/upload",
+          uploadUrl: "//api.eyo.kr:8081/upload/",
 
           // Enable the XMLHttpRequest.withCredentials property.
           withCredentials: true,

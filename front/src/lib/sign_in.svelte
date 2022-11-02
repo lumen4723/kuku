@@ -81,7 +81,7 @@
 			<input
 				class="input"
 				type="password"
-				placeholder="Set your new password"
+				placeholder="Your password"
 				bind:value={password}
 				required
 			/>
