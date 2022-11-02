@@ -406,11 +406,13 @@ def get_article_by_title(findtitle: str, db: Session, page=1, limit=20) -> Resul
         )
 
         result = []
+        cnt = 0
         for a in article:
             if findtitle in a["title"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt})
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -436,11 +438,13 @@ def get_article_by_username(finduser: str, db: Session, page=1, limit=20) -> Res
         )
 
         result = []
+        cnt = 0
         for a in article:
             if finduser in a["username"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt})
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -466,11 +470,13 @@ def get_article_by_content(findcontent: str, db: Session, page=1, limit=20) -> R
         )
 
         result = []
+        cnt = 0
         for a in article:
             if findcontent in a["content"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt})
 
     except Exception as e:
         err_msg = str(e).lower()
