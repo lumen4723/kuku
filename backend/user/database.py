@@ -8,15 +8,18 @@ from .security import get_password_hash, verify_password
 from utils.exception import *
 from .schemas import loginuser, UserInformation
 from typing import TYPE_CHECKING
-
+from sendgrid.helpers.mail import Mail, Email, To, Content
+import sendgrid
+from config_default import Config
+from . import templateHtml
 if TYPE_CHECKING:
     from board.free.database import board_free
     from board.qna.database import board_qna
     from board.qna.like.database import board_qna_like
     from board.free.like.database import board_free_like
     from board.free.comment.database import board_free_comment
-
-
+from utils.token import verify_token, token_generator_by_email
+from result import Result, Ok, Err
 class User(SQLModel, table=True):
 
     uid: Optional[int] = Field(default=None, primary_key=True)
@@ -64,6 +67,8 @@ def create_user(object_in: User, db: Session) -> Result:
         object_in.password = get_password_hash(object_in.password)
         user = User.from_orm(object_in)
         db.add(user)
+        if isinstance(emailCertificationByEmail(db, object_in.email), Err):
+            return Err(DefaultException(detail="email send error"))
         db.commit()
         db.refresh(user)
         return Ok(
@@ -103,6 +108,75 @@ def login(object_in: loginuser, db: Session) -> Result:
     if not verify_password(object_in.password, user.password):
         return Err(NotFound())
     return Ok(user.uid)
+
+def emailCertification(db : Session,uid : int) -> Result:
+    try:
+        email = db.query(User).filter_by(uid=uid).first()
+        if email is None:
+            return Err(NotFound())
+        sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
+        from_email = Email("noreply@eyo.kr")  # Change to your verified sender
+        to_email = To(email.email)  # Change to your recipient
+        subject = "KUKU 회원가입 인증 메일입니다."
+        if isinstance(token_generator_by_email(email.email), Ok):
+            token = str(token_generator_by_email(email.email).unwrap())
+        else:
+            return Err(DefaultException(detail="token generator error"))
+        content = Content("text/html",templateHtml.emailTemplate(token))
+        mail = Mail(from_email, to_email, subject, content)
+        # Get a JSON-ready representation of the Mail object
+        mail_json = mail.get()
+        
+        # Send an HTTP POST request to /mail/send
+        response = sg.client.mail.send.post(request_body=mail_json)
+        if str(response.status_code).lower() in "error":
+            return Err(DefaultException(detail="email send error"))
+        else:
+            return Ok("email send success")
+    except Exception as e:
+        return Err(DefaultException(detail="unknown error"))
+
+def emailCertificationByEmail(db : Session,email : str) -> Result:
+    try:
+        sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
+        from_email = Email("noreply@eyo.kr")  # Change to your verified sender
+        to_email = To(email)  # Change to your recipient
+        subject = "KUKU 회원가입 인증 메일입니다."
+        if isinstance(token_generator_by_email(email), Ok):
+            token = str(token_generator_by_email(email).unwrap())
+        else:
+            return Err(DefaultException(detail="token generator error"))
+        content = Content("text/html",templateHtml.emailTemplate(token))
+        mail = Mail(from_email, to_email, subject, content)
+        # Get a JSON-ready representation of the Mail object
+        mail_json = mail.get()
+        
+        # Send an HTTP POST request to /mail/send
+        response = sg.client.mail.send.post(request_body=mail_json)
+        if str(response.status_code).lower() in "error":
+            return Err(DefaultException(detail="email send error"))
+        else:
+            return Ok("email send success")
+    except Exception as e:
+        return Err(DefaultException(detail="unknown error"))
+
+def emailConform(token: str, db: Session) -> Result:
+    try:
+        if isinstance(verify_token(token),Ok):
+            email = verify_token(token).unwrap()
+        else:
+            return Err(DefaultException(detail="token verify error"))
+        user = db.query(User).filter_by(email=email).first()
+        if user is None:
+            return Err(NotFound())
+        check = ((db.query(User).filter_by(email=email).update({"type": 1}))==1)
+        if check is False:
+            return Err(DefaultException(detail="update err"))
+        db.commit()
+        return Ok(str(user.username))
+    except Exception as e:
+        return Err(DefaultException(detail="unknown error"))
+
 
 
 # update_user
