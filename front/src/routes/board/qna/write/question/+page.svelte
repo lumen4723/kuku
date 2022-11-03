@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { is_empty } from "svelte/internal";
+  import { append, hasContext, is_empty } from "svelte/internal";
   import Swal from "sweetalert2";
 
   let title = "",
@@ -68,6 +68,7 @@
         });
       });
   };
+
   const alt = () => {
     Swal.fire({
       title: "제목을 입력해주세요",
@@ -75,6 +76,23 @@
       confirmButtonText: "확인",
     });
   };
+
+  // 태그 가져오기
+  const getTags = async() => {
+    const res = await fetch(
+      `//api.eyo.kr:8081/board/tag/list`,
+      {
+      mode: "cors",
+      credentials: "include",
+    });
+    const article = await res.json();
+    if (res.ok) {
+      return article;
+    } else {
+      throw new Error(article);
+    }
+  };
+  $: boardtags = getTags();
 </script>
 
 <!-- 글작성 페이지-->
@@ -111,17 +129,33 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <a href="#" class="dropdown-item">1tag</a>
-        <a href="#" class="dropdown-item">2tag</a>
-        <a href="#" class="dropdown-item">3tag</a>
-        <a href="#" class="dropdown-item">4tag</a>
-        <a href="#" class="dropdown-item">5tag</a>
+        {#await boardtags then picktags}
+          {#each picktags as tag}
+            {#if tags.includes(tag.slug)}
+            <div class="dropdown-item">
+              {tag.slug}
+            </div>
+            {:else}
+            <div class="dropdown-item" on:click={() => {tags[tags.length] = tag.slug}}>
+              {tag.slug}
+            </div>
+            {/if}
+          {/each}
+        {:catch error}
+          <p>태그를 불러오는데 실패했습니다.</p>
+        {/await}
       </div>
     </div>
 
     <div class="tags has-addons tag-add">
-      <span class="tag is-info">1tag</span>
-      <a href="#" class="tag is-delete" />
+      {#each tags as tag}
+        <span class="tag is-info">{tag}</span>
+        <div class="tag is-delete" on:click={() => {tags = tags.filter(x => x != tag)}} />
+      {/each}
+      <!--{#each picktags as tag}
+        <span class="tag is-info" on:click={console.log(picktags.has(tag))}>{tag}</span>
+        <div class="button tag is-delete" style="margin-right: 5px;" on:click={() => {}}/>
+      {/each} -->
     </div>
   </div>
 
@@ -147,7 +181,7 @@
     min-height: 400px;
   }
   .tag-add {
-    margin: 0, 0, 0, 10px;
+    margin-left: 10px;
     padding: 5px;
   }
 </style>

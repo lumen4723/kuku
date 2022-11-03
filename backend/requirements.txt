@@ -12,3 +12,4 @@ fastapi_sessions==0.3.2
 sendGrid==6.9.7
 PyJWT==1.7.1 python-decouple==3.3
 result==0.8.0
+python-multipart==0.0.5

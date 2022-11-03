@@ -245,10 +245,12 @@
       </div>
       <div style="clear:both" />
       <div style="float:left;">
+
         <div>
           <div class="icon is-medium" style="float: left;">
             <i class="fa-solid fa-tag" />
           </div>
+          
           <a href="/">
             <button
               class="button is-rounded is-link is-light is-small is-responsive"
@@ -256,6 +258,14 @@
               태그
             </button>
           </a>
+          <a href="/">
+            <button
+              class="button is-rounded is-link is-light is-small is-responsive"
+            >
+              태그
+            </button>
+          </a>
+
         </div>
       </div>
     </div>
