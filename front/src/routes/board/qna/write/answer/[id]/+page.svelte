@@ -1,6 +1,8 @@
 <script>
   import { page } from "$app/stores";
   import { onMount } from "svelte";
+  import { is_empty } from "svelte/internal";
+  import Swal from "sweetalert2";
 
   let title = "";
   let content = "";
@@ -66,6 +68,13 @@
         });
       });
   };
+  const alt = () => {
+    Swal.fire({
+      title: "제목을 입력해주세요",
+      icon: "error",
+      confirmButtonText: "확인",
+    });
+  };
 </script>
 
 <!-- 글작성 페이지-->
@@ -96,16 +105,18 @@
 
 <br /><br /><br />
 
-<div class="buttons">
+{#if is_empty(title)}
+  <button class="button is-success" on:click={alt}>작성</button>
+{:else}
   <a href="/board/qna/article/{$page.params.id}">
     <button class="button is-success" type="submit" on:click={upload}>
       작성
     </button>
   </a>
+{/if}
   <a href="/board/qna/article/{$page.params.id}">
     <button class="button is-danger">취소</button>
   </a>
-</div>
 
 <br /><br />
 

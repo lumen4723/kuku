@@ -182,11 +182,13 @@ def get_article_by_title(findtitle: str, db: Session, page=1, limit=20):
         )
 
         result = []
+        cnt = 0
         for a in article:
             if findtitle in a["title"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt,})
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -215,11 +217,13 @@ def get_article_by_user(finduser: str, db: Session, page=1, limit=20):
         )
 
         result = []
+        cnt = 0
         for a in article:
             if finduser in a["username"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt,})
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -248,11 +252,13 @@ def get_article_by_content(findcontent: str, db: Session, page=1, limit=20):
         )
 
         result = []
+        cnt = 0
         for a in article:
             if findcontent in a["content"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt,})
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -261,7 +267,7 @@ def get_article_by_content(findcontent: str, db: Session, page=1, limit=20):
         elif "nonetype" in err_msg:
             return Err(NotFound())
         return Err(DefaultException(detail="unknown error"))
-        
+
 
 # delete article by id
 def delete_article(

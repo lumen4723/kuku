@@ -1,37 +1,58 @@
 <script>
-	import Myprofile from "./Myprofile.svelte";
+	import { page } from "$app/stores";
+	import { browser } from "$app/env";
+	import { goto } from "$app/navigation";
+	import Swal from "sweetalert2";
 	import Changeuser from "./Changeuser.svelte";
 	import Withdrawal from "./Withdrawal.svelte";
-	let currentPage = "Myprofile";
-	
+
+	let currentPage = "Changeuser";
+	const isSignup = $page.url.searchParams.has("msg");
+	const afterSignup = () => {
+		Swal.fire({
+			title: "회원정보 변경이 완료되었습니다.	변경된 정보로 다시 로그인 해주세요.",
+			icon: "success",
+			confirmButtonText: "확인",
+		});
+		logout();
+		if (browser) {
+			goto("/account");
+		}
+	};
+
+	const logout = async () => {
+		await fetch(`//api.eyo.kr:8081/user/logout`, {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((res) => {
+				if (res.ok == false) return Promise.reject(res);
+			})
+			.then(() => {
+				if (browser) {
+					window.localStorage.removeItem("user.email");
+					window.localStorage.removeItem("user.id");
+					window.localStorage.removeItem("user.username");
+				}
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	};
+
+	$: if (isSignup) afterSignup();
 </script>
 
 <div class="container">
 	<div class="columns">
 		<div class="column is-2">
 			<aside class="menu">
-				<p class="menu-label">General</p>
-				<ul class="menu-list">
-					<li>
-						<!-- svelte-ignore a11y-missing-attribute -->
-						<a
-							class:is-active={currentPage == "Dashboard"}
-							on:click={() => (currentPage = "Dashboard")}
-							>대쉬보드</a
-						>
-					</li>
-				</ul>
 				<p class="menu-label">ADMINISTRATION</p>
 				<ul class="menu-list">
-					<li>
-						<!-- svelte-ignore a11y-missing-attribute -->
-						<a
-							class:is-active={currentPage == "Myprofile"}
-							on:click={() => (currentPage = "Myprofile")}
-						>
-							프로필
-						</a>
-					</li>
 					<li>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<a
@@ -54,9 +75,7 @@
 			</aside>
 		</div>
 		<div class="column is-8">
-			{#if currentPage == "Myprofile"}
-				<Myprofile />
-			{:else if currentPage == "Changeuser"}
+			{#if currentPage == "Changeuser"}
 				<Changeuser />
 			{:else if currentPage == "Withdrawal"}
 				<Withdrawal />
