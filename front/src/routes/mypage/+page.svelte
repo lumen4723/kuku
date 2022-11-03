@@ -15,9 +15,6 @@
 			confirmButtonText: "확인",
 		});
 		logout();
-		if (browser) {
-			goto("/account");
-		}
 	};
 
 	const logout = async () => {
@@ -37,6 +34,7 @@
 					window.localStorage.removeItem("user.email");
 					window.localStorage.removeItem("user.id");
 					window.localStorage.removeItem("user.username");
+					window.location.href = "/account";
 				}
 			})
 			.catch((e) => {
