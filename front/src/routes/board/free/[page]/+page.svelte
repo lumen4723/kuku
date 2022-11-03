@@ -12,12 +12,12 @@
 		{ value: "username", label: "작성자" },
 	];
 
-	let searchT;
-	let currentST = searchTypes[0].value;
-	let currentPage = 1;
+	let searchT = "";
 	let isLogged = userIsLogged();
-
+	let currentPage = 1;
 	let currentLimit = pageLimits[0].value;
+	let currentST = searchTypes[0].value;
+	let boardList;
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
@@ -51,7 +51,7 @@
 	};
 	const searchUser = async (user, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/title/${user}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr:8081/board/free/search/username/${user}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -66,7 +66,7 @@
 	};
 	const searchContent = async (content, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/title/${content}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr:8081/board/free/search/content/${content}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -88,52 +88,51 @@
 			boardList = searchUser(searchT, currentPage, currentLimit);
 		}
 	};
+	const changeList = () => {
+		searchT == ""
+			? (boardList = getBoardList(currentPage, currentLimit))
+			: searchRun();
+	};
 
-	let boardList = getBoardList(currentPage, currentLimit);
+	changeList();
 </script>
 
 <div class="container">
-	<table
-		class="table container is-fluid has-text-centered"
-		style="margin-bottom: 0;"
-	>
-		<thead>
-			<tr>
-				<th class="has-text-centered">제목</th>
-				<th class="has-text-centered">작성자</th>
-				<th class="has-text-centered">작성일자</th>
-				<th class="has-text-centered">추천</th>
-				<th class="has-text-centered">조회수</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#await boardList then freeBoard}
+	{#await boardList then freeBoard}
+		<table
+			class="table container is-fluid has-text-centered"
+			style="margin-bottom: 0;"
+		>
+			<thead>
+				<tr>
+					<th class="has-text-centered">제목</th>
+					<th class="has-text-centered">작성자</th>
+					<th class="has-text-centered">작성일자</th>
+					<th class="has-text-centered">추천</th>
+					<th class="has-text-centered">조회수</th>
+				</tr>
+			</thead>
+			<tbody>
 				{#each freeBoard["list"] as free}
 					<tr>
-						<td
-							><a href="/board/free/article/{free.article_id}"
-								>{free.title}</a
-							></td
-						>
+						<td>
+							<a href="/board/free/article/{free.article_id}">
+								{free.title}
+							</a>
+						</td>
 						<td>{free.username}</td>
 						<td>{free.created}</td>
 						<td>{free.like}</td>
 						<td>{free.views}</td>
 					</tr>
 				{/each}
-			{:catch error}
+			</tbody>
+			<tfoot>
 				<tr>
-					<td colspan="5">{error.message}</td>
+					<td colspan="5" />
 				</tr>
-			{/await}
-		</tbody>
-		<tfoot>
-			<tr>
-				<td colspan="5" />
-			</tr></tfoot
-		>
-	</table>
-	{#await boardList then freeBoard}
+			</tfoot>
+		</table>
 		<nav class="pagination is-centered" aria-label="pagination">
 			<ul class="pagination-list">
 				{#each Array(Math.ceil(Math.abs(freeBoard["cnt"]) / currentLimit)) as n, i}
@@ -143,8 +142,13 @@
 							class="pagination-link"
 							class:is-current={i + 1 === currentPage}
 							sveltekit:prefetch
-							on:click={() => (currentPage = i + 1)}>{i + 1}</a
+							on:click={() => {
+								currentPage = i + 1;
+								changeList();
+							}}
 						>
+							{i + 1}
+						</a>
 					</li>
 				{/each}
 			</ul>
@@ -152,20 +156,19 @@
 	{:catch error}
 		{error.message}
 	{/await}
-
 	<div class="container">
-		<div class="field is-horizontal">
-			<div class="field-body">
-				<div class="select">
-					<select bind:value={currentST}>
-						{#each searchTypes as st}
-							<option value={st.value}>
-								{st.label}
-							</option>
-						{/each}
-					</select>
-				</div>
-				<form method="get" on:submit|preventDefault={searchRun}>
+		<form method="get" on:submit|preventDefault={changeList}>
+			<div class="field is-horizontal">
+				<div class="field-body">
+					<div class="select">
+						<select bind:value={currentST}>
+							{#each searchTypes as st}
+								<option value={st.value}>
+									{st.label}
+								</option>
+							{/each}
+						</select>
+					</div>
 					<div class="control is-expanded has-icons-left">
 						<input
 							class="input"
@@ -178,21 +181,29 @@
 						</span>
 					</div>
 					<button class="button is-info" type="submit"> 검색 </button>
-				</form>
+				</div>
+				{#if isLogged}
+					<a href="/board/free/write" class="button is-primary">
+						글쓰기
+					</a>
+				{/if}
+				<div class="select">
+					<select
+						bind:value={currentLimit}
+						on:change={() => {
+							currentPage = 1;
+							changeList();
+						}}
+					>
+						{#each pageLimits as pl}
+							<option value={pl.value}>
+								{pl.label}
+							</option>
+						{/each}
+					</select>
+				</div>
 			</div>
-			{#if isLogged}
-				<a href="/board/free/write" class="button is-primary">글쓰기</a>
-			{/if}
-			<div class="select">
-				<select bind:value={currentLimit}>
-					{#each pageLimits as pl}
-						<option value={pl.value}>
-							{pl.label}
-						</option>
-					{/each}
-				</select>
-			</div>
-		</div>
+		</form>
 	</div>
 	<br />
 </div>
