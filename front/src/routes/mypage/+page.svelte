@@ -1,7 +1,6 @@
 <script>
 	import { page } from "$app/stores";
 	import { browser } from "$app/env";
-	import { goto } from "$app/navigation";
 	import Swal from "sweetalert2";
 	import Changeuser from "./Changeuser.svelte";
 	import Withdrawal from "./Withdrawal.svelte";
