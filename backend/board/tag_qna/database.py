@@ -29,11 +29,10 @@ def create_tag_qna(
         tag.tagid = tagid
 
         db.add(tag)
-        db.refresh(tag)
 
         if commit:
             db.commit()
-
+            db.refresh(tag)
         return Ok(tag)
     except Exception as e:
         return Err(DefaultException(detail="create tag qna error"))

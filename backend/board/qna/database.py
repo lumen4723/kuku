@@ -70,7 +70,7 @@ def create_question(object_in: Board_qna_question, uid: int, db: Session) -> Res
         article.content = object_in.content
         article.userid = uid
         db.add(article)
-
+        db.commit()
         change_information("qna", True, db, commit=False)
         for tag in object_in.tags:
             tagid = get_id_by_slug(tag, db).unwrap()
