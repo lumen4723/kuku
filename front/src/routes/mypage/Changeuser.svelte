@@ -115,7 +115,19 @@
 			});
 	};
 </script>
-
+<article class="message is-warning">
+	<div class="message-body">
+		<p>이메일이 아직 검증되지 않았습니다.</p>
+		<p>이메일을 검증해 주세요.</p>
+	</div>
+</article>
+<div class="columns">
+	<div class="column is-5 is-offset-2">
+		<button class="button is-warning">
+			이메일 검증하기
+		</button>
+	</div>
+</div>
 <form method="PUT" on:submit|preventDefault={updateUser}>
 	{#if message != ""}
 		<article class="message is-danger">
