@@ -3,6 +3,7 @@
   import List from "../../[page]/+page.svelte";
   import { onMount } from "svelte";
   import Swal from "sweetalert2";
+  import { HtmlTag } from "svelte/internal";
 
   const getArticle = async (article_id) => {
     const res = await fetch(
@@ -249,13 +250,16 @@
           <div class="icon is-medium" style="float: left;">
             <i class="fa-solid fa-tag" />
           </div>
-          <a href="/">
-            <button
-              class="button is-rounded is-link is-light is-small is-responsive"
-            >
-              태그
-            </button>
-          </a>
+          {#each article.tags as tags}
+            <a href="/board/qna/tag/{tags.slug}">
+              <button
+                class="button is-rounded is-responsive"
+                style="background-color: {tags.color};"
+              >
+                {tags.name}
+              </button>
+            </a>
+          {/each}
         </div>
       </div>
     </div>
