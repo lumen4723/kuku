@@ -5,7 +5,7 @@
 
   let title = "",
     content = "",
-    picktags = [];
+    tags = [];
   let ClassicEditor;
   let ckeditorInstance;
 
@@ -129,14 +129,14 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        {#await boardtags then tags}
-          {#each tags as tag}
-            {#if picktags.includes(tag.slug)}
+        {#await boardtags then picktags}
+          {#each picktags as tag}
+            {#if tags.includes(tag.slug)}
             <div class="dropdown-item">
               {tag.slug}
             </div>
             {:else}
-            <div class="dropdown-item" on:click={() => {picktags[picktags.length] = tag.slug}}>
+            <div class="dropdown-item" on:click={() => {tags[tags.length] = tag.slug}}>
               {tag.slug}
             </div>
             {/if}
@@ -148,9 +148,9 @@
     </div>
 
     <div class="tags has-addons tag-add">
-      {#each picktags as tag}
+      {#each tags as tag}
         <span class="tag is-info">{tag}</span>
-        <div class="tag is-delete" on:click={() => {picktags = picktags.filter(x => x != tag)}} />
+        <div class="tag is-delete" on:click={() => {tags = tags.filter(x => x != tag)}} />
       {/each}
       <!--{#each picktags as tag}
         <span class="tag is-info" on:click={console.log(picktags.has(tag))}>{tag}</span>
