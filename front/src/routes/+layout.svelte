@@ -127,7 +127,7 @@
 	</nav>
 </header>
 
-<main>
+<main data-sveltekit-prefetch>
 	<slot />
 </main>
 

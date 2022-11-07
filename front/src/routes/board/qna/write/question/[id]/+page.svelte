@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { page } from "$app/stores";
+  import { is_empty } from "svelte/internal";
   import Swal from "sweetalert2";
 
   let ClassicEditor;
@@ -13,6 +14,7 @@
     ClassicEditor.create(document.querySelector("#editor"))
       .then((editor) => {
         ckeditorInstance = editor;
+        console.log(editor);
       })
       .catch((error) => {
         console.error(error);
@@ -20,8 +22,9 @@
   });
 
   const getArticle = async (article_id) => {
+    if (isNaN(article_id)) return false;
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/article/${article_id}?article_id=${article_id}`,
+      `//api.eyo.kr:8081/board/qna/list/article/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -66,9 +69,23 @@
         putResult = JSON.stringify(json);
       })
       .catch((err) => {
-        putResult = JSON.stringify(err);
+        console.log(err);
       });
   };
+  const getTags = async () => {
+    const res = await fetch(`//api.eyo.kr:8081/board/tag/list`, {
+      mode: "cors",
+      credentials: "include",
+    });
+    const article = await res.json();
+    if (res.ok) {
+      return article;
+    } else {
+      throw new Error(article);
+    }
+  };
+  $: boardtags = getTags();
+
   const upload = () => {
     console.log(
       JSON.stringify({
@@ -77,64 +94,65 @@
         tags: article_data.tags,
       })
     );
-    putArticle($page.params.id)
-      .then((res) => {
-        console.log(res);
-      })
-      .then(
-        Swal.fire({
-          title: "수정하시겠습니까?",
-          text: "",
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonColor: "RGB(067, 085, 189)",
-          cancelButtonColor: "RGB(219, 224, 255)",
-          confirmButtonText: "수정",
-          cancelButtonText: "취소",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            Swal.fire("Motified!", "글이 수정되었습니다.", "success").then(
-              (result) => {
-                if (result.isConfirmed)
-                  location.href = "/board/qna/article/" + $page.params.id;
-              }
-            );
+    Swal.fire({
+      title: "수정하시겠습니까?",
+      text: "",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "rgb(067, 085, 189)",
+      cancelButtonColor: "rgb(219, 224, 255)",
+      confirmButtonText: "수정",
+      cancelButtonText: "취소",
+      preConfirm: () => {
+        putArticle($page.params.id)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            err.text().then((text) => {
+              console.log(text);
+            });
+          });
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Motified!", "글이 수정되었습니다.", "success").then(
+          (result) => {
+            if (result.isConfirmed)
+              location.href = "/board/qna/article/" + $page.params.id;
           }
-        })
-      )
-      .catch((err) => {
-        console.log(err);
-        // err.text().then((text) => {
-        //   console.log(text);
-        // });
-      });
+        );
+      }
+    });
+  };
+
+  const alt = () => {
+    Swal.fire({
+      title: "제목을 입력해주세요",
+      icon: "error",
+      confirmButtonText: "확인",
+    });
   };
 </script>
 
 <!-- 글작성 페이지-->
-<form action="PUT" on:submit|preventDefault={upload}>
+<form method="PUT" on:submit|preventDefault={upload}>
   <div class="content">
-    <div class="write__title" style="text-align: left; font-size: 30px;" />
-    <form>
-      <div class="write__form__title" style="margin-top: 2px;">
-        <h1>Q</h1>
-        <input
-          class="input mb-4"
-          id="title"
-          placeholder="제목을 입력해주세요."
-          bind:value={article_data.title}
-          required
-        />
-      </div>
-      <div class="write__form__content">
-        <textarea
-          class="textarea"
-          id="editor"
-          placeholder="내용을 입력해주세요."
-          required>{article_data.content}</textarea
-        >
-      </div>
-    </form>
+    <h1>Q</h1>
+    <input
+      class="input mb-4"
+      id="title"
+      placeholder="제목을 입력해주세요."
+      bind:value={article_data.title}
+      required
+    />
+    <textarea
+      class="textarea"
+      id="editor"
+      placeholder="내용을 입력해주세요."
+      required>{article_data.content}</textarea
+    >
   </div>
 
   <div class="dropdown is-hoverable">
@@ -152,27 +170,53 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <a href="#" class="dropdown-item">1tag</a>
-        <a href="#" class="dropdown-item">2tag</a>
-        <a href="#" class="dropdown-item">3tag</a>
-        <a href="#" class="dropdown-item">4tag</a>
-        <a href="#" class="dropdown-item">5tag</a>
+        {#await boardtags then picktags}
+          {#each picktags as tag}
+            {#if article_data.tags.includes(tag.slug)}
+              <div class="dropdown-item">
+                {tag.slug}
+              </div>
+            {:else}
+              <div
+                class="dropdown-item"
+                on:click={() => {
+                  article_data.tags[article_data.tags.length] = tag.slug;
+                }}
+              >
+                {tag.slug}
+              </div>
+            {/if}
+          {/each}
+        {:catch error}
+          <p>태그를 불러오는데 실패했습니다.</p>
+        {/await}
       </div>
     </div>
 
     <div class="tags has-addons tag-add">
-      <span class="tag is-info">1tag</span>
-      <a href="#" class="tag is-delete" />
+      {#each article_data.tags as tag}
+        <span class="tag is-info">{tag.name}</span>
+        <div
+          class="tag is-delete"
+          on:click={() => {
+            article_data.tags = article_data.tags.filter((x) => x != tag);
+          }}
+        />
+      {/each}
     </div>
   </div>
-
   <br /><br /><br />
 
-  <button class="button is-success" type="submit" on:click={upload}>작성</button
-  >
-  <a href="/board/qna/1">
-    <button class="button is-danger">삭제</button>
-  </a>
+  <div>
+    <button
+      class="button is-success"
+      type="submit"
+      on:click={is_empty(article_data.title) ? alt : upload}>완료</button
+    >
+    <a href="/board/qna/article/{$page.params.id}">
+      <button class="button is-danger">취소</button>
+    </a>
+  </div>
 </form>
 <br /><br />
 

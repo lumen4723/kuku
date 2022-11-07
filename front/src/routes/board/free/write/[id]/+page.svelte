@@ -124,7 +124,7 @@
 <br />
 
 <form method="PUT" on:submit|preventDefault={upload}>
-  <div class="contents">
+  <div class="content">
     <input
       class="input mb-4"
       type="text"

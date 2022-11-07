@@ -1,4 +1,6 @@
 <script>
+	import Swal from "sweetalert2";
+	import { browser } from "$app/env";
 	import { is_empty } from "svelte/internal";
 
 	let username = "",
@@ -101,15 +103,26 @@
 				if (res.ok == false) return Promise.reject(res);
 				return res.json();
 			})
-			.then(() => {
-				location.href =
-					"?msg=정보수정을 완료하였습니다. 다시 로그인 해주세요.";
-				isLoading = false;
+			.then((res) => {
+				Swal.fire({
+					title: "회원정보 변경에 성공하였습니다. 다시 로그인해주세요.",
+					icon: "success",
+					confirmButtonText: "확인",
+				}).then((result) => {
+					if (result)
+						if (browser) {
+							window.localStorage.removeItem("user.email");
+							window.localStorage.removeItem("user.id");
+							window.localStorage.removeItem("user.username");
+							window.location.href = "/account";
+						}
+				});
 			})
 			.catch((e) => {
-				e.json().then((json) => {
-					message = "정보수정에 실패하였습니다: " + json["detail"];
-					isLoading = false;
+				Swal.fire({
+					title: "회원정보 변경에 실패하였습니다." + e,
+					icon: "error",
+					confirmButtonText: "확인",
 				});
 			});
 	};
@@ -128,18 +141,20 @@
 				return res.json();
 			})
 			.then(() => {
-				// 메세지 
+				// 메세지
 				message = "인증메일을 전송하였습니다.";
 				isLoading = false;
 			})
 			.catch((e) => {
 				e.json().then((json) => {
-					message = "인증메일 전송에 실패하였습니다: " + json["detail"];
+					message =
+						"인증메일 전송에 실패하였습니다: " + json["detail"];
 					isLoading = false;
 				});
 			});
 	};
 </script>
+
 <article class="message is-warning">
 	<div class="message-body">
 		<p>이메일이 아직 검증되지 않았습니다.</p>
