@@ -253,7 +253,7 @@
           {#each article.tags as tags}
             <a href="/board/qna/tag/{tags.slug}">
               <button
-                class="button is-rounded is-responsive"
+                class="button is-rounded is-responsive is-small"
                 style="background-color: {tags.color};"
               >
                 {tags.name}
