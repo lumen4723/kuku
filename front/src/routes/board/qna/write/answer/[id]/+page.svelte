@@ -79,7 +79,7 @@
 
 <!-- 글작성 페이지-->
 <form action="POST" on:submit|preventDefault={upload}>
-  <div class="contents">
+  <div class="content">
     <div class="write__title" style="text-align: left; font-size: 30px;" />
     <form>
       <div class="write__form__title" style="margin-top: 2px;">

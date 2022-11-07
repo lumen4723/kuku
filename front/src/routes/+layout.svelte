@@ -1,6 +1,7 @@
 <script>
 	import "bulma/css/bulma.css";
 	import "@fortawesome/fontawesome-free/css/all.css";
+	import "sweetalert2/dist/sweetalert2.min.css";
 	import { page } from "$app/stores";
 	import { browser } from "$app/env";
 
@@ -126,7 +127,7 @@
 	</nav>
 </header>
 
-<main>
+<main data-sveltekit-prefetch>
 	<slot />
 </main>
 
