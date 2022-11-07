@@ -183,7 +183,11 @@
 					<button class="button is-info" type="submit"> 검색 </button>
 				</div>
 				{#if isLogged}
-					<a href="/board/free/write" class="button is-primary">
+					<a
+						sveltekit:reload
+						href="/board/free/write"
+						class="button is-primary"
+					>
 						글쓰기
 					</a>
 				{/if}
