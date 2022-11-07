@@ -183,7 +183,7 @@
 					<button class="button is-info" type="submit"> 검색 </button>
 				</div>
 				{#if isLogged}
-					<a href="/board/qna/write" class="button is-primary">
+					<a href="/board/qna/write/question" class="button is-primary">
 						글쓰기
 					</a>
 				{/if}

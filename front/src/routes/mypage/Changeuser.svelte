@@ -147,7 +147,7 @@
 	</div>
 </article>
 <div class="columns">
-	<div class="column is-5 is-offset-2">
+	<div class="column is-5 is-offset-1">
 		<button class="button is-warning" on:click={emailcheck}>
 			이메일 검증하기
 		</button>
