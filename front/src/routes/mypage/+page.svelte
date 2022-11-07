@@ -1,48 +1,8 @@
 <script>
-	import { page } from "$app/stores";
-	import { browser } from "$app/env";
-	import { goto } from "$app/navigation";
-	import Swal from "sweetalert2";
 	import Changeuser from "./Changeuser.svelte";
 	import Withdrawal from "./Withdrawal.svelte";
 
 	let currentPage = "Changeuser";
-	const isSignup = $page.url.searchParams.has("msg");
-	const afterSignup = () => {
-		Swal.fire({
-			title: "회원정보 변경이 완료되었습니다.	변경된 정보로 다시 로그인 해주세요.",
-			icon: "success",
-			confirmButtonText: "확인",
-		});
-		logout();
-	};
-
-	const logout = async () => {
-		await fetch(`//api.eyo.kr:8081/user/logout`, {
-			method: "POST",
-			headers: {
-				Accept: "application/json",
-			},
-			mode: "cors",
-			credentials: "include",
-		})
-			.then((res) => {
-				if (res.ok == false) return Promise.reject(res);
-			})
-			.then(() => {
-				if (browser) {
-					window.localStorage.removeItem("user.email");
-					window.localStorage.removeItem("user.id");
-					window.localStorage.removeItem("user.username");
-					window.location.href = "/account";
-				}
-			})
-			.catch((e) => {
-				console.log(e);
-			});
-	};
-
-	$: if (isSignup) afterSignup();
 </script>
 
 <div class="container">

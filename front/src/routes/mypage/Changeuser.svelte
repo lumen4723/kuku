@@ -1,6 +1,7 @@
 <script>
-	import { is_empty } from "svelte/internal";
+	import Swal from "sweetalert2";
 	import { browser } from "$app/env";
+	import { is_empty } from "svelte/internal";
 
 	let username = "",
 		email = "",
@@ -102,27 +103,86 @@
 				if (res.ok == false) return Promise.reject(res);
 				return res.json();
 			})
+			.then((res) => {
+				Swal.fire({
+					title: "회원정보 변경에 성공하였습니다. 다시 로그인해주세요.",
+					icon: "success",
+					confirmButtonText: "확인",
+				}).then((result) => {
+					if (result)
+						if (browser) {
+							window.localStorage.removeItem("user.email");
+							window.localStorage.removeItem("user.id");
+							window.localStorage.removeItem("user.username");
+							window.location.href = "/account";
+						}
+				});
+			})
+			.catch((e) => {
+				Swal.fire({
+					title: "회원정보 변경에 실패하였습니다." + e,
+					icon: "error",
+					confirmButtonText: "확인",
+				});
+			});
+	};
+
+	const emailcheck = async () => {
+		await fetch("//api.eyo.kr:8081/user/sendEmailBySesson", {
+			method: "POST",
+			headers: {
+				Aceept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((res) => {
+				if (res.ok == false) return Promise.reject(res);
+				return res.json();
+			})
 			.then(() => {
-				location.href =
-					"?msg=정보수정을 완료하였습니다. 다시 로그인 해주세요.";
+				// 메세지
+				message = "인증메일을 전송하였습니다.";
 				isLoading = false;
 			})
 			.catch((e) => {
 				e.json().then((json) => {
-					message = "정보수정에 실패하였습니다: " + json["detail"];
+					message =
+						"인증메일 전송에 실패하였습니다: " + json["detail"];
 					isLoading = false;
 				});
 			});
 	};
 </script>
 
+<article class="message is-warning">
+	<div class="message-body">
+		<p>이메일이 아직 검증되지 않았습니다.</p>
+		<p>이메일을 검증해 주세요.</p>
+	</div>
+</article>
+<div class="columns">
+	<div class="column is-5 is-offset-1">
+		<button class="button is-warning" on:click={emailcheck}>
+			이메일 검증하기
+		</button>
+	</div>
+</div>
 <form method="PUT" on:submit|preventDefault={updateUser}>
 	{#if message != ""}
-		<article class="message is-danger">
-			<div class="message-body">
-				{message}
-			</div>
-		</article>
+		{#if message.includes("인증메일을 전송하였습니다.")}
+			<article class="message is-success">
+				<div class="message-body">
+					<p>{message}</p>
+				</div>
+			</article>
+		{:else}
+			<article class="message is-danger">
+				<div class="message-body">
+					<p>{message}</p>
+				</div>
+			</article>
+		{/if}
 	{/if}
 	<div class="field">
 		<label class="label" for="password">Password</label>
