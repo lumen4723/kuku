@@ -48,9 +48,7 @@ def _combine_username_tags(articles: List["board_qna"]) -> Dict:
             "views": articles.views,
             "tags": tagList,
         }
-
     result = []
-
     for article in articles:
         a = article.dict()
         a["username"] = article.userRel.username
@@ -195,8 +193,6 @@ def list_article(
                     "list": _combine_username_tags(
                         db.query(board_qna)
                         .filter_by(state=1, parentid=None)
-                        .join(User)
-                        .outerjoin(board_qna_tag)
                         .order_by(order, board_qna.created.desc())
                         .all()
                     ),
@@ -209,14 +205,11 @@ def list_article(
             db.query(board_qna)
             .filter_by(state=1, parentid=(None if aid == -1 else aid))
             .join(User)
-            .outerjoin(board_qna_tag)
-            .outerjoin(tag)
             .order_by(order, board_qna.created.desc())
             .offset(start)
             .limit(limit)
             .all()
         )
-
         article_cnt = db.query(board_information).filter_by(description="qna").first()
 
         return Ok({"list": list, "cnt": article_cnt.size,})
@@ -304,7 +297,6 @@ def get_article(article_id: int, db: Session) -> Result:
             db.query(board_qna)
             .filter_by(article_id=article_id, state=1)
             .join(User)
-            .outerjoin(board_qna_tag)
             .first()
         )
         article.views += 1
@@ -333,7 +325,7 @@ def get_article(article_id: int, db: Session) -> Result:
 
 # update ariticle
 def update_article(
-    article_id: int, uid: int, object_in: Board_qna_question, db: Session
+    object_in: Board_qna_question, article_id: int, uid: int, db: Session
 ) -> Result:
     try:
         article = db.query(board_qna).filter_by(article_id=article_id, state=1).first()
