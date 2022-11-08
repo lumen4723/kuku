@@ -48,9 +48,7 @@ def _combine_username_tags(articles: List["board_qna"]) -> Dict:
             "views": articles.views,
             "tags": tagList,
         }
-
     result = []
-
     for article in articles:
         a = article.dict()
         a["username"] = article.userRel.username
@@ -70,7 +68,7 @@ def create_question(object_in: Board_qna_question, uid: int, db: Session) -> Res
         article.content = object_in.content
         article.userid = uid
         db.add(article)
-
+        db.commit()
         change_information("qna", True, db, commit=False)
         for tag in object_in.tags:
             tagid = get_id_by_slug(tag, db).unwrap()
@@ -195,8 +193,6 @@ def list_article(
                     "list": _combine_username_tags(
                         db.query(board_qna)
                         .filter_by(state=1, parentid=None)
-                        .join(User)
-                        .outerjoin(board_qna_tag)
                         .order_by(order, board_qna.created.desc())
                         .all()
                     ),
@@ -209,14 +205,11 @@ def list_article(
             db.query(board_qna)
             .filter_by(state=1, parentid=(None if aid == -1 else aid))
             .join(User)
-            .outerjoin(board_qna_tag)
-            .outerjoin(tag)
             .order_by(order, board_qna.created.desc())
             .offset(start)
             .limit(limit)
             .all()
         )
-
         article_cnt = db.query(board_information).filter_by(description="qna").first()
 
         return Ok({"list": list, "cnt": article_cnt.size,})
@@ -304,7 +297,6 @@ def get_article(article_id: int, db: Session) -> Result:
             db.query(board_qna)
             .filter_by(article_id=article_id, state=1)
             .join(User)
-            .outerjoin(board_qna_tag)
             .first()
         )
         article.views += 1
@@ -333,7 +325,7 @@ def get_article(article_id: int, db: Session) -> Result:
 
 # update ariticle
 def update_article(
-    article_id: int, uid: int, object_in: Board_qna_question, db: Session
+    object_in: Board_qna_question, article_id: int, uid: int, db: Session
 ) -> Result:
     try:
         article = db.query(board_qna).filter_by(article_id=article_id, state=1).first()
@@ -406,11 +398,13 @@ def get_article_by_title(findtitle: str, db: Session, page=1, limit=20) -> Resul
         )
 
         result = []
+        cnt = 0
         for a in article:
             if findtitle in a["title"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt})
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -436,11 +430,13 @@ def get_article_by_username(finduser: str, db: Session, page=1, limit=20) -> Res
         )
 
         result = []
+        cnt = 0
         for a in article:
             if finduser in a["username"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt})
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -466,11 +462,13 @@ def get_article_by_content(findcontent: str, db: Session, page=1, limit=20) -> R
         )
 
         result = []
+        cnt = 0
         for a in article:
             if findcontent in a["content"]:
                 result.append(a)
+                cnt += 1
 
-        return Ok(result)
+        return Ok({"list": result, "cnt": cnt})
 
     except Exception as e:
         err_msg = str(e).lower()

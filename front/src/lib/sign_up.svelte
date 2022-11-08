@@ -134,7 +134,7 @@
 				class:is-success={!usernameFailed}
 				name="username"
 				type="text"
-				placeholder="Your username"
+				placeholder="Set your new username"
 				bind:value={username}
 				on:input={checkUsername}
 				required
@@ -184,7 +184,7 @@
 				class:is-success={email.match(valid_email)}
 				name="email"
 				type="text"
-				placeholder="Your email"
+				placeholder="Set your new email"
 				bind:value={email}
 				required
 			/>
