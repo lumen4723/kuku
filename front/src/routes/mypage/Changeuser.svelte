@@ -111,9 +111,9 @@
 				}).then((result) => {
 					if (result)
 						if (browser) {
-							window.localStorage.removeItem("user.email");
-							window.localStorage.removeItem("user.id");
-							window.localStorage.removeItem("user.username");
+							window.sessionStorage.removeItem("user.email");
+							window.sessionStorage.removeItem("user.id");
+							window.sessionStorage.removeItem("user.username");
 							window.location.href = "/account";
 						}
 				});
