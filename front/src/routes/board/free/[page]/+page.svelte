@@ -29,6 +29,9 @@
 		);
 		const freeBoard = await res.json();
 		if (res.ok) {
+			freeBoard.cntDiv10 = Math.round(Math.abs(freeBoard["cnt"]) / 10);
+			freeBoard.cntDiv15 = Math.round(Math.abs(freeBoard["cnt"]) / 15);
+			freeBoard.cntDiv20 = Math.round(Math.abs(freeBoard["cnt"]) / 20);
 			return freeBoard;
 		} else {
 			throw new Error(freeBoard);
@@ -44,6 +47,9 @@
 		);
 		const freeBoard = await res.json();
 		if (res.ok) {
+			freeBoard.cntDiv10 = Math.round(Math.abs(freeBoard["cnt"]) / 10);
+			freeBoard.cntDiv15 = Math.round(Math.abs(freeBoard["cnt"]) / 15);
+			freeBoard.cntDiv20 = Math.round(Math.abs(freeBoard["cnt"]) / 20);
 			return freeBoard;
 		} else {
 			throw new Error(freeBoard);
@@ -59,6 +65,9 @@
 		);
 		const freeBoard = await res.json();
 		if (res.ok) {
+			freeBoard.cntDiv10 = Math.round(Math.abs(freeBoard["cnt"]) / 10);
+			freeBoard.cntDiv15 = Math.round(Math.abs(freeBoard["cnt"]) / 15);
+			freeBoard.cntDiv20 = Math.round(Math.abs(freeBoard["cnt"]) / 20);
 			return freeBoard;
 		} else {
 			throw new Error(freeBoard);
@@ -74,6 +83,9 @@
 		);
 		const freeBoard = await res.json();
 		if (res.ok) {
+			freeBoard.cntDiv10 = Math.round(Math.abs(freeBoard["cnt"]) / 10);
+			freeBoard.cntDiv15 = Math.round(Math.abs(freeBoard["cnt"]) / 15);
+			freeBoard.cntDiv20 = Math.round(Math.abs(freeBoard["cnt"]) / 20);
 			return freeBoard;
 		} else {
 			throw new Error(freeBoard);
@@ -135,22 +147,74 @@
 		</table>
 		<nav class="pagination is-centered" aria-label="pagination">
 			<ul class="pagination-list">
-				{#each Array(Math.ceil(Math.abs(freeBoard["cnt"]) / currentLimit)) as n, i}
+				{#if currentPage > 3}
 					<li>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<a
 							class="pagination-link"
-							class:is-current={i + 1 === currentPage}
-							sveltekit:prefetch
 							on:click={() => {
-								currentPage = i + 1;
+								currentPage = 1;
 								changeList();
 							}}
 						>
-							{i + 1}
+							1
 						</a>
 					</li>
-				{/each}
+					<li>
+						<span class="pagination-ellipsis">&hellip;</span>
+					</li>
+				{/if}
+				{#if currentPage <= 3}
+					{#each [1, 2, 3, 4, 5] as n}
+						<li>
+							<!-- svelte-ignore a11y-missing-attribute -->
+							<a
+								class="pagination-link"
+								class:is-current={n === currentPage}
+								on:click={() => {
+									currentPage = n;
+									changeList();
+								}}
+							>
+								{n}
+							</a>
+						</li>
+					{/each}
+				{:else}
+					{#each ((s, e) => [...Array(e - s + 1)].map((_, i) => s + i))(currentPage >= freeBoard["cntDiv" + currentLimit] - 2 ? freeBoard["cntDiv" + currentLimit] - 4 : currentPage - 2, currentPage >= freeBoard["cntDiv" + currentLimit] - 2 ? freeBoard["cntDiv" + currentLimit] : currentPage + 2) as n}
+						<li>
+							<!-- svelte-ignore a11y-missing-attribute -->
+							<a
+								class="pagination-link"
+								class:is-current={n === currentPage}
+								on:click={() => {
+									currentPage = n;
+									changeList();
+								}}
+							>
+								{n}
+							</a>
+						</li>
+					{/each}
+				{/if}
+				{#if currentPage + 2 < freeBoard["cntDiv" + currentLimit]}
+					<li>
+						<span class="pagination-ellipsis">&hellip;</span>
+					</li>
+					<li>
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<a
+							class="pagination-link"
+							on:click={() => {
+								currentPage =
+									freeBoard["cntDiv" + currentLimit];
+								changeList();
+							}}
+						>
+							{freeBoard["cntDiv" + currentLimit]}
+						</a>
+					</li>
+				{/if}
 			</ul>
 		</nav>
 	{:catch error}

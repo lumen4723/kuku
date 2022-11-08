@@ -29,6 +29,9 @@
 		);
 		const qnaBoard = await res.json();
 		if (res.ok) {
+			qnaBoard.cntDiv10 = Math.round(Math.abs(qnaBoard["cnt"]) / 10);
+			qnaBoard.cntDiv15 = Math.round(Math.abs(qnaBoard["cnt"]) / 15);
+			qnaBoard.cntDiv20 = Math.round(Math.abs(qnaBoard["cnt"]) / 20);
 			return qnaBoard;
 		} else {
 			throw new Error(qnaBoard);
@@ -44,6 +47,9 @@
 		);
 		const qnaBoard = await res.json();
 		if (res.ok) {
+			qnaBoard.cntDiv10 = Math.round(Math.abs(qnaBoard["cnt"]) / 10);
+			qnaBoard.cntDiv15 = Math.round(Math.abs(qnaBoard["cnt"]) / 15);
+			qnaBoard.cntDiv20 = Math.round(Math.abs(qnaBoard["cnt"]) / 20);
 			return qnaBoard;
 		} else {
 			throw new Error(qnaBoard);
@@ -59,6 +65,9 @@
 		);
 		const qnaBoard = await res.json();
 		if (res.ok) {
+			qnaBoard.cntDiv10 = Math.round(Math.abs(qnaBoard["cnt"]) / 10);
+			qnaBoard.cntDiv15 = Math.round(Math.abs(qnaBoard["cnt"]) / 15);
+			qnaBoard.cntDiv20 = Math.round(Math.abs(qnaBoard["cnt"]) / 20);
 			return qnaBoard;
 		} else {
 			throw new Error(qnaBoard);
@@ -74,6 +83,9 @@
 		);
 		const qnaBoard = await res.json();
 		if (res.ok) {
+			qnaBoard.cntDiv10 = Math.round(Math.abs(qnaBoard["cnt"]) / 10);
+			qnaBoard.cntDiv15 = Math.round(Math.abs(qnaBoard["cnt"]) / 15);
+			qnaBoard.cntDiv20 = Math.round(Math.abs(qnaBoard["cnt"]) / 20);
 			return qnaBoard;
 		} else {
 			throw new Error(qnaBoard);
@@ -135,22 +147,73 @@
 		</table>
 		<nav class="pagination is-centered" aria-label="pagination">
 			<ul class="pagination-list">
-				{#each Array(Math.ceil(Math.abs(qnaBoard["cnt"]) / currentLimit)) as n, i}
+				{#if currentPage > 3}
 					<li>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<a
 							class="pagination-link"
-							class:is-current={i + 1 === currentPage}
-							sveltekit:prefetch
 							on:click={() => {
-								currentPage = i + 1;
+								currentPage = 1;
 								changeList();
 							}}
 						>
-							{i + 1}
+							1
 						</a>
 					</li>
-				{/each}
+					<li>
+						<span class="pagination-ellipsis">&hellip;</span>
+					</li>
+				{/if}
+				{#if currentPage <= 3}
+					{#each [1, 2, 3, 4, 5] as n}
+						<li>
+							<!-- svelte-ignore a11y-missing-attribute -->
+							<a
+								class="pagination-link"
+								class:is-current={n === currentPage}
+								on:click={() => {
+									currentPage = n;
+									changeList();
+								}}
+							>
+								{n}
+							</a>
+						</li>
+					{/each}
+				{:else}
+					{#each ((s, e) => [...Array(e - s + 1)].map((_, i) => s + i))(currentPage >= qnaBoard["cntDiv" + currentLimit] - 2 ? qnaBoard["cntDiv" + currentLimit] - 4 : currentPage - 2, currentPage >= qnaBoard["cntDiv" + currentLimit] - 2 ? qnaBoard["cntDiv" + currentLimit] : currentPage + 2) as n}
+						<li>
+							<!-- svelte-ignore a11y-missing-attribute -->
+							<a
+								class="pagination-link"
+								class:is-current={n === currentPage}
+								on:click={() => {
+									currentPage = n;
+									changeList();
+								}}
+							>
+								{n}
+							</a>
+						</li>
+					{/each}
+				{/if}
+				{#if currentPage + 2 < qnaBoard["cntDiv" + currentLimit]}
+					<li>
+						<span class="pagination-ellipsis">&hellip;</span>
+					</li>
+					<li>
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<a
+							class="pagination-link"
+							on:click={() => {
+								currentPage = qnaBoard["cntDiv" + currentLimit];
+								changeList();
+							}}
+						>
+							{qnaBoard["cntDiv" + currentLimit]}
+						</a>
+					</li>
+				{/if}
 			</ul>
 		</nav>
 	{:catch error}
