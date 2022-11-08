@@ -3,7 +3,6 @@
 	import List from "../../[page]/+page.svelte";
 	import { onMount } from "svelte";
 	import Swal from "sweetalert2";
-	import { HtmlTag } from "svelte/internal";
 
 	const getArticle = async (article_id) => {
 		const res = await fetch(
@@ -22,7 +21,7 @@
 		}
 	};
 
-	let article = getArticle($page.params.id);
+	$: article = getArticle($page.params.id);
 
 	const delArticle = async (article_id) => {
 		const res = await fetch(
@@ -107,7 +106,7 @@
 	};
 
 	const dislike_qna = async (article_id) => {
-		const res = await fetch(
+		await fetch(
 			`//api.eyo.kr:8081/board/qna/article/${article_id}/dislike`,
 			{
 				method: "POST",
@@ -157,15 +156,8 @@
 	};
 
 	let userid;
-	console.log(userid);
-	//console.log(userid);
-
-	//console.log(user.userid); // undefined
-	//console.log(user);
-	//let who = whoami($page.params.userid);
-	//console.log(userid);
-
 	let isClicked = false;
+
 	const likeclick = () => {
 		isClicked = !isClicked;
 		if (isClicked) {
@@ -300,15 +292,17 @@
 
 <div style="padding: 5px ">
 	<div style="float: left;">
-		<a href="/board/qna/1"
-			><button class="button is-rounded is-light">목록</button></a
-		>
+		<a href="/board/qna/1">
+			<button class="button is-rounded is-light">목록</button>
+		</a>
 	</div>
-	<div style="float: right;">
-		<a href="/board/qna/write/answer/{$page.params.id}"
-			><button class="button is-rounded is-light">답글 작성</button></a
-		>
-	</div>
+	{#if isLogin}
+		<div style="float: right;">
+			<a href="/board/qna/write/answer/{$page.params.id}">
+				<button class="button is-rounded is-light">답글 작성</button>
+			</a>
+		</div>
+	{/if}
 </div>
 <br /><br />
 <div style="padding: 16px">
@@ -340,8 +334,9 @@
 						</td>
 						<td
 							style="width: 200px; border-right: 2px solid #dbdbdb;"
-							>{answer.title}</td
 						>
+							{answer.title}
+						</td>
 						<td style="width: 600px;">{answer.created}</td>
 						<td style="left: 100%;">
 							{#if isLogin}

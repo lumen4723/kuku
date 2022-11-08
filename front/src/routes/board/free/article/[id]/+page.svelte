@@ -1,4 +1,4 @@
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11">
+<script>
 	import { page } from "$app/stores";
 	import List from "../../[page]/+page.svelte";
 	import Swal from "sweetalert2";
@@ -19,7 +19,7 @@
 			throw new Error(article);
 		}
 	};
-	let article = getArticle($page.params.id);
+	$: article = getArticle($page.params.id);
 
 	const delArticle = async (article_id) => {
 		const res = await fetch(
@@ -232,11 +232,11 @@
 		<div style="padding: 16px">
 			{#if isLogin}
 				<div class="edit" style="float: right; margin-top: 16px">
-					<a href="/board/free/write/{article.article_id}"
-						><button class="button is-rounded is-light">
+					<a href="/board/free/write/{article.article_id}">
+						<button class="button is-rounded is-light">
 							수정
-						</button></a
-					>
+						</button>
+					</a>
 					<button
 						class="button is-rounded is-light"
 						type="submit"
@@ -304,8 +304,9 @@
 									class="author"
 									href="/free/{comment.username}"
 									style="color: #4A4A4A;"
-									>{comment.username}</a
 								>
+									{comment.username}
+								</a>
 								<span style="color: #DBDBDB;">|</span>
 								{comment.created}
 							</td>
