@@ -165,7 +165,7 @@
       throw new Error(user);
     }
   };
-  const user = getUser();
+  $: user = getUser();
 </script>
 
 {#await user then user}

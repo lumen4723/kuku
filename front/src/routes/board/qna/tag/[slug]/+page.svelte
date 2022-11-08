@@ -31,17 +31,39 @@
     }
   };
   $: slugList = getSlugList(slug, currentPage, pageLimit);
+
+  const getName = async (slug) => {
+    const res = await fetch(
+      `//api.eyo.kr:8081/board/tag/get_name_by_slug/${slug}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+    const tagName = await res.json();
+    if (res.ok) {
+      return tagName;
+    } else {
+      throw new Error(tagName);
+    }
+  };
+  $: tagName = getName(slug);
 </script>
 
-<header>
-  <section class="hero is-small ">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">{slug}</h1>
+{#await tagName then slugName}
+  <header>
+    <section class="hero is-small ">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">{slugName}</h1>
+        </div>
       </div>
-    </div>
-  </section>
-</header>
+    </section>
+  </header>
+{/await}
+
 <div class="container">
   <table
     class="table container is-fluid has-text-centered"
