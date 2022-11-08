@@ -143,7 +143,7 @@
 	let comment_content = "";
 	const create_comment = async (article_id) => {
 		return await fetch(
-			`http://api.eyo.kr:8081/board/free/comment/create/${article_id}`,
+			`//api.eyo.kr:8081/board/free/comment/create/${article_id}`,
 			{
 				method: "POST",
 				headers: {
@@ -183,7 +183,7 @@
 	};
 	const delete_comment = async (comment_id) => {
 		await fetch(
-			`http://api.eyo.kr:8081/board/free/comment/delete/${comment_id}`,
+			`//api.eyo.kr:8081/board/free/comment/delete/${comment_id}`,
 			{
 				method: "PUT",
 				headers: {
