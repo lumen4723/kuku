@@ -1,5 +1,6 @@
 <script>
 	import Carousel from "$lib/carousel.svelte";
+	import gmttolocal from "$lib/time.js";
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
@@ -16,15 +17,40 @@
 			throw new Error(freeBoard);
 		}
 	};
-
-	let boardList = getBoardList(1, 10);
-	let date = (date) => {
-		let year = date.slice(0, 4);
-		let month = date.slice(5, 7);
-		let day = date.slice(8, 10);
-		let hour = date.slice(11, 13);
-		return `${year}년 ${month}월 ${day}일 ${hour}시`;
+	const getNoticeList = async (pageLimit) => {
+		const res = await fetch(
+			`//api.eyo.kr:8081/board/free/notice/list?limit=${pageLimit}`,
+			{
+				mode: "cors",
+				credentials: "include",
+			}
+		);
+		const freeBoard = await res.json();
+		if (res.ok) {
+			return freeBoard;
+		} else {
+			throw new Error(freeBoard);
+		}
 	};
+	const getqnalist = async (pageIdx, pageLimit) => {
+		const res = await fetch(
+			`//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+			{
+				mode: "cors",
+				credentials: "include",
+			}
+		);
+		const freeBoard = await res.json();
+		if (res.ok) {
+			return freeBoard;
+		} else {
+			throw new Error(freeBoard);
+		}
+	};
+
+	let boardList = getBoardList(1, 8);
+	let NoticeList = getNoticeList(8);
+	let qnaList = getqnalist(1, 8);
 </script>
 
 <section class="hero is-primary is-halfheight">
@@ -170,8 +196,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#await boardList then freeBoard}
-								{#each freeBoard["list"] as free}
+							{#await NoticeList then freenotice}
+								{#each freenotice["list"] as free}
 									<tr>
 										<td
 											><a
@@ -180,7 +206,7 @@
 											></td
 										>
 										<td>
-											{date(free.created)}
+											{gmttolocal(free.created)}
 										</td>
 									</tr>
 								{/each}
@@ -210,16 +236,16 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#await boardList then freeBoard}
-								{#each freeBoard["list"] as free}
+							{#await qnaList then qnaBoard}
+								{#each qnaBoard["list"] as qna}
 									<tr>
 										<td
 											><a
-												href="/board/free/article/{free.article_id}"
-												>{free.title}</a
+												href="/board/qna/article/{qna.article_id}"
+												>{qna.title}</a
 											></td
 										>
-										<td>{free.state}</td>
+										<td>{qna.state}</td>
 									</tr>
 								{/each}
 							{:catch error}
@@ -244,6 +270,6 @@
 		color: #ffffff;
 	}
 	table.table {
-		width: -webkit-fill-available;
+		width: 100%;
 	}
 </style>
