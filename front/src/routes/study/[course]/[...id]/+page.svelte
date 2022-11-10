@@ -57,7 +57,9 @@
 			{/each}
 		</aside>
 		<article class="p-2">
-			{@html print_article(chapter_id)}
+			<div class="content">
+				{@html print_article(chapter_id)}
+			</div>
 		</article>
 	</main>
 {/await}
@@ -66,12 +68,18 @@
 	aside {
 		width: 250px;
 		float: left;
+		max-height: calc(100vh - 52px);
+		overflow-y: scroll;
 	}
 	article {
 		width: calc(100% - 250px);
 		float: right;
 		background: white;
 		min-height: calc(100vh - 220px);
+	}
+	article .content {
+		max-width: 768px;
+		margin: 0 auto;
 	}
 
 	main {

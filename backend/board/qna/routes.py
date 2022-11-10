@@ -36,6 +36,14 @@ async def create_question(
     )
 
 
+# get article question router
+@router.get("/list/answer/{parent_id}")
+async def get_answer(
+    parent_id: int, session: Session = Depends(utils.database.get_db),
+):
+    return database.list_article(session, aid=parent_id).map_err(throwMsg).unwrap()
+
+
 # create article router
 @router.post(
     "/answer", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
@@ -90,7 +98,7 @@ async def get_article(
 
 
 # get article by id router
-@router.get("/article/{aritlce_id}")
+@router.get("/list/article/{article_id}")
 async def get_article_by_id(
     article_id: int, session: Session = Depends(utils.database.get_db)
 ):
@@ -99,7 +107,7 @@ async def get_article_by_id(
 
 # delete article by id router
 @router.delete(
-    "/article/{article_id}",
+    "/delete/{article_id}",
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
@@ -128,7 +136,26 @@ async def update_article_by_id(
     session_data: SessionData = Depends(verifier),
 ):
     return (
-        database.update_article(article_id, session_data.uid, article, session)
+        database.update_article(article, article_id, session_data.uid, session)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# update answer by id router
+@router.put(
+    "/answer/{answer_id}",
+    dependencies=[Depends(cookie)],
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def update_answer_by_id(
+    answer_id: int,
+    answer: Board_qna_answer,
+    session: Session = Depends(utils.database.get_db),
+    session_data: SessionData = Depends(verifier),
+):
+    return (
+        database.update_answer(answer, answer_id, session_data.uid, session)
         .map_err(throwMsg)
         .unwrap()
     )
@@ -211,3 +238,49 @@ async def get_article(
         .map_err(throwMsg)
         .unwrap()
     )
+
+
+# get article by title
+@router.get("/search/title/{title}")
+async def search_article_by_title(
+    title: str,
+    page: int,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_title(title, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# get article by username
+@router.get("/search/username/{username}")
+async def search_article_by_username(
+    username: str,
+    page: int,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_username(username, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+
+
+# get article by content
+@router.get("/search/content/{content}")
+async def search_article_by_content(
+    content: str,
+    page: int,
+    limit: int = 20,
+    session: Session = Depends(utils.database.get_db),
+):
+    return (
+        database.get_article_by_content(content, session, page, limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
+

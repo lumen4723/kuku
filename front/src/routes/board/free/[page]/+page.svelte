@@ -2,8 +2,13 @@
 	import { userIsLogged } from "$lib/user.js";
 
 	let currentPage = 1;
-	let pageLimit = 10;
 	let isLogged = userIsLogged();
+	const pageLimits = [
+		{ value: 10, label: "10개씩 보기" },
+		{ value: 15, label: "15개씩 보기" },
+		{ value: 20, label: "20개씩 보기" },
+	];
+	let currentLimit = pageLimits[0].value;
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
@@ -21,7 +26,7 @@
 		}
 	};
 
-	$: boardList = getBoardList(currentPage, pageLimit);
+	$: boardList = getBoardList(currentPage, currentLimit);
 </script>
 
 <div class="container">
@@ -43,7 +48,7 @@
 				{#each freeBoard["list"] as free}
 					<tr>
 						<td
-							><a href="../article/{free.article_id}"
+							><a href="/board/free/article/{free.article_id}"
 								>{free.title}</a
 							></td
 						>
@@ -68,7 +73,7 @@
 	{#await boardList then freeBoard}
 		<nav class="pagination is-centered" aria-label="pagination">
 			<ul class="pagination-list">
-				{#each Array(Math.ceil(freeBoard["cnt"] / pageLimit)) as n, i}
+				{#each Array(Math.ceil(Math.abs(freeBoard["cnt"]) / currentLimit)) as n, i}
 					<li>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<a
@@ -113,10 +118,12 @@
 				<a href="/board/free/write" class="button is-primary">글쓰기</a>
 			{/if}
 			<div class="select">
-				<select>
-					<option>10개씩 보기</option>
-					<option>15개씩 보기</option>
-					<option>20개씩 보기</option>
+				<select bind:value={currentLimit}>
+					{#each pageLimits as pl}
+						<option value={pl.value}>
+							{pl.label}
+						</option>
+					{/each}
 				</select>
 			</div>
 		</div>

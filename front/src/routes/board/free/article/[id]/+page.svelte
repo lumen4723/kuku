@@ -3,6 +3,7 @@
   import List from "../../[page]/+page.svelte";
   import Swal from "sweetalert2";
   import { onMount } from "svelte";
+
   const getArticle = async (article_id) => {
     const res = await fetch(
       `//api.eyo.kr:8081/board/free/article_id/${article_id}`,
@@ -20,6 +21,60 @@
   };
   let article = getArticle($page.params.id);
 
+  const delArticle = async (article_id) => {
+    const res = await fetch(
+      `//api.eyo.kr:8081/board/free/delete/${article_id}`,
+      {
+        method: "DELETE",
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    const article = await res.json();
+    if (res.ok) {
+      return article;
+    } else {
+      throw new Error(article);
+    }
+  };
+  const del = () => {
+    Swal.fire({
+      title: "삭제하시겠습니까?",
+      text: "다시 되돌릴 수 없습니다.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "rgb(067, 085, 189)",
+      cancelButtonColor: "rgb(219, 224, 255)",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+      preConfirm: () => {
+        delArticle($page.params.id)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              title: "본인이 작성한 글만 삭제\n할 수 있습니다.",
+              text: "",
+              icon: "error",
+              confirmButtonColor: "rgb(067, 085, 189)",
+            });
+            err.text().then((text) => {
+              // console.log(text);
+            });
+          });
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "글이 삭제되었습니다.", "success").then(
+          (result) => {
+            if (result.isConfirmed) location.href = "/board/free/1";
+          }
+        );
+      }
+    });
+  };
   const getComment = async (article_id) => {
     const res = await fetch(
       `//api.eyo.kr:8081/board/free/comment/${article_id}`,
@@ -176,9 +231,13 @@
           <a href="/board/free/write/{article.article_id}"
             ><button class="button is-rounded is-light"> 수정 </button></a
           >
-          <a href="/board/free/1"
-            ><button class="button is-rounded is-light"> 삭제 </button></a
+          <button
+            class="button is-rounded is-light"
+            type="submit"
+            on:click={del}
           >
+            삭제
+          </button>
         </div>
       {/if}
       <div style="float:left;">
@@ -275,7 +334,7 @@
     </form>
   {/if}
 </div>
-
+<List />
 <br /><br /><br />
 
 <style>
@@ -287,7 +346,7 @@
   }
   .content {
     width: 100%;
-    height: 300px;
+    min-height: 300px;
     padding: 16px;
   }
   .comment table {
