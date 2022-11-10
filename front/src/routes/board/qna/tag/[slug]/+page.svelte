@@ -125,25 +125,7 @@
   {/await}
 
   <div class="container">
-    <div class="field is-horizontal">
-      <div class="field-body">
-        <div class="select">
-          <select>
-            <option>제목</option>
-            <option>작성자</option>
-            <option>내용</option>
-          </select>
-        </div>
-        <div class="control is-expanded has-icons-left">
-          <input class="input" type="text" placeholder="검색어를 입력하세요." />
-          <span class="icon is-small is-left">
-            <i class="fas fa-search" />
-          </span>
-        </div>
-        <p class="control">
-          <button class="button is-info"> 검색 </button>
-        </p>
-      </div>
+    <div class="field is-horizontal" style="float: right;">
       {#if isLogged}
         <a href="/board/qna/write/question" class="button is-primary">글쓰기</a>
       {/if}
@@ -157,6 +139,7 @@
         </select>
       </div>
     </div>
+    <br />
   </div>
   <br />
 </div>
