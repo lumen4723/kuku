@@ -156,7 +156,7 @@
     >
   </div>
 
-  <div class="dropdown is-hoverable">
+  <div class="dropdown is-hoverable" on:click={(e)=>e.preventDefault()}>
     <div class="dropdown-trigger">
       <button
         class="button"
