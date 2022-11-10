@@ -177,6 +177,17 @@
 	const alt2 = () => {
 		alert("로그인이 필요합니다.");
 	};
+	const updateUserCheck = async(e) =>{
+		let articleObj = await article;
+		if(Number(window.sessionStorage["user.id"]) != articleObj.userid) {
+			Swal.fire({
+							title: "본인이 작성한 글만 수정\n할 수 있습니다.",
+							text: "",
+							icon: "error",
+							confirmButtonColor: "rgb(067, 085, 189)",
+						}).then(e.preventDefault());
+		}
+	}
 
 	let isLogin = true;
 	onMount(async () => {
@@ -193,11 +204,11 @@
 		<div style="padding: 16px">
 			{#if isLogin}
 				<div class="edit" style="float: right; margin-top: 16px">
-					<a href="/board/qna/write/question/{article.article_id}"
-						><button class="button is-rounded is-light">
+					<a href="/board/qna/write/question/{article.article_id}">
+						<button class="button is-rounded is-light" on:click={updateUserCheck}>
 							수정
-						</button></a
-					>
+						</button>
+					</a>
 					<button
 						class="button is-rounded is-light"
 						on:click={function a() {
