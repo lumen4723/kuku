@@ -44,6 +44,7 @@
   let article = getArticle($page.params.id);
 
   const putArticle = async (article_id) => {
+    let tagArr = article_data.tags.map(x=>x.slug);
     const res = await fetch(
       `//api.eyo.kr:8081/board/qna/article/${article_id}`,
       {
@@ -55,7 +56,7 @@
         body: JSON.stringify({
           title: article_data.title,
           content: ckeditorInstance.getData(),
-          tags: article_data.tags,
+          tags: tagArr,
         }),
         mode: "cors",
         credentials: "include",
@@ -155,7 +156,7 @@
     >
   </div>
 
-  <div class="dropdown is-hoverable">
+  <div class="dropdown is-hoverable" on:click={(e)=>e.preventDefault()}>
     <div class="dropdown-trigger">
       <button
         class="button"
@@ -172,20 +173,18 @@
       <div class="dropdown-content">
         {#await boardtags then picktags}
           {#each picktags as tag}
-            {#if article_data.tags.includes(tag.slug)}
-              <div class="dropdown-item">
-                {tag.slug}
-              </div>
-            {:else}
-              <div
-                class="dropdown-item"
-                on:click={() => {
-                  article_data.tags[article_data.tags.length] = tag.slug;
-                }}
-              >
-                {tag.slug}
-              </div>
-            {/if}
+                <div
+                  class="dropdown-item"
+                  on:click={() => {
+                    console.log(article_data.tags.filter((x)=>x==tag.slug).length);
+                    if(article_data.tags.filter((x)=>x.slug==tag.slug).length > 0) {
+                      return;
+                    }
+                    article_data.tags[article_data.tags.length] = tag;
+                  }}
+                >
+                  {tag.name}
+                </div>
           {/each}
         {:catch error}
           <p>태그를 불러오는데 실패했습니다.</p>

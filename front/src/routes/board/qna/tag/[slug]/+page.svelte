@@ -31,17 +31,39 @@
     }
   };
   $: slugList = getSlugList(slug, currentPage, pageLimit);
+
+  const getName = async (slug) => {
+    const res = await fetch(
+      `//api.eyo.kr:8081/board/tag/get_name_by_slug/${slug}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+    const tagName = await res.json();
+    if (res.ok) {
+      return tagName;
+    } else {
+      throw new Error(tagName);
+    }
+  };
+  $: tagName = getName(slug);
 </script>
 
-<header>
-  <section class="hero is-small ">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">{slug}</h1>
+{#await tagName then slugName}
+  <header>
+    <section class="hero is-small ">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">{slugName}</h1>
+        </div>
       </div>
-    </div>
-  </section>
-</header>
+    </section>
+  </header>
+{/await}
+
 <div class="container">
   <table
     class="table container is-fluid has-text-centered"
@@ -103,25 +125,7 @@
   {/await}
 
   <div class="container">
-    <div class="field is-horizontal">
-      <div class="field-body">
-        <div class="select">
-          <select>
-            <option>제목</option>
-            <option>작성자</option>
-            <option>내용</option>
-          </select>
-        </div>
-        <div class="control is-expanded has-icons-left">
-          <input class="input" type="text" placeholder="검색어를 입력하세요." />
-          <span class="icon is-small is-left">
-            <i class="fas fa-search" />
-          </span>
-        </div>
-        <p class="control">
-          <button class="button is-info"> 검색 </button>
-        </p>
-      </div>
+    <div class="field is-horizontal" style="float: right;">
       {#if isLogged}
         <a href="/board/qna/write/question" class="button is-primary">글쓰기</a>
       {/if}
@@ -135,6 +139,7 @@
         </select>
       </div>
     </div>
+    <br />
   </div>
   <br />
 </div>

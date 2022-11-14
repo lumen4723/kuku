@@ -5,6 +5,7 @@
 
   let title = "",
     content = "",
+    intag = [],
     tags = [];
   let ClassicEditor;
   let ckeditorInstance;
@@ -32,7 +33,7 @@
       body: JSON.stringify({
         title,
         content: ckeditorInstance.getData(),
-        tags,
+        tags: intag,
       }),
       mode: "cors",
       credentials: "include",
@@ -57,6 +58,7 @@
         tags,
       })
     );
+    intag = tags.map((x) => x.slug);
     postArticle()
       .then((res) => {
         console.log(res);
@@ -137,10 +139,10 @@
               <div
                 class="dropdown-item"
                 on:click={() => {
-                  tags[tags.length] = tag.slug;
+                  tags[tags.length] = tag;
                 }}
               >
-                {tag.slug}
+                {tag.name}
               </div>
             {/if}
           {/each}
@@ -152,11 +154,11 @@
 
     <div class="tags has-addons tag-add">
       {#each tags as tag}
-        <span class="tag is-info">{tag}</span>
+        <span class="tag is-info">{tag.name}</span>
         <div
           class="tag is-delete"
           on:click={() => {
-            tags = tags.filter((x) => x != tag);
+            tags = tags.filter((x) => x.slug != tag.slug);
           }}
         />
       {/each}

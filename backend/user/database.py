@@ -105,7 +105,7 @@ def get_all_user(db: Session):
 # login
 def login(object_in: loginuser, db: Session) -> Result:
 
-    user = db.query(User).filter_by(email=object_in.email).first()
+    user = db.query(User).filter_by(email=object_in.email, state = 1).first()
     if user is None:
         return Err(NotFound())
     if not verify_password(object_in.password, user.password):
@@ -114,7 +114,7 @@ def login(object_in: loginuser, db: Session) -> Result:
 
 def emailCertification(db : Session,uid : int) -> Result:
     try:
-        email = db.query(User).filter_by(uid=uid).first()
+        email = db.query(User).filter_by(uid=uid,state =1).first()
         if email is None:
             return Err(NotFound())
         sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
@@ -169,10 +169,10 @@ def emailConform(token: str, db: Session) -> Result:
             email = verify_token(token).unwrap()
         else:
             return Err(DefaultException(detail="token verify error"))
-        user = db.query(User).filter_by(email=email).first()
+        user = db.query(User).filter_by(email=email,state =1).first()
         if user is None:
             return Err(NotFound())
-        check = ((db.query(User).filter_by(email=email).update({"type": 1}))==1)
+        check = ((db.query(User).filter_by(email=email,state =1).update({"type": 1}))==1)
         if check is False:
             return Err(DefaultException(detail="update err"))
         db.commit()
@@ -290,7 +290,7 @@ def update_user(change: User, origin: User, originuid: str, db: Session) -> Resu
 
 # delete user
 def delete_user(object_in: loginuser, db: Session) -> Result:
-    user = db.query(User).filter_by(email=object_in.email).first()
+    user = db.query(User).filter_by(email=object_in.email,state=1).first()
     if user is None:
         return Err(NotFound())
     if not verify_password(object_in.password, user.password):
@@ -303,7 +303,7 @@ def delete_user(object_in: loginuser, db: Session) -> Result:
 
 # check username
 def check_username(username: str, db: Session) -> Result:
-    user = db.query(User).filter_by(username=username).first()
+    user = db.query(User).filter_by(username=username,state=1).first()
     if user is not None:
         return Err(AlreadyExists())
     else:

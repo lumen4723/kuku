@@ -41,53 +41,41 @@
 	};
 </script>
 
-<div class="columns">
-	<div class="column">
-		<div
-		class="box"
-		style="width: 86%;
-        margin: 0 auto;
-        border-radius: 10px;
-        height: {positionMove_const}%;
-        padding: 0.9rem 1.2rem;"
-		>
-			<!-- svelte-ignore a11y-mouse-events-have-key-events -->
-			<div
-				class="columns"
-				style="margin: auto"
-				on:mouseover={stopPlay}
-				on:mouseleave={autoPlay}
-			>
-				<div class="column" id="arrow">
-					<img on:click={prev} class="arrowbutton" src="https://via.placeholder.com/60x60/aa6600" alt=""/>
-				</div>
-				<div class="column" id="contain1">
-					<div class="slider" style="left: -{positionLeft}%;">
-						{#each images as img}
-							<img src={img} alt="" style="width:{positionMove_const}%;" />
-						{/each}
-					</div>
-				</div>
-				<div class="column" id="arrow">
-					<img on:click={next} class="arrowbutton" src="https://via.placeholder.com/60x60/66aa00" alt=""/>
-				</div>
-			</div>
-			<div class="buttons has-addons is-centered">
-				{#each images as _, i}
-					<button
-						class="button
-                    {currId === i ? 'is-danger is-active' : 'is-light'}
-                    "
-						style="border-radius: 50%;
-                    height: 0.4rem;
-                    padding: 0.4rem;
-                    margin: 0.2rem;
-                    "
-						on:click={() => getIndex(i)}
-					/>
+<div class="box" style="border-radius: 10px;">
+	<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+	<div
+		class="columns"
+		on:mouseover={stopPlay}
+		on:mouseleave={autoPlay}
+	>
+		<div class="column" id="arrow">
+			<img on:click={prev} class="arrowbutton" src="https://via.placeholder.com/60x60/aa6600" alt=""/>
+		</div>
+		<div class="column is-four-fifths" id="contain1" style="margin: 0px; width: 90%;">
+			<div class="slider" style="left: -{positionLeft}%">
+				{#each images as img}
+					<img src={img} alt="" style="width:100%;" />
 				{/each}
 			</div>
 		</div>
+		<div class="column" id="arrow">
+			<img on:click={next} class="arrowbutton" src="https://via.placeholder.com/60x60/66aa00" alt=""/>
+		</div>
+	</div>
+	<div class="buttons has-addons is-centered">
+		{#each images as _, i}
+			<button
+				class="button
+			{currId === i ? 'is-danger is-active' : 'is-light'}
+			"
+				style="border-radius: 50%;
+			height: 0.4rem;
+			padding: 0.4rem;
+			margin: 0.2rem;
+			"
+				on:click={() => getIndex(i)}
+			/>
+		{/each}
 	</div>
 </div>
 
@@ -98,29 +86,22 @@
 	}
 	.slider {
 		display: flex;
-		align-items: center;
 		position: relative;
 		transition: left 0.5s;
 	}
 	.slider img {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		object-fit: cover;
 		flex-shrink: 0;
 	}
 	#arrow {
-		width: 30%;
-		align-items: center;
+		padding: 0px;
+		margin-right: 0px;
 		display: flex;
-		flex-basis: unset;
-		padding-left: 0px;
-		padding-right: 0px;
+		align-items: right;
 	}
 	.arrowbutton {
-		width: -webkit-fill-available;
-	}
-	.column {
-		flex-basis: unset;
+		height: 22.5%;
+		margin: auto 0px;
 	}
 </style>
