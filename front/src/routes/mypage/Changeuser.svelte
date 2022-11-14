@@ -12,20 +12,22 @@
 		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	let show_password = false;
 	let show_passwordConf = false;
+	let passwordThis;
+	let passwordConfThis;
+	let usernameFailed = true;
+	let usernameExcepts = ["ㅅㅂ", "kuku"];
+	let isLoading = false;
+	let message = "";
+
 	function passwordShow_button() {
 		show_password = !show_password;
 	}
 	function passwordConfShow_button() {
 		show_passwordConf = !show_passwordConf;
 	}
-	let passwordThis;
-	let passwordConfThis;
-	let usernameFailed = true;
-	let usernameExcepts = ["ㅅㅂ", "kuku"];
-
 	/**checking user name is available
-	이후 제한 사항들을 추가해야 합니다.
-	*/
+		  이후 제한 사항들을 추가해야 합니다.
+		  */
 	const filterUsername = () => {
 		if (is_empty(username)) {
 			return false;
@@ -74,9 +76,6 @@
 			isLoading = false;
 		}
 	};
-
-	let isLoading = false;
-	let message = "";
 
 	const updateUser = async () => {
 		isLoading = true;
@@ -153,21 +152,41 @@
 				});
 			});
 	};
+
+	const getUser = async () => {
+		const email = window.sessionStorage.getItem("user.email");
+		const res = await fetch(`//api.eyo.kr:8081/user/?email=${email}`, {
+			mode: "cors",
+			credentials: "include",
+		});
+		const user = await res.json();
+		if (res.ok) {
+			return user;
+		} else {
+			throw new Error(user);
+		}
+	};
+	$: user = getUser();
 </script>
 
-<article class="message is-warning">
-	<div class="message-body">
-		<p>이메일이 아직 검증되지 않았습니다.</p>
-		<p>이메일을 검증해 주세요.</p>
-	</div>
-</article>
-<div class="columns">
-	<div class="column is-5 is-offset-1">
-		<button class="button is-warning" on:click={emailcheck}>
-			이메일 검증하기
-		</button>
-	</div>
-</div>
+{#await user then user}
+	{#if user.type != 1}
+		<article class="message is-warning">
+			<div class="message-body">
+				<p>이메일이 아직 검증되지 않았습니다.</p>
+				<p>이메일을 검증해 주세요.</p>
+			</div>
+		</article>
+		<div class="columns">
+			<div class="column is-5 is-offset-1">
+				<button class="button is-warning" on:click={emailcheck}>
+					이메일 검증하기
+				</button>
+			</div>
+		</div>
+	{/if}
+{/await}
+
 <form method="PUT" on:submit|preventDefault={updateUser}>
 	{#if message != ""}
 		{#if message.includes("인증메일을 전송하였습니다.")}
@@ -236,11 +255,11 @@
 					/>
 				</span>
 
-				{#if usernameFailed && !is_empty(username)}<p
-						class="help has-text-danger"
-					>
+				{#if usernameFailed && !is_empty(username)}
+					<p class="help has-text-danger">
 						{username} is not available
-					</p>{/if}
+					</p>
+				{/if}
 			{/if}
 		</div>
 		<p class="help">Write your name to be shown to others</p>
@@ -370,8 +389,10 @@
 				class="button is-link"
 				class:is-loading={isLoading}
 				disabled={isLoading}
-				type="submit">Update</button
+				type="submit"
 			>
+				Update
+			</button>
 		</div>
 	</div>
 </form>

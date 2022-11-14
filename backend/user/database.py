@@ -12,6 +12,7 @@ from sendgrid.helpers.mail import Mail, Email, To, Content
 import sendgrid
 from config_default import Config
 from . import templateHtml
+
 if TYPE_CHECKING:
     from board.free.database import board_free
     from board.qna.database import board_qna
@@ -20,6 +21,8 @@ if TYPE_CHECKING:
     from board.free.comment.database import board_free_comment
 from utils.token import verify_token, token_generator_by_email
 from result import Result, Ok, Err
+
+
 class User(SQLModel, table=True):
 
     uid: Optional[int] = Field(default=None, primary_key=True)
@@ -102,7 +105,7 @@ def get_all_user(db: Session):
 # login
 def login(object_in: loginuser, db: Session) -> Result:
 
-    user = db.query(User).filter_by(email=object_in.email).first()
+    user = db.query(User).filter_by(email=object_in.email, state = 1).first()
     if user is None:
         return Err(NotFound())
     if not verify_password(object_in.password, user.password):
@@ -111,7 +114,7 @@ def login(object_in: loginuser, db: Session) -> Result:
 
 def emailCertification(db : Session,uid : int) -> Result:
     try:
-        email = db.query(User).filter_by(uid=uid).first()
+        email = db.query(User).filter_by(uid=uid,state =1).first()
         if email is None:
             return Err(NotFound())
         sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
@@ -166,10 +169,10 @@ def emailConform(token: str, db: Session) -> Result:
             email = verify_token(token).unwrap()
         else:
             return Err(DefaultException(detail="token verify error"))
-        user = db.query(User).filter_by(email=email).first()
+        user = db.query(User).filter_by(email=email,state =1).first()
         if user is None:
             return Err(NotFound())
-        check = ((db.query(User).filter_by(email=email).update({"type": 1}))==1)
+        check = ((db.query(User).filter_by(email=email,state =1).update({"type": 1}))==1)
         if check is False:
             return Err(DefaultException(detail="update err"))
         db.commit()
@@ -177,6 +180,82 @@ def emailConform(token: str, db: Session) -> Result:
     except Exception as e:
         return Err(DefaultException(detail="unknown error"))
 
+
+
+def emailCertification(db: Session, uid: int) -> Result:
+    try:
+        email = db.query(User).filter_by(uid=uid).first()
+        if email is None:
+            return Err(NotFound())
+        sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
+        from_email = Email("noreply@eyo.kr")  # Change to your verified sender
+        to_email = To(email.email)  # Change to your recipient
+        subject = "Sending with SendGrid is Fun"
+        if isinstance(token_generator_by_email(email.email), Ok):
+            token = str(token_generator_by_email(email.email).unwrap())
+        else:
+            return Err(DefaultException(detail="token generator error"))
+        content = Content("text/html", templateHtml.emailTemplate(token))
+        mail = Mail(from_email, to_email, subject, content)
+        # Get a JSON-ready representation of the Mail object
+        mail_json = mail.get()
+
+        # Send an HTTP POST request to /mail/send
+        response = sg.client.mail.send.post(request_body=mail_json)
+        if str(response.status_code).lower() in "error":
+            return Err(DefaultException(detail="email send error"))
+        else:
+            return Ok("email send success")
+    except Exception as e:
+        return Err(DefaultException(detail="unknown error"))
+
+
+def emailCertificationByEmail(db: Session, email: str) -> Result:
+    try:
+        check = db.query(User).filter_by(email=email).first()
+        if check is None:
+            return Err(NotFound())
+        sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
+        from_email = Email("noreply@eyo.kr")  # Change to your verified sender
+        to_email = To(email)  # Change to your recipient
+        subject = "Sending with SendGrid is Fun"
+        if isinstance(token_generator_by_email(email), Ok):
+            token = str(token_generator_by_email(email).unwrap())
+        else:
+            return Err(DefaultException(detail="token generator error"))
+        content = Content("text/html", templateHtml.emailTemplate(token))
+        mail = Mail(from_email, to_email, subject, content)
+        # Get a JSON-ready representation of the Mail object
+        mail_json = mail.get()
+
+        # Send an HTTP POST request to /mail/send
+        response = sg.client.mail.send.post(request_body=mail_json)
+        if str(response.status_code).lower() in "error":
+            return Err(DefaultException(detail="email send error"))
+        else:
+            return Ok("email send success")
+    except Exception as e:
+        return Err(DefaultException(detail="unknown error"))
+
+
+def emailConform(token: str, db: Session) -> Result:
+    try:
+        print(token)
+        if isinstance(verify_token(token), Ok):
+            email = verify_token(token).unwrap()
+        else:
+            return Err(DefaultException(detail="token verify error"))
+        print(email)
+        user = db.query(User).filter_by(email=email).first()
+        if user is None:
+            return Err(NotFound())
+        check = (db.query(User).filter_by(email=email).update({"type": 1})) == 1
+        if check is False:
+            return Err(DefaultException(detail="update err"))
+        db.commit()
+        return Ok(str(user.username))
+    except Exception as e:
+        return Err(DefaultException(detail="unknown error"))
 
 
 # update_user
@@ -211,7 +290,7 @@ def update_user(change: User, origin: User, originuid: str, db: Session) -> Resu
 
 # delete user
 def delete_user(object_in: loginuser, db: Session) -> Result:
-    user = db.query(User).filter_by(email=object_in.email).first()
+    user = db.query(User).filter_by(email=object_in.email,state=1).first()
     if user is None:
         return Err(NotFound())
     if not verify_password(object_in.password, user.password):
@@ -224,7 +303,7 @@ def delete_user(object_in: loginuser, db: Session) -> Result:
 
 # check username
 def check_username(username: str, db: Session) -> Result:
-    user = db.query(User).filter_by(username=username).first()
+    user = db.query(User).filter_by(username=username,state=1).first()
     if user is not None:
         return Err(AlreadyExists())
     else:

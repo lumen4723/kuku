@@ -33,3 +33,7 @@ async def create_tag(
 @router.get("/get_id_by_slug/{slug}")
 async def get_id_by_slug(slug: str, session: Session = Depends(utils.database.get_db)):
     return database.get_id_by_slug(slug, session).map_err(throwMsg).unwrap()
+
+@router.get("/get_name_by_slug/{slug}")
+async def get_name_by_slug(slug: str, session: Session = Depends(utils.database.get_db)):
+    return database.get_name_by_slug(slug, session).map_err(throwMsg).unwrap()

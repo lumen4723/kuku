@@ -20,7 +20,7 @@ class board_free(SQLModel, table=True):
     userRel: "User" = Relationship(back_populates="free")
 
     created: datetime = Field(default=datetime.now())
-    state: int = Field(default=1)  # deleted = 0, normal = 1
+    state: int = Field(default=1)  # deleted = 0, normal = 1, notice = 2
     like: int = Field(default=0)
     views: int = Field(default=0)
 
@@ -105,7 +105,58 @@ def list_article(db: Session, all: bool = False, page=1, limit=20, like=False):
                 .all()
             )
 
-        return Ok({"list": list, "cnt": article_cnt,})
+        return Ok(
+            {
+                "list": list,
+                "cnt": article_cnt,
+            }
+        )
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "background" in err_msg:
+            return Err(DefaultException(detail="malformed form data"))
+
+        return Err(DefaultException(detail="unknown error"))
+
+
+def list_notice(db: Session, all: bool = False, page=1, limit=20, like=False):
+    try:
+        article_cnt = db.query(board_information).filter_by(description="free").first()
+
+        order = board_free.like.desc() if like else None
+        if article_cnt is None:
+            article_cnt = 0
+        else:
+            article_cnt = article_cnt.size
+
+        list = []
+        if all:
+            list = _combine_username(
+                db.query(board_free)
+                .filter_by(state=2)
+                .order_by(order, board_free.created.desc())
+                .join(User)
+                .all()
+            )
+
+        else:
+            start = (page - 1) * limit
+            list = _combine_username(
+                db.query(board_free)
+                .filter_by(state=2)
+                .order_by(order, board_free.created.desc())
+                .join(User)
+                .offset(start)
+                .limit(limit)
+                .all()
+            )
+
+        return Ok(
+            {
+                "list": list,
+                "cnt": article_cnt,
+            }
+        )
     except Exception as e:
         err_msg = str(e).lower()
         if "background" in err_msg:
@@ -188,7 +239,12 @@ def get_article_by_title(findtitle: str, db: Session, page=1, limit=20):
                 result.append(a)
                 cnt += 1
 
-        return Ok({"list": result, "cnt": cnt,})
+        return Ok(
+            {
+                "list": result,
+                "cnt": cnt,
+            }
+        )
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -223,7 +279,12 @@ def get_article_by_user(finduser: str, db: Session, page=1, limit=20):
                 result.append(a)
                 cnt += 1
 
-        return Ok({"list": result, "cnt": cnt,})
+        return Ok(
+            {
+                "list": result,
+                "cnt": cnt,
+            }
+        )
 
     except Exception as e:
         err_msg = str(e).lower()
@@ -258,7 +319,12 @@ def get_article_by_content(findcontent: str, db: Session, page=1, limit=20):
                 result.append(a)
                 cnt += 1
 
-        return Ok({"list": result, "cnt": cnt,})
+        return Ok(
+            {
+                "list": result,
+                "cnt": cnt,
+            }
+        )
 
     except Exception as e:
         err_msg = str(e).lower()

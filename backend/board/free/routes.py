@@ -20,6 +20,9 @@ router = APIRouter(
 async def user(session: Session = Depends(utils.database.get_db)):
     return database.list_article(session, all=True).map_err(throwMsg).unwrap()
 
+@router.get("/notice/list")
+async def user(session: Session = Depends(utils.database.get_db)):
+    return database.list_notice(session, all=True).map_err(throwMsg).unwrap()
 
 # create article router
 @router.post(
