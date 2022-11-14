@@ -22,7 +22,7 @@
       });
   });
 
-  const postArticle = () => 
+  const postArticle = () =>
     fetch(`//api.eyo.kr:8081/board/qna/question`, {
       method: "POST",
       headers: {
@@ -78,10 +78,8 @@
   };
 
   // 태그 가져오기
-  const getTags = async() => {
-    const res = await fetch(
-      `//api.eyo.kr:8081/board/tag/list`,
-      {
+  const getTags = async () => {
+    const res = await fetch(`//api.eyo.kr:8081/board/tag/list`, {
       mode: "cors",
       credentials: "include",
     });
@@ -132,13 +130,18 @@
         {#await boardtags then picktags}
           {#each picktags as tag}
             {#if tags.includes(tag.slug)}
-            <div class="dropdown-item">
-              {tag.slug}
-            </div>
+              <div class="dropdown-item">
+                {tag.slug}
+              </div>
             {:else}
-            <div class="dropdown-item" on:click={() => {tags[tags.length] = tag.slug}}>
-              {tag.slug}
-            </div>
+              <div
+                class="dropdown-item"
+                on:click={() => {
+                  tags[tags.length] = tag.slug;
+                }}
+              >
+                {tag.slug}
+              </div>
             {/if}
           {/each}
         {:catch error}
@@ -150,7 +153,12 @@
     <div class="tags has-addons tag-add">
       {#each tags as tag}
         <span class="tag is-info">{tag}</span>
-        <div class="tag is-delete" on:click={() => {tags = tags.filter(x => x != tag)}} />
+        <div
+          class="tag is-delete"
+          on:click={() => {
+            tags = tags.filter((x) => x != tag);
+          }}
+        />
       {/each}
       <!--{#each picktags as tag}
         <span class="tag is-info" on:click={console.log(picktags.has(tag))}>{tag}</span>
