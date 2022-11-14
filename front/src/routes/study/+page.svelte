@@ -1,12 +1,15 @@
 <script>
-	const async_course_list = fetch(`//api.eyo.kr:8081/study/head-chapters`, {
-		method: "GET",
-		headers: {
-			Accept: "application/json",
-		},
-		mode: "cors",
-		credentials: "include",
-	}).then((resp) => resp.json());
+	const async_course_list = fetch(
+		`https://api.eyo.kr:8081/study/head-chapters`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		}
+	).then((resp) => resp.json());
 </script>
 
 <div class="container">
