@@ -1,6 +1,6 @@
 <script>
 	const async_course_list = fetch(
-		`https://api.eyo.kr:8081/study/head-chapters`,
+		`https://api.eyo.kr:8081/study/head-chapters/`,
 		{
 			method: "GET",
 			headers: {
@@ -43,9 +43,6 @@
 							<div class="card-content content">
 								<h4 class="subtitle mb-1">{item.title}</h4>
 								<span class="tag mb-4">{item.category}</span>
-								<div class="chapter-description content">
-									{item.content}
-								</div>
 							</div>
 						</div></a
 					>
