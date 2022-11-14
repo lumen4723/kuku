@@ -8,7 +8,12 @@
 	let chapter_select_element;
 	const course_id = $page.params.course;
 
-	$: chapter_id = $page.params.id.match(/\d+/)[0];
+	let chapter_id = 1;
+	$: {
+		chapter_id = $page.params.id.match(/\d+/);
+		if (chapter_id == null && browser)
+			location.href = "/study/" + course_id;
+	}
 
 	let supported_language = ["Java", "Python"];
 	let selected_language = supported_language[0];
@@ -19,7 +24,7 @@
 	let article_tree = [];
 	let article_list = {};
 	let async_chapter_list = fetch(
-		`//api.eyo.kr:8081/study/${course_id}/list`,
+		`https://api.eyo.kr:8081/study/${course_id}/list`,
 		{
 			method: "GET",
 			headers: {
