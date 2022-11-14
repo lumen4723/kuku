@@ -3,6 +3,7 @@ from utils.exception import *
 from config_default import Config
 import jwt
 from result import Result, Ok, Err
+<<<<<<< HEAD
 from urllib import parse 
 def token_generator_by_email(email:str) -> Result:
     try:
@@ -15,6 +16,7 @@ def token_generator_by_email(email:str) -> Result:
     except Exception as e:
         return Err(str(e))
 
+<<<<<<< HEAD
 def verify_token(token: str) -> Result:
     try:
         token_data = jwt.decode(token, Config.session_key, algorithms=["HS256"])
