@@ -139,8 +139,96 @@
     });
   };
   let isLogin = true;
+  let comment_content = "";
+  const create_comment = async (article_id) => {
+    return await fetch(
+      `//api.eyo.kr:8081/board/free/comment/create/${article_id}`,
+      {
+        method: "POST",
+        headers: {
+          Aceept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: comment_content,
+        }),
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+  };
+  const upload = () => {
+    create_comment($page.params.id)
+      .then((res) => {
+        console.log(res);
+        if (res.ok == false) {
+          return Promise.reject(res);
+        } else {
+          return res.json();
+        }
+      })
+      .then(
+        Swal.fire("Good job!", "댓글이 생성되었습니다!", "success").then(
+          function (isConfirm) {
+            location.reload(isConfirm);
+          }
+        )
+      )
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+  const delete_comment = async (comment_id) => {
+    await fetch(`//api.eyo.kr:8081/board/free/comment/delete/${comment_id}`, {
+      method: "PUT",
+      headers: {
+        Aceept: "application/json",
+      },
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.ok == false) {
+          return Promise.reject(res);
+        } else {
+          return res.json();
+        }
+      })
+      .then(
+        Swal.fire("Good job!", "댓글이 삭제되었습니다!", "success").then(
+          function (isConfirm) {
+            location.reload(isConfirm);
+          }
+        )
+      )
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "본인의 글만 삭제할 수 있습니다!",
+        });
+      });
+  };
+  onMount(async () => {
+    if (window.sessionStorage["user.username"] == null) {
+      isLogin = false;
+    }
+  });
+</script>
 
-  let       <button
+{#await article}
+  <p class="has-text-centered">Loading in progress...</p>
+{:then article}
+  <header>
+    <div style="padding: 16px">
+      {#if isLogin}
+        {#if Number(window.sessionStorage["user.id"]) == article.userid}
+          <div class="edit" style="float: right; margin-top: 16px">
+            <a href="/board/free/write/{article.article_id}">
+              <button class="button is-rounded is-light"> 수정 </button>
+            </a>
+            <button
               class="button is-rounded is-light"
               type="submit"
               on:click={del}
