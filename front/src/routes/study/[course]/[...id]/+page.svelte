@@ -3,7 +3,7 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import ChapterListItem from "./chapterListItem.svelte";
-	import CodeEditor from "./codeEditor.svelte";
+	import CodeEditor from "$lib/codeEditor.svelte";
 
 	let chapter_select_element;
 	const course_id = $page.params.course;
