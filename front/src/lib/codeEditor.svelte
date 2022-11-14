@@ -1,5 +1,7 @@
 <script>
 	export let language;
+	export let code;
+	export let getData;
 
 	import { onMount } from "svelte";
 	import { browser } from "$app/env";
@@ -14,7 +16,6 @@
 	let Monaco;
 
 	$: {
-		console.log(language);
 		if (browser && editor != undefined) {
 			Monaco.editor.setModelLanguage(
 				editor.getModel(),
@@ -22,6 +23,15 @@
 			);
 		}
 	}
+	$: {
+		if (browser && editor != undefined) {
+			editor.getModel().setValue(code);
+		}
+	}
+	getData = () => {
+		return editor.getModel().getValue();
+	};
+
 	onMount(async () => {
 		// @ts-ignore
 		self.MonacoEnvironment = {
@@ -49,11 +59,7 @@
 		Monaco = await import("monaco-editor");
 		editor = Monaco.editor.create(divEl, {
 			theme: "vs-dark",
-			value: [
-				"function x() {",
-				'\tconsole.log("Hello world!");',
-				"}",
-			].join("\n"),
+			value: code,
 			language: language.toLocaleLowerCase(),
 		});
 
