@@ -203,7 +203,7 @@
 		let data = {
 			title: title,
 			language: selected_language,
-			parent_id: parent_chapter,
+			parent_id: parent_chapter == "null" ? null : parent_chapter,
 			category: category,
 			chapter_id: chapter_id,
 
