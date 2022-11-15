@@ -9,6 +9,11 @@ from config import Config
 
 class SessionData(BaseModel):
     uid: int
+    username: str
+    email: str
+    type: int
+    state: int
+    is_admin: str
 
 
 cookie_params = CookieParameters(samesite="none")
