@@ -2,70 +2,113 @@
 	import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
+	import env from "$lib/env.js";
+
 	import ChapterListItem from "./chapterListItem.svelte";
 	import CodeEditor from "$lib/codeEditor.svelte";
 
 	let chapter_select_element;
 	const course_id = $page.params.course;
+	let chapter_id = $page.params.id.match(/\d+/);
 
-	let chapter_id = 1;
-	$: {
-		chapter_id = $page.params.id.match(/\d+/);
-		if (chapter_id == null && browser)
-			location.href = "/study/" + course_id;
-	}
-
-	let supported_language = ["Java", "Python"];
-	let selected_language = supported_language[0];
+	let articles = [];
+	let supported_language = [];
+	let selected_language = "";
 
 	let run_output =
-		"\n\n    Anyone know how to change the language according to code file extension or first line like '#!/usr/bin/env python'?\n\n  setLanguage(node: any) {\n    if (node) {\n      const languages = {\n        'js': 'javascript',\n        'ts': 'typescript',\n        'html': 'html',\n        'htm': 'html',\n        'txt': 'text',\n        'css': 'css'\n      }\n      const ext = node.name.match(/([^.])+$/g)[0];\n\n      // this.editorComponent.instance.options.language = languages[ext];\n\n      (window as any).monaco.editor.setModelLanguage((window as any).monaco.editor.getModels()[0], languages[ext]);\n\n      return node;\n    }\n  }\n\n";
+		"\n\n    Anyone know how to change the language according to  file extension or first line like '#!/usr/bin/env python'?\n\n  setLanguage(node: any) {\n    if (node) {\n      const languages = {\n        'js': 'javascript',\n        'ts': 'typescript',\n        'html': 'html',\n        'htm': 'html',\n        'txt': 'text',\n        'css': 'css'\n      }\n      const ext = node.name.match(/([^.])+$/g)[0];\n\n      // this.editorComponent.instance.options.language = languages[ext];\n\n      (window as any).monaco.editor.setModelLanguage((window as any).monaco.editor.getModels()[0], languages[ext]);\n\n      return node;\n    }\n  }\n\n";
 
-	let article_tree = [];
-	let article_list = {};
-	let async_chapter_list = fetch(
-		`https://api.eyo.kr:8081/study/${course_id}/list`,
-		{
+	let chapter_tree = [];
+	let chapter_kv = {};
+	async function async_chapter_list(course_id) {
+		console.log(chapter_tree.length);
+		if (chapter_tree.length != 0) return Promise.resolve("already loaded");
+
+		return fetch(`${env.baseUrl}/study/${course_id}/list`, {
 			method: "GET",
 			headers: {
 				Accept: "application/json",
 			},
 			mode: "cors",
 			credentials: "include",
-		}
-	).then((resp) =>
-		resp
-			.json()
-			.then(function (data) {
-				article_tree = data;
+		}).then((resp) =>
+			resp
+				.json()
+				.then(function (data) {
+					chapter_tree = data;
 
-				function traverse(node) {
-					article_list[node.no] = node;
+					function traverse(node) {
+						chapter_kv[node.no] = node;
 
-					node.children.forEach((child) => {
-						traverse(child);
-					});
-				}
-				data.forEach((data) => traverse(data));
+						node.children.forEach((child) => {
+							traverse(child);
+						});
+					}
+					data.forEach((data) => traverse(data));
 
-				Promise.resolve(data);
+					Promise.resolve(data);
+				})
+				.then((data) => {
+					chapter_select_element.value = chapter_id;
+					chapter_select_element.querySelector(
+						`option[value="${chapter_id}"]`
+					).selected = true;
+
+					return Promise.resolve(data);
+				})
+		);
+	}
+
+	async function async_chapter_article(course_id, chapter_id) {
+		return fetch(`${env.baseUrl}/study/${course_id}/${chapter_id}/`, {
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((resp) => resp.json())
+			.then((data) => {
+				articles = data;
+				supported_language = data.map((article) => article.language);
+
+				return Promise.resolve(data);
 			})
 			.then((data) => {
-				chapter_select_element.value = chapter_id;
-				chapter_select_element.querySelector(
-					`option[value="${chapter_id}"]`
-				).selected = true;
+				if (data.length > 0) {
+					selected_language = data[0].language;
+				}
 
-				return data;
+				return Promise.resolve(data);
 			})
-	);
+			.catch((err) => {
+				console.log(err);
+			});
+	}
 
-	function print_article(chapter_id) {
+	function get_article(chapter_id, language) {
 		if (chapter_id == null) {
-			return article_tree[0].content;
+			return "";
 		}
 
-		return article_list[chapter_id].content;
+		return articles.filter((article) => article.language == language)[0]
+			.content;
+	}
+	function get_code(chapter_id, language) {
+		if (chapter_id == null || articles == null) {
+			return "";
+		}
+
+		let article = articles.filter(
+			(article) => article.language == language
+		);
+
+		if (article.length == 0) {
+			return "";
+		}
+
+		return article[0].code;
 	}
 
 	function change_chapter(e) {
@@ -82,7 +125,7 @@
 				on:change={change_chapter}
 				style="display: block; width: 100%"
 			>
-				{#each article_tree as item}
+				{#each chapter_tree as item}
 					<ChapterListItem
 						{item}
 						{course_id}
@@ -91,15 +134,15 @@
 				{/each}
 			</select>
 		</header>
-		<article class="content">
-			{#await async_chapter_list}
+		<article class="content p-2 pb-4">
+			{#await Promise.all( [async_chapter_list(course_id), async_chapter_article(course_id, chapter_id)] )}
 				<div class="p-6">
 					<progress class="progress is-small is-primary" max="100"
 						>Loading in progress</progress
 					>
 				</div>
 			{:then}
-				{@html print_article(chapter_id)}
+				{@html get_article(chapter_id, selected_language)}
 			{/await}
 		</article>
 	</aside>
@@ -114,7 +157,10 @@
 				>Run <i class="fa-solid fa-play ml-3 is-size-7" />
 			</button>
 		</header>
-		<CodeEditor language={selected_language} />
+		<CodeEditor
+			language={selected_language}
+			code={get_code(chapter_id, selected_language)}
+		/>
 		<section id="output" class="p-2 is-family-code">{run_output}</section>
 	</section>
 </main>

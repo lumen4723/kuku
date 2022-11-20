@@ -5,18 +5,22 @@ from config import Config
 from urllib import parse
 
 
-
 DATABASE_CONFIG = Config.MariaDB
 DATABASE_URL = f'mysql://{DATABASE_CONFIG["user"]}:{parse.quote(DATABASE_CONFIG["password"])}@{DATABASE_CONFIG["host"]}/{DATABASE_CONFIG["database"]}'
 
 engine = create_engine(DATABASE_URL)
-session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_db():
+    databaseSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
     try:
-        yield session()
+        yield databaseSession()
     except Exception as e:
-        print(f"error {e}")
+        print(f"database error {e}")
+
     finally:
-        session.close_all()
+        try:
+            databaseSession.close_all()
+        except Exception as e:
+            pass
