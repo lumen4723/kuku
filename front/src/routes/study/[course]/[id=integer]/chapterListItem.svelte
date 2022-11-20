@@ -5,7 +5,6 @@
 	export let depth = 0;
 
 	let children = item.children;
-	console.log([selected_id, item.no, selected_id == item.no]);
 </script>
 
 <option value={item.no} selected={selected_id == item.no}>

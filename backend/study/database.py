@@ -106,6 +106,26 @@ def list_category(db: Session):
         return Err(str(e))
 
 
+def list_chapter_languages(course_slug: int, chapter: int, db: Session) -> tuple[str]:
+    try:
+        return Ok(
+            tuple(
+                map(
+                    lambda x: x.language,
+                    db.query(lecture_article.language)
+                    .filter(lecture_article.chapter_id == chapter)
+                    .join(lecture_article.chapterRel)
+                    .join(lecture_chapter.lectureRel)
+                    .filter(lecture.slug == course_slug)
+                    .distinct()
+                    .all(),
+                )
+            )
+        )
+    except Exception as e:
+        return Err(str(e))
+
+
 def get_course_info(course_slug: str, db: Session):
     try:
         return Ok(db.query(lecture).filter(lecture.slug == course_slug).first())
@@ -153,7 +173,6 @@ def list_article(course_slug: int, chapter: int, db: Session):
             .join(lecture_article.chapterRel)
             .join(lecture_chapter.lectureRel)
             .filter(lecture.slug == course_slug)
-            .limit(1)
             .all()
         )
     except Exception as e:

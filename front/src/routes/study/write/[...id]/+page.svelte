@@ -92,7 +92,7 @@
 		}
 	}
 
-	$: update_courses(selected_course);
+	// $: update_courses(selected_course);
 	async function update_courses(selected_course) {
 		if (browser && selected_course != undefined && selected_course != "") {
 			return fetch(`//api.eyo.kr:8081/study/${selected_course}/list`, {
@@ -166,6 +166,8 @@
 
 	$: load_article_of_language(selected_language, articles);
 	function load_article_of_language(language, articles) {
+		console.log(language);
+
 		if (browser && language != undefined && articles != undefined) {
 			const article = articles.find((item) => item.language == language);
 
@@ -210,8 +212,6 @@
 			content: ckeditorInstance.getData(),
 			code: getCodeData(),
 		};
-
-		debugger;
 
 		fetch(`//api.eyo.kr:8081/study/${selected_course}/`, {
 			method: "POST",
@@ -313,9 +313,7 @@
 			/>
 			<br /><br /><br />
 		</div>
-		<button class="button is-link" type="submit" on:click={postArticle}
-			>완료</button
-		>
+		<button class="button is-link" type="submit">완료</button>
 	</form>
 </div>
 <br /> <br />

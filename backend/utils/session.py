@@ -15,6 +15,12 @@ class SessionData(BaseModel):
     state: int
     is_admin: str
 
+    username: str
+    email: str
+    type: int
+    state: int
+    is_admin: str
+
 
 cookie_params = CookieParameters(samesite="none")
 
@@ -26,7 +32,7 @@ cookie = SessionCookie(
     secret_key=Config.session_key,
     cookie_params=cookie_params,
 )
-backend = InMemoryBackend[UUID, SessionData]()
+sessionStorage = InMemoryBackend[UUID, SessionData]()
 
 
 class BasicVerifier(SessionVerifier[UUID, SessionData]):
@@ -67,6 +73,6 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
 verifier = BasicVerifier(
     identifier="general_verifier",
     auto_error=True,
-    backend=backend,
+    backend=sessionStorage,
     auth_http_exception=HTTPException(status_code=403, detail="invalid session"),
 )

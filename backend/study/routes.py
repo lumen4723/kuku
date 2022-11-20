@@ -41,9 +41,24 @@ async def list_head_chapter(session: Session = Depends(utils.database.get_db)):
             )
         )
 
+    def join_supported_languages(article: tuple):
+        return tuple(
+            map(
+                lambda x: {
+                    **x,
+                    "supported_languages": database.list_chapter_languages(
+                        x["course_slug"], x["no"], session
+                    )
+                    .unwrap_or([]),
+                },
+                article,
+            )
+        )
+
     return (
         database.list_head_chapter(session)
         .map(flatten_course)
+        .map(join_supported_languages)
         .map_err(throwMsg)
         .unwrap()
     )
@@ -177,10 +192,14 @@ async def write_article(
             )
         )
 
-    chapter.__setattr__(
-        "parent_id",
-        article_form.parent_id,
-    )
+    if article_form.parent_id != None:
+        if article_form.chapter_id != None and article_form.parent_id == chapter.no:
+            return throwMsg("자기 자신을 부모로 지정할 수 없습니다.")
+
+        chapter.__setattr__(
+            "parent_id",
+            article_form.parent_id,
+        )
 
     chapter = database.create_chapter(chapter, session).unwrap_or(None)
 

@@ -10,7 +10,7 @@ from uuid import UUID, uuid4
 from utils.session import *
 from fastapi.responses import HTMLResponse
 from . import templateHtml
-from result import Result, Ok, Err
+from result import Result, Ok, Err, as_result
 
 router = APIRouter(
     prefix="/user",
@@ -48,7 +48,7 @@ async def create_session(
     uuidSession = uuid4()
     data = SessionData(**user_data.dict())
 
-    await backend.create(uuidSession, data)
+    await sessionStorage.create(uuidSession, data)
     cookie.attach_to_response(response, uuidSession)
 
     return database.get_user_by_uid(user_data.uid, session).map_err(throwMsg).unwrap()
@@ -87,7 +87,9 @@ async def delete_user(
 
 @router.post("/logout")
 async def del_session(response: Response, session_id: UUID = Depends(cookie)):
-    await backend.delete(session_id)
+    if session_id in sessionStorage.data:
+        await sessionStorage.delete(session_id)
+
     cookie.delete_from_response(response)
     return "deleted session"
 
