@@ -1,0 +1,169 @@
+2.1. if문
+이번 장에서는 조건문을 배워보겠습니다.
+조건문은 프로그램의 흐름을 제어하는데 사용됩니다.
+조건문은 if문과 switch문이 있습니다.
+
+if문은 조건식이 참이면 if문 안의 문장을 실행하고,
+조건식이 거짓이면 if문 안의 문장을 실행하지 않습니다.
+if문은 다음과 같이 사용합니다.
+[
+    #include <stdio.h>
+    int main() {
+        int a = 10;
+        if (a == 10) {
+            printf("a는 10입니다.\n");
+        }
+        return 0;
+    }
+]
+실행 결과는 다음과 같습니다.
+a는 10입니다.
+
+if문장이 참이 아닐때 추가 조건을 걸어주고 싶다면 elseif문을 사용합니다.
+elseif문은 if문 뒤에 사용합니다.
+[
+    #include <stdio.h>
+    int main() {
+        int a = 20;
+        if (a == 10) {
+            printf("a는 10입니다.\n");
+        }
+        else if (a == 20){
+            printf("a는 20입니다.\n");
+        }
+        return 0;
+    }
+]
+실행 결과는 다음과 같습니다.
+a는 20입니다.
+
+if문이 참이 아닐때 실행할 문장이 있다면 else문을 사용합니다.
+else문은 if문 뒤에 사용합니다.
+[
+    #include <stdio.h>
+    int main() {
+        int a = 30;
+        if (a == 10) {
+            printf("a는 10입니다.\n");
+        }
+        else if (a == 20){
+            printf("a는 20이 입니다.\n");
+        }
+        else {
+            printf("a는 10도 20도 아닙니다.\n");
+        }
+        return 0;
+    }
+]
+실행 결과는 다음과 같습니다.
+a는 10도 20도 아닙니다.
+
+2.1.1. 세수의 최대값 구하기
+세수의 최대값을 구하는 프로그램을 작성해보겠습니다.
+[
+    #include <stdio.h>
+    int main() {
+        int a, b, c;
+        scanf("%d %d %d", &a, &b, &c);
+
+        if (a > b) {
+            if (a > c) {
+                printf("%d\n", a); // a가 b보다 크고 c보다 크면 a가 최대값
+            }
+            else {
+                printf("%d\n", c); // a가 b보다 크지만 c보다 작으면 c가 최대값
+            }
+        }
+        else {
+            if (b > c) {
+                printf("%d\n", b); // b가 a보다 크고 c보다 크면 b가 최대값
+            }
+            else {
+                printf("%d\n", c); // b가 a보다 크지만 c보다 작으면 c가 최대값
+            }
+        }
+        return 0;
+    }
+]
+실행 결과는 다음과 같습니다.
+(예를들어 a, b, c 을 각 10 30 20으로 입력)
+30
+
+2.2. switch문
+switch문은 if문과 비슷하지만 조건식이 참인 경우를 찾아서 실행합니다.
+
+switch문은 다음과 같이 사용합니다.
+[
+    #include <stdio.h>
+    int main() {
+        int a = 10;
+        switch (a) {
+            case 10:    // a는 10이므로 여기서부터 실행
+                printf("a는 10입니다.\n");
+            case 20:
+                printf("a는 20입니다.\n");
+            default:
+                printf("a는 10도 아니고 20도 아닙니다.\n");
+        }
+        return 0;
+    }
+]
+실행 결과는 다음과 같습니다.
+a는 10입니다.
+a는 20입니다.
+a는 10도 아니고 20도 아닙니다.
+
+switch문은 값이 같은 case문을 찾아서 실행합니다.
+실행 할때 실행할case문부터 끝가지 실행하기 때문에
+'break'문을 사용하여 적당히 switch문을 빠져나옵니다.
+[
+    #include <stdio.h>
+    int main() {
+        int a = 10;
+        switch (a) {
+            case 10:
+                printf("a는 10입니다.\n");
+                break;
+            case 20:
+                printf("a는 20입니다.\n");
+                break;
+            default:
+                printf("a는 10도 아니고 20도 아닙니다.\n");
+        }
+        return 0;
+    }
+]
+실행 결과는 다음과 같습니다.
+a는 10입니다.
+
+2.2.1. 시험점수에 따른 등급 출력하기
+시험점수에 따른 등급을 출력하는 프로그램을 작성해보겠습니다.
+[
+    #include <stdio.h>
+    int main() {
+        int score;
+        scanf("%d", &score);
+
+        switch (score / 10) {
+            case 10:
+            case 9:
+                printf("A\n");
+                break;
+            case 8:
+                printf("B\n");
+                break;
+            case 7:
+                printf("C\n");
+                break;
+            case 6:
+                printf("D\n");
+                break;
+            default:
+                printf("F\n");
+        }
+        return 0;
+    }
+]
+실행 결과는 다음과 같습니다.
+(예를들어 90점을 입력)
+A

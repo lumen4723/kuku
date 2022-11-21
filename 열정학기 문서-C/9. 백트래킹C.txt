@@ -1,0 +1,287 @@
+9. 백트래킹
+백트래킹은 모든 경우의 수를 탐색하는 브루트 포스 알고리즘에 가지치기 기법을 추가한 것입니다.
+가지치기란, 해가 될 수 없는 경우를 미리 판단하여 탐색을 진행하지 않는 것을 말합니다.
+백트래킹의 간단한 예제들을 풀면서 이해해보겠습니다.
+    9.1. 순열 문제
+    순열은 n개의 원소 중에서 r개를 중복 없이 뽑아 일렬로 나열하는 것을 말합니다.
+    예를 들어, 1, 2, 3, 4, 5 중에서 3개를 뽑아 나열하면 다음과 같은 순열이 나옵니다.
+    1 2 3
+    1 2 4
+    .
+    .
+    .
+    5 4 3
+    5 4 2
+    (총 60개)
+
+    문제의 입력은 n과 r이며, 출력은 가능한 순열의 조합입니다.
+    (단, 1 ≤ r ≤ n ≤ 15)
+
+    [
+        #include <stdio.h>
+
+        int n, r;
+        int arr[16];
+        int visited[16];
+
+        void perm(int n, int remain) {
+            if (remain == 0) {
+                for (int i = 0; i < r; i++) {
+                    printf("%d ", arr[i]);
+                }
+                printf("\n");
+                return;
+            }
+            for (int i = 1; i <= n; i++) {
+                if (visited[i] == 0) {
+
+                    visited[i] = 1;
+                    arr[remain - 1] = i;
+                    perm(n, remain - 1);
+                    visited[i] = 0;
+
+                }
+            }
+        }
+
+        int main() {
+            scanf("%d %d", &n, &r);
+            perm(n, r);
+            return 0;
+        }
+    ]
+    실행결과는 다음과 같습니다.
+    (예를 들어 3 2를 입력)
+    1 2
+    1 3
+    2 1
+    2 3
+    3 1
+    3 2
+
+    9.2. 중복순열 문제
+    중복순열은 n개의 원소 중에서 r개를 중복을 허용하여 뽑아 일렬로 나열하는 것을 말합니다.
+    예를 들어, 1, 2, 3, 4, 5 중에서 3개를 뽑아 나열하면 다음과 같은 중복순열이 나옵니다.
+    1 1 1
+    1 1 2
+    .
+    .
+    .
+    5 5 4
+    5 5 5
+    (총 125개)
+
+    문제의 입력은 n과 r이며, 출력은 가능한 중복순열의 조합입니다.
+    (단, 1 ≤ r ≤ n ≤ 15)
+
+    [
+        #include <stdio.h>
+
+        int n, r;
+        int arr[16];
+
+        void perm(int n, int remain) {
+            if (remain == 0) {
+                for (int i = 0; i < r; i++) {
+                    printf("%d ", arr[i]);
+                }
+                printf("\n");
+                return;
+            }
+            for (int i = 1; i <= n; i++) {
+                arr[remain - 1] = i;
+                perm(n, remain - 1);
+            }
+        }
+
+        int main(){
+            scanf("%d %d", &n, &r);
+            perm(n, r);
+            return 0;
+        }
+    ]
+    실행결과는 다음과 같습니다.
+    (예를 들어 3 2를 입력)
+    1 1
+    1 2
+    1 3
+    2 1
+    2 2
+    2 3
+    3 1
+    3 2
+    3 3
+
+    9.3. N-Queen 문제
+        N-Queen 문제는 유명한 백트래킹 문제입니다.
+        N-Queen 문제는 N*N 크기의 체스판에 N개의 퀸을 서로 공격할 수 없도록 놓는 문제입니다.
+        퀸은 가로, 세로, 대각선으로 이동할 수 있기 때문에, 퀸이 서로 공격할 수 없도록 놓으려면
+        퀸이 놓인 행과 열, 대각선에는 퀸이 하나씩만 놓여야 합니다.
+        N-Queen 문제를 풀기 위해서는, 퀸이 놓인 행과 열, 대각선을 체크하는 배열을 만들어야 합니다.
+
+        입력으로 N이 주어졌을때 N*N 체스판위에서 N개의 퀸을 전부 공격할 수 없게 배치 할 수있는 경우의 수를 구하시오.
+        (1 ≤ N < 15)
+
+        [
+            #include <stdio.h>
+
+            int put[14] = { -1 };
+            int N, ans = 0;
+
+            void stage(int row, int col) {
+	            if (col == N) {
+		            ans++;
+		            return;
+	            }
+	            if (row == N) {
+		            return;
+	            }
+	            for (int i = 0; i < col; i++) {
+		            int a = put[i] - row;
+                    a *= a;
+
+		            int b = i - col;
+                    b *= b;
+
+		            if (a == 0 || a == b) {
+			            stage(row + 1, col);
+			            return;
+		            }
+	            }
+	            put[col] = row;
+	            stage(0, col + 1);
+	            stage(row + 1, col);
+            }
+
+            int main() {
+	            scanf("%d", &N);
+	            stage(0, 0);
+	            printf("%d", ans);
+                return 0;
+            }
+        ]
+        실행결과는 다음과 같습니다.
+        (예를 들어 8를 입력)
+        92
+
+    9.4. 스토쿠 문제
+        스토쿠 문제는 유명한 백트래킹 문제입니다.
+        스토쿠 문제는 9*9 크기의 스토쿠 판에 1~9까지의 숫자를 채우는 문제입니다.
+        스토쿠 판은 9개의 3*3 크기의 작은 판으로 나뉘어져 있으며, 작은 판 안에는 1~9까지의 숫자가 중복되지 않게 채워져야 합니다.
+        또한, 가로, 세로에도 1~9까지의 숫자가 중복되지 않게 채워져야 합니다.
+        스토쿠 문제를 풀기 위해서는, 작은 판 안에 1~9까지의 숫자가 채워졌는지 체크하는 배열과
+        가로, 세로에 1~9까지의 숫자가 채워졌는지 체크하는 배열을 만들어야 합니다.
+
+        입력으로 스토쿠 판이 주어졌을때, 스토쿠 판을 채우는 방법을 구하시오.
+        (1 ≤ N < 15)
+
+        [
+            #include <stdio.h>
+            #include <vector>
+
+            int sudo[9][9] = { 0 };
+            std::vector<std::pair<int, int>> prob;
+
+            bool ispos(int row, int col, int val) { // 3개다 지나면 true 하나라도 걸리면 false;
+            	//step1 && step2
+            	for (int i = 0; i < 9; i++) {
+            		if (sudo[row][i] == val && i != col) {
+            			return false;
+            		}
+            		if (sudo[i][col] == val && i != row) {
+            			return false;
+            		}
+            	}
+            	//step3
+            	int minr, maxr, minc, maxc; //3x3의 이중 for문 생성후 타 스텝과 동일하게 진행
+            	if (row < 3) {
+            		minr = 0; maxr = 2;
+            	}
+            	else if (row < 6) {
+            		minr = 3; maxr = 5;
+            	}
+            	else {
+            		minr = 6; maxr = 8;
+            	}
+            	if (col < 3) {
+            		minc = 0; maxc = 2;
+            	}
+            	else if (col < 6) {
+            		minc = 3; maxc = 5;
+            	}
+            	else {
+            		minc = 6; maxc = 8;
+            	}
+            	for (int i = minr; i <= maxr; i++) {
+            		for (int j = minc; j <= maxc; j++) {
+            			if (sudo[i][j] == val && (i != row && j != col)) {
+            				return false;
+            			}
+            		}
+            	}
+            	return true;
+            }
+
+            bool endf = false; // 시간 효율을 위함
+
+            void solve(int stage) {
+            	if (stage == prob.size()) {
+            		endf = true;
+            		return;
+            	}
+            	for (int in = 1; in < 10; in++) {
+            		if (ispos(prob[stage].first, prob[stage].second, in)) { //여부판단
+            			sudo[prob[stage].first][prob[stage].second] = in; // 1. 값을 일단 대입
+            			solve(stage + 1); // 2.다음 스테이지로 이동
+            		}
+            		if (endf) { //1회안으로 찾으면 즉시 종료
+            			return;
+            		}
+            	}
+            	sudo[prob[stage].first][prob[stage].second] = 0;
+            	//3. 2의 값이 다돌면(=길이없으면) 기존의 값을 초기화 후 이전 스테이지로 리턴
+            }
+
+            int main() {
+            	std::pair<int, int> tmp;
+            	for (int i = 0; i < 9; i++) {
+            		for (int j = 0; j < 9; j++) {
+            			scanf("%d", &sudo[i][j]);
+            			if (sudo[i][j] == 0) {
+            				tmp.first = i; tmp.second = j;
+            				prob.push_back(tmp);
+            			}
+            		}
+            	}
+
+            	solve(0);
+
+            	for (int i = 0; i < 9; i++) {
+            		for (int j = 0; j < 9; j++) {
+            			printf("%d ", sudo[i][j]);
+            		}
+            		printf("\n");
+            	}
+            }
+        ]
+        실행결과는 다음과 같습니다.
+        (예를들어
+        0 3 5 4 6 9 2 7 8
+        7 8 2 1 0 5 6 0 9
+        0 6 0 2 7 8 1 3 5
+        3 2 1 0 4 6 8 9 7
+        8 0 4 9 1 3 5 0 6
+        5 9 6 8 2 0 4 1 3
+        9 1 7 6 5 2 0 8 0
+        6 0 3 7 0 1 9 5 2
+        2 5 8 3 9 4 7 6 0
+        을 입력)
+        1 3 5 4 6 9 2 7 8
+        7 8 2 1 3 5 6 4 9
+        4 6 9 2 7 8 1 3 5
+        3 2 1 5 4 6 8 9 7
+        8 7 4 9 1 3 5 2 6
+        5 9 6 8 2 7 4 1 3
+        9 1 7 6 5 2 3 8 4
+        6 4 3 7 8 1 9 5 2
+        2 5 8 3 9 4 7 6 1
