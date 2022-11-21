@@ -1,6 +1,7 @@
 <script>
-	import { is_empty } from "svelte/internal";
+	import Swal from "sweetalert2";
 	import { browser } from "$app/env";
+	import { is_empty } from "svelte/internal";
 
 	let username = "",
 		email = "",
@@ -11,20 +12,22 @@
 		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	let show_password = false;
 	let show_passwordConf = false;
+	let passwordThis;
+	let passwordConfThis;
+	let usernameFailed = true;
+	let usernameExcepts = ["ㅅㅂ", "kuku"];
+	let isLoading = false;
+	let message = "";
+
 	function passwordShow_button() {
 		show_password = !show_password;
 	}
 	function passwordConfShow_button() {
 		show_passwordConf = !show_passwordConf;
 	}
-	let passwordThis;
-	let passwordConfThis;
-	let usernameFailed = true;
-	let usernameExcepts = ["ㅅㅂ", "kuku"];
-
 	/**checking user name is available
-	이후 제한 사항들을 추가해야 합니다.
-	*/
+		  이후 제한 사항들을 추가해야 합니다.
+		  */
 	const filterUsername = () => {
 		if (is_empty(username)) {
 			return false;
@@ -74,9 +77,6 @@
 		}
 	};
 
-	let isLoading = false;
-	let message = "";
-
 	const updateUser = async () => {
 		isLoading = true;
 		await fetch("//api.eyo.kr:8081/user/update", {
@@ -102,39 +102,106 @@
 				if (res.ok == false) return Promise.reject(res);
 				return res.json();
 			})
+			.then((res) => {
+				Swal.fire({
+					title: "회원정보 변경에 성공하였습니다. 다시 로그인해주세요.",
+					icon: "success",
+					confirmButtonText: "확인",
+				}).then((result) => {
+					if (result)
+						if (browser) {
+							window.sessionStorage.removeItem("user.email");
+							window.sessionStorage.removeItem("user.id");
+							window.sessionStorage.removeItem("user.username");
+							window.location.href = "/account";
+						}
+				});
+			})
+			.catch((e) => {
+				Swal.fire({
+					title: "회원정보 변경에 실패하였습니다." + e,
+					icon: "error",
+					confirmButtonText: "확인",
+				});
+			});
+	};
+
+	const emailcheck = async () => {
+		await fetch("//api.eyo.kr:8081/user/sendEmailBySesson", {
+			method: "POST",
+			headers: {
+				Aceept: "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((res) => {
+				if (res.ok == false) return Promise.reject(res);
+				return res.json();
+			})
 			.then(() => {
-				location.href =
-					"?msg=정보수정을 완료하였습니다. 다시 로그인 해주세요.";
+				// 메세지
+				message = "인증메일을 전송하였습니다.";
 				isLoading = false;
 			})
 			.catch((e) => {
 				e.json().then((json) => {
-					message = "정보수정에 실패하였습니다: " + json["detail"];
+					message =
+						"인증메일 전송에 실패하였습니다: " + json["detail"];
 					isLoading = false;
 				});
 			});
 	};
+
+	const getUser = async () => {
+		const email = window.sessionStorage.getItem("user.email");
+		const res = await fetch(`//api.eyo.kr:8081/user/?email=${email}`, {
+			mode: "cors",
+			credentials: "include",
+		});
+		const user = await res.json();
+		if (res.ok) {
+			return user;
+		} else {
+			throw new Error(user);
+		}
+	};
+	$: user = getUser();
 </script>
-<article class="message is-warning">
-	<div class="message-body">
-		<p>이메일이 아직 검증되지 않았습니다.</p>
-		<p>이메일을 검증해 주세요.</p>
-	</div>
-</article>
-<div class="columns">
-	<div class="column is-5 is-offset-2">
-		<button class="button is-warning">
-			이메일 검증하기
-		</button>
-	</div>
-</div>
-<form method="PUT" on:submit|preventDefault={updateUser}>
-	{#if message != ""}
-		<article class="message is-danger">
+
+{#await user then user}
+	{#if user.type != 1}
+		<article class="message is-warning">
 			<div class="message-body">
-				{message}
+				<p>이메일이 아직 검증되지 않았습니다.</p>
+				<p>이메일을 검증해 주세요.</p>
 			</div>
 		</article>
+		<div class="columns">
+			<div class="column is-5 is-offset-1">
+				<button class="button is-warning" on:click={emailcheck}>
+					이메일 검증하기
+				</button>
+			</div>
+		</div>
+	{/if}
+{/await}
+
+<form method="PUT" on:submit|preventDefault={updateUser}>
+	{#if message != ""}
+		{#if message.includes("인증메일을 전송하였습니다.")}
+			<article class="message is-success">
+				<div class="message-body">
+					<p>{message}</p>
+				</div>
+			</article>
+		{:else}
+			<article class="message is-danger">
+				<div class="message-body">
+					<p>{message}</p>
+				</div>
+			</article>
+		{/if}
 	{/if}
 	<div class="field">
 		<label class="label" for="password">Password</label>
@@ -188,11 +255,11 @@
 					/>
 				</span>
 
-				{#if usernameFailed && !is_empty(username)}<p
-						class="help has-text-danger"
-					>
+				{#if usernameFailed && !is_empty(username)}
+					<p class="help has-text-danger">
 						{username} is not available
-					</p>{/if}
+					</p>
+				{/if}
 			{/if}
 		</div>
 		<p class="help">Write your name to be shown to others</p>
@@ -322,8 +389,10 @@
 				class="button is-link"
 				class:is-loading={isLoading}
 				disabled={isLoading}
-				type="submit">Update</button
+				type="submit"
 			>
+				Update
+			</button>
 		</div>
 	</div>
 </form>

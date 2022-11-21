@@ -33,12 +33,15 @@
 			.then((json) => {
 				writable(null).subscribe(function (value) {
 					if (browser) {
-						window.localStorage.setItem(
+						window.sessionStorage.setItem(
 							"user.email",
 							json["email"]
 						);
-						window.localStorage.setItem("user.id", json["userid"]);
-						window.localStorage.setItem(
+						window.sessionStorage.setItem(
+							"user.id",
+							json["userid"]
+						);
+						window.sessionStorage.setItem(
 							"user.username",
 							json["username"]
 						);

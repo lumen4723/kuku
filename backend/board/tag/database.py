@@ -48,3 +48,11 @@ def get_id_by_slug(slug: str, db: Session) -> Result:
         return Ok(obj)
     except Exception as e:
         return Err("get id by slug error")
+
+
+def get_name_by_slug(slug: str, db: Session) -> Result:
+    try:
+        obj = db.query(tag).filter(tag.slug == slug).first().name
+        return Ok(obj)
+    except Exception as e:
+        return Err("get name by slug error")

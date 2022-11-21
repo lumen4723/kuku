@@ -1,4 +1,7 @@
 <script>
+	import { browser } from "$app/env";
+	import Swal from "sweetalert2";
+
 	let email, password;
 
 	const user_delete = async () => {
@@ -21,14 +24,36 @@
 			})
 			.then((res) => {
 				if (res == 0) {
-					location.href = "/";
+					Swal.fire({
+						title: "회원탈퇴에 성공하였습니다.",
+						icon: "success",
+						confirmButtonText: "확인",
+					}).then((result) => {
+						if (result)
+							if (browser) {
+								window.sessionStorage.removeItem("user.email");
+								window.sessionStorage.removeItem("user.id");
+								window.sessionStorage.removeItem(
+									"user.username"
+								);
+								window.location.href = "/";
+							}
+					});
 				} else {
-					alert("회원탈퇴에 실패하였습니다.");
+					Swal.fire({
+						title: "회원탈퇴에 실패하였습니다.",
+						icon: "error",
+						confirmButtonText: "확인",
+					});
 				}
 			})
 			.catch((e) => {
 				console.log(e);
-				alert("회원탈퇴에 실패하였습니다.");
+				Swal.fire({
+					title: "회원탈퇴에 실패하였습니다.",
+					icon: "error",
+					confirmButtonText: "확인",
+				});
 			});
 	};
 </script>

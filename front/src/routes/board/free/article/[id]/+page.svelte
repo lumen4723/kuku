@@ -1,4 +1,4 @@
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11">
+<script>
   import { page } from "$app/stores";
   import List from "../../[page]/+page.svelte";
   import Swal from "sweetalert2";
@@ -19,7 +19,7 @@
       throw new Error(article);
     }
   };
-  let article = getArticle($page.params.id);
+  $: article = getArticle($page.params.id);
 
   const delArticle = async (article_id) => {
     const res = await fetch(
@@ -139,11 +139,10 @@
     });
   };
   let isLogin = true;
-
   let comment_content = "";
   const create_comment = async (article_id) => {
     return await fetch(
-      `http://api.eyo.kr:8081/board/free/comment/create/${article_id}`,
+      `//api.eyo.kr:8081/board/free/comment/create/${article_id}`,
       {
         method: "POST",
         headers: {
@@ -180,17 +179,14 @@
       });
   };
   const delete_comment = async (comment_id) => {
-    await fetch(
-      `http://api.eyo.kr:8081/board/free/comment/delete/${comment_id}`,
-      {
-        method: "PUT",
-        headers: {
-          Aceept: "application/json",
-        },
-        mode: "cors",
-        credentials: "include",
-      }
-    )
+    await fetch(`//api.eyo.kr:8081/board/free/comment/delete/${comment_id}`, {
+      method: "PUT",
+      headers: {
+        Aceept: "application/json",
+      },
+      mode: "cors",
+      credentials: "include",
+    })
       .then((res) => {
         console.log(res);
         if (res.ok == false) {
@@ -215,7 +211,7 @@
       });
   };
   onMount(async () => {
-    if (window.localStorage["user.username"] == null) {
+    if (window.sessionStorage["user.username"] == null) {
       isLogin = false;
     }
   });
@@ -227,18 +223,20 @@
   <header>
     <div style="padding: 16px">
       {#if isLogin}
-        <div class="edit" style="float: right; margin-top: 16px">
-          <a href="/board/free/write/{article.article_id}"
-            ><button class="button is-rounded is-light"> 수정 </button></a
-          >
-          <button
-            class="button is-rounded is-light"
-            type="submit"
-            on:click={del}
-          >
-            삭제
-          </button>
-        </div>
+        {#if Number(window.sessionStorage["user.id"]) == article.userid}
+          <div class="edit" style="float: right; margin-top: 16px">
+            <a href="/board/free/write/{article.article_id}">
+              <button class="button is-rounded is-light"> 수정 </button>
+            </a>
+            <button
+              class="button is-rounded is-light"
+              type="submit"
+              on:click={del}
+            >
+              삭제
+            </button>
+          </div>
+        {/if}
       {/if}
       <div style="float:left;">
         <span class="is-size-3">{article.title}</span> <br />
@@ -295,8 +293,10 @@
                 <a
                   class="author"
                   href="/free/{comment.username}"
-                  style="color: #4A4A4A;">{comment.username}</a
+                  style="color: #4A4A4A;"
                 >
+                  {comment.username}
+                </a>
                 <span style="color: #DBDBDB;">|</span>
                 {comment.created}
               </td>
@@ -305,15 +305,17 @@
               <td>{comment.content}</td>
             </tr>
             {#if isLogin}
-              <button
-                class="button is-rounded
+              {#if Number(window.sessionStorage["user.id"]) == comment.userid}
+                <button
+                  class="button is-rounded
 							is-link is-light is-small
 							is-responsive
 							"
-                on:click={delete_comment(comment.cid)}
-              >
-                삭제
-              </button>
+                  on:click={delete_comment(comment.cid)}
+                >
+                  삭제
+                </button>
+              {/if}
             {/if}
           {/each}
         {/if}

@@ -3,7 +3,6 @@
   import List from "../../[page]/+page.svelte";
   import { onMount } from "svelte";
   import Swal from "sweetalert2";
-  import { HtmlTag } from "svelte/internal";
 
   const getArticle = async (article_id) => {
     const res = await fetch(
@@ -22,7 +21,7 @@
     }
   };
 
-  let article = getArticle($page.params.id);
+  $: article = getArticle($page.params.id);
 
   const delArticle = async (article_id) => {
     const res = await fetch(
@@ -107,21 +106,18 @@
   };
 
   const dislike_qna = async (article_id) => {
-    const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/article/${article_id}/dislike`,
-      {
-        method: "POST",
-        mode: "cors",
-        credentials: "include",
+    await fetch(`//api.eyo.kr:8081/board/qna/article/${article_id}/dislike`, {
+      method: "POST",
+      mode: "cors",
+      credentials: "include",
 
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userid: whoami(),
-        }),
-      }
-    )
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userid: whoami(),
+      }),
+    })
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -157,15 +153,8 @@
   };
 
   let userid;
-  console.log(userid);
-  //console.log(userid);
-
-  //console.log(user.userid); // undefined
-  //console.log(user);
-  //let who = whoami($page.params.userid);
-  //console.log(userid);
-
   let isClicked = false;
+
   const likeclick = () => {
     isClicked = !isClicked;
     if (isClicked) {
@@ -185,10 +174,21 @@
   const alt2 = () => {
     alert("로그인이 필요합니다.");
   };
+  const updateUserCheck = async (e) => {
+    let articleObj = await article;
+    if (Number(window.sessionStorage["user.id"]) != articleObj.userid) {
+      Swal.fire({
+        title: "본인이 작성한 글만 수정\n할 수 있습니다.",
+        text: "",
+        icon: "error",
+        confirmButtonColor: "rgb(067, 085, 189)",
+      }).then(e.preventDefault());
+    }
+  };
 
   let isLogin = true;
   onMount(async () => {
-    if (window.localStorage["user.username"] == null) {
+    if (window.sessionStorage["user.username"] == null) {
       isLogin = false;
     }
   });
@@ -201,9 +201,14 @@
     <div style="padding: 16px">
       {#if isLogin}
         <div class="edit" style="float: right; margin-top: 16px">
-          <a href="/board/qna/write/question/{article.article_id}"
-            ><button class="button is-rounded is-light"> 수정 </button></a
-          >
+          <a href="/board/qna/write/question/{article.article_id}">
+            <button
+              class="button is-rounded is-light"
+              on:click={updateUserCheck}
+            >
+              수정
+            </button>
+          </a>
           <button
             class="button is-rounded is-light"
             on:click={function a() {
@@ -252,12 +257,12 @@
           </div>
           {#each article.tags as tags}
             <a href="/board/qna/tag/{tags.slug}">
-              <button
-                class="button is-rounded is-responsive"
+              <span
+                class="tag is-rounded is-responsive is-small"
                 style="background-color: {tags.color};"
               >
                 {tags.name}
-              </button>
+              </span>
             </a>
           {/each}
         </div>
@@ -296,15 +301,17 @@
 
 <div style="padding: 5px ">
   <div style="float: left;">
-    <a href="/board/qna/1"
-      ><button class="button is-rounded is-light">목록</button></a
-    >
+    <a href="/board/qna/1">
+      <button class="button is-rounded is-light">목록</button>
+    </a>
   </div>
-  <div style="float: right;">
-    <a href="/board/qna/write/answer/{$page.params.id}"
-      ><button class="button is-rounded is-light">답글 작성</button></a
-    >
-  </div>
+  {#if isLogin}
+    <div style="float: right;">
+      <a href="/board/qna/write/answer/{$page.params.id}">
+        <button class="button is-rounded is-light">답글 작성</button>
+      </a>
+    </div>
+  {/if}
 </div>
 <br /><br />
 <div style="padding: 16px">
@@ -332,9 +339,9 @@
                 >{answer.username}</a
               >
             </td>
-            <td style="width: 200px; border-right: 2px solid #dbdbdb;"
-              >{answer.title}</td
-            >
+            <td style="width: 200px; border-right: 2px solid #dbdbdb;">
+              {answer.title}
+            </td>
             <td style="width: 600px;">{answer.created}</td>
             <td style="left: 100%;">
               {#if isLogin}

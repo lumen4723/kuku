@@ -1,6 +1,7 @@
 <script>
 	import "bulma/css/bulma.css";
 	import "@fortawesome/fontawesome-free/css/all.css";
+	import "sweetalert2/dist/sweetalert2.min.css";
 	import { page } from "$app/stores";
 	import { browser } from "$app/env";
 
@@ -10,7 +11,7 @@
 	let loginBtnactivate = true;
 	let username = null;
 	if (browser) {
-		username = window.localStorage.getItem("user.username");
+		username = window.sessionStorage.getItem("user.username");
 		if (username != null) {
 			loginBtnStr = username;
 			loginBtnactivate = false;
@@ -32,9 +33,9 @@
 				})
 				.then(() => {
 					if (browser) {
-						window.localStorage.removeItem("user.email");
-						window.localStorage.removeItem("user.id");
-						window.localStorage.removeItem("user.username");
+						window.sessionStorage.removeItem("user.email");
+						window.sessionStorage.removeItem("user.id");
+						window.sessionStorage.removeItem("user.username");
 					}
 					location.href = "/";
 				})
@@ -126,7 +127,7 @@
 	</nav>
 </header>
 
-<main>
+<main data-sveltekit-prefetch>
 	<slot />
 </main>
 
