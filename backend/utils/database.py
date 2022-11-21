@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from config import Config
 from urllib import parse
 
@@ -12,15 +12,11 @@ engine = create_engine(DATABASE_URL)
 
 
 def get_db():
-    databaseSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    databaseSession = scoped_session(
+        sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    )
 
     try:
         yield databaseSession()
-    except Exception as e:
-        print(f"database error {e}")
-
     finally:
-        try:
-            databaseSession.close_all()
-        except Exception as e:
-            pass
+        databaseSession.close()

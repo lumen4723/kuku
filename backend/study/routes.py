@@ -48,8 +48,7 @@ async def list_head_chapter(session: Session = Depends(utils.database.get_db)):
                     **x,
                     "supported_languages": database.list_chapter_languages(
                         x["course_slug"], x["no"], session
-                    )
-                    .unwrap_or([]),
+                    ).unwrap_or([]),
                 },
                 article,
             )
@@ -109,15 +108,15 @@ async def list_course_chapter(
 
 
 # write new article
-@router.post("/{course_slug}/write")
-async def write_course_chapter(
-    course_slug: str,
-    article: database.lecture_chapter,
-    session: Session = Depends(utils.database.get_db),
-):
-    return (
-        database.write_chapter(course_slug, article, session).map_err(throwMsg).unwrap()
-    )
+# @router.post("/{course_slug}/write")
+# async def write_course_chapter(
+#     course_slug: str,
+#     article: database.lecture_chapter,
+#     session: Session = Depends(utils.database.get_db),
+# ):
+#     return (
+#         database.write_chapter(course_slug, article, session).map_err(throwMsg).unwrap()
+#     )
 
 
 @router.get("/chapter/{chapter}")
@@ -166,7 +165,7 @@ async def write_article(
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
 ):
-    if session_data.is_admin != "N":
+    if session_data.is_admin == "N":
         return throwMsg("권한이 없습니다.")
 
     course = database.get_course_info(course_slug, session).map_err(throwMsg).unwrap()

@@ -15,11 +15,14 @@
 	let supported_language = [];
 	let selected_language = "";
 
-	let run_output =
-		"\n\n    Anyone know how to change the language according to  file extension or first line like '#!/usr/bin/env python'?\n\n  setLanguage(node: any) {\n    if (node) {\n      const languages = {\n        'js': 'javascript',\n        'ts': 'typescript',\n        'html': 'html',\n        'htm': 'html',\n        'txt': 'text',\n        'css': 'css'\n      }\n      const ext = node.name.match(/([^.])+$/g)[0];\n\n      // this.editorComponent.instance.options.language = languages[ext];\n\n      (window as any).monaco.editor.setModelLanguage((window as any).monaco.editor.getModels()[0], languages[ext]);\n\n      return node;\n    }\n  }\n\n";
+	let run_token = "";
+	let run_output = "";
 
 	let chapter_tree = [];
 	let chapter_kv = {};
+
+	let get_editor_code = () => "";
+
 	async function async_chapter_list(course_id) {
 		console.log(chapter_tree.length);
 		if (chapter_tree.length != 0) return Promise.resolve("already loaded");
@@ -81,6 +84,72 @@
 				}
 
 				return Promise.resolve(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
+
+	function run_code() {
+		const code = get_editor_code();
+		const language = selected_language;
+
+		return fetch(`${env.baseUrl}/run/`, {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			mode: "cors",
+			credentials: "include",
+			body: JSON.stringify({
+				code: code,
+				language: language,
+			}),
+		})
+			.then((resp) => {
+				console.log(resp);
+
+				if (!resp.ok) return Promise.reject(resp);
+				return resp.json();
+			})
+			.then((data) => {
+				run_token = data;
+
+				return Promise.resolve(data);
+			})
+			.then((token) => {
+				const max_count = 10;
+				let try_count = 0;
+				cancelation_token = setInterval(() => {
+					if (try_count > max_count) {
+						clearInterval(cancelation_token);
+						return;
+					}
+
+					if (token != run_token) {
+						clearInterval(cancelation_token);
+						return;
+					}
+
+					fetch(`${env.baseUrl}/study/run/${token}`, {
+						method: "GET",
+						headers: {
+							Accept: "application/json",
+						},
+						mode: "cors",
+						credentials: "include",
+					})
+						.then((resp) => resp.json())
+						.then((data) => {
+							run_done = data.done;
+							run_output = data.output;
+
+							if (run_done) {
+								clearInterval(cancelation_token);
+							}
+						});
+				}, 1000);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -153,13 +222,14 @@
 					<option value={language}>{language}</option>
 				{/each}
 			</select>
-			<button class="button is-info"
+			<button class="button is-info" on:click={run_code}
 				>Run <i class="fa-solid fa-play ml-3 is-size-7" />
 			</button>
 		</header>
 		<CodeEditor
+			bind:getData={get_editor_code}
 			language={selected_language}
-			code={get_code(chapter_id, selected_language)}
+			code={get_code(chapter_id, selected_language, articles)}
 		/>
 		<section id="output" class="p-2 is-family-code">{run_output}</section>
 	</section>

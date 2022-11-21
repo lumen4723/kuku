@@ -44,6 +44,7 @@ def create_chapter(chapter: lecture_chapter, db: Session):
         db.refresh(chapter)
         return Ok(chapter)
     except Exception as e:
+        print(e)
         return Err(str(e))
 
 
@@ -54,6 +55,7 @@ def create_article(article: lecture_article, db: Session):
         db.refresh(article)
         return Ok(article)
     except Exception as e:
+        print(e)
         return Err(str(e))
 
 
@@ -74,6 +76,7 @@ def list_head_chapter(db: Session):
             .all()
         )
     except Exception as e:
+        print(e)
         return Err(str(e))
 
 

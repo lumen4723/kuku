@@ -1,8 +1,18 @@
 <script>
+	onMount(() => {
+		if (browser)
+			window.onbeforeunload = function () {
+				return true;
+			};
+	});
+	onDestroy(() => {
+		if (browser) window.onbeforeunload = null;
+	});
+
 	import { onMount } from "svelte";
 	import { browser } from "$app/env";
 	import { page } from "$app/stores";
-	import { is_empty } from "svelte/internal";
+	import { is_empty, onDestroy } from "svelte/internal";
 	import Swal from "sweetalert2";
 	import CodeEditor from "$lib/codeEditor.svelte";
 
@@ -84,7 +94,6 @@
 
 					update_courses(selected_course)
 						.then(function (r) {
-							console.log(r);
 							select_title(title);
 						})
 						.catch((err) => console.log(err));
@@ -92,7 +101,7 @@
 		}
 	}
 
-	// $: update_courses(selected_course);
+	$: update_courses(selected_course);
 	async function update_courses(selected_course) {
 		if (browser && selected_course != undefined && selected_course != "") {
 			return fetch(`//api.eyo.kr:8081/study/${selected_course}/list`, {
@@ -129,7 +138,6 @@
 
 	$: select_title(title);
 	function select_title(selected_title) {
-		console.log(selected_title);
 		if (browser && selected_title != "") {
 			const chapter = chapters.find(
 				(item) => item.title == selected_title
@@ -166,8 +174,6 @@
 
 	$: load_article_of_language(selected_language, articles);
 	function load_article_of_language(language, articles) {
-		console.log(language);
-
 		if (browser && language != undefined && articles != undefined) {
 			const article = articles.find((item) => item.language == language);
 
@@ -202,6 +208,11 @@
 	});
 
 	const postArticle = async () => {
+		if (title == "") {
+			alert("제목을 입력해주세요.");
+			return;
+		}
+
 		let data = {
 			title: title,
 			language: selected_language,
@@ -251,6 +262,9 @@
 					</div>
 					<div class="is-one-fifth select">
 						<select bind:value={parent_chapter}>
+							<option value="null" disabled selected
+								>상위 카테고리</option
+							>
 							{#each chapters as c}
 								<option value={c.no}>{c.title}</option>
 							{/each}
@@ -298,8 +312,7 @@
 			<textarea
 				class="textarea"
 				id="editor"
-				placeholder="내용을 입력하세요."
-				required>{content}</textarea
+				placeholder="내용을 입력하세요.">{content}</textarea
 			>
 			<hr />
 			<h2 class="title">기본 예제코드</h2>
@@ -313,7 +326,7 @@
 			/>
 			<br /><br /><br />
 		</div>
-		<button class="button is-link" type="submit">완료</button>
+		<button class="button is-link">완료</button>
 	</form>
 </div>
 <br /> <br />
