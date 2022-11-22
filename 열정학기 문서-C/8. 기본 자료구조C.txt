@@ -535,69 +535,80 @@
             [
                 #include <stdio.h>
                 #include <string.h>
-                #include <stdlib.h>
-                #define MAX 100000
+                #include <deque>
+
                 int main() {
-                    int t;
-                    scanf("%d", &t);
-                    while (t--) {
-                        char p[MAX];
-                        int n;
-                        int deque[MAX];
-                        int front = 0;
-                        int back = 0;
-                        int size = 0;
-                        int error = 0;
-                        int r = 0;
-                        scanf("%s", p);
-                        scanf("%d", &n);
-                        getchar();
-                        getchar();
-                        for (int i = 0; i < n; i++) {
-                            scanf("%d", &deque[back]);
-                            back = (back + 1) % MAX;
-                            size += 1;
-                        }
-                        getchar();
-                        for (int i = 0; i < strlen(p); i++) {
-                            if (p[i] == 'R') {
-                                r = !r;
-                            } else if (p[i] == 'D') {
-                                if (size == 0) {
-                                    error = 1;
-                                    break;
-                                }
-                                if (r == 0) {
-                                    front = (front + 1) % MAX;
-                                } else {
-                                    back = (back - 1 + MAX) % MAX;
-                                }
-                                size -= 1;
-                            }
-                        }
-                        if (error == 1) {
-                            printf("error\n");
-                        } else {
+                	int T, indata = 0;
+                	char act[100001], arr[100001];
+
+                    scanf("%d", &T);
+                	while (T--) {
+                		std::deque<int> dq;
+                		int index = 1, size;
+                		bool isfront = true, iserror = false;
+
+                        scanf("%s", act);
+                        scanf("%d", &size);
+                        scanf("%s", arr);
+
+                		while (1) {
+                			if (arr[index] >= '0' && arr[index] <= '9') {
+                				indata = indata * 10 + (arr[index] - '0');
+                			}
+                			else if (arr[index] == ',') {
+                				dq.push_back(indata);
+                				indata = 0;
+                			}
+                			else {
+                				if (indata != 0) {
+                					dq.push_back(indata);
+                				}
+                				indata = 0;
+                				break;
+                			}
+                			index++;
+                		}
+
+                		for (int i = 0; i < strlen(act); i++) {
+                			if (act[i] == 'R') {
+                				isfront = !isfront;
+                			}
+                			else if (act[i] == 'D' && !dq.empty()) {
+                				if (isfront) {
+                					dq.pop_front();
+                				}
+                				else {
+                					dq.pop_back();
+                				}
+                			}
+                			else {
+                				printf("error");
+                				iserror = true;
+                				break;
+                			}
+                		}
+
+                		if (!iserror) {
                             printf("[");
-                            if (r == 0) {
-                                for (int i = 0; i < size; i++) {
-                                    printf("%d", deque[(front + i) % MAX]);
-                                    if (i != size - 1) {
-                                        printf(",");
-                                    }
-                                }
-                            } else {
-                                for (int i = 0; i < size; i++) {
-                                    printf("%d", deque[(back - 1 - i + MAX) % MAX]);
-                                    if (i != size - 1) {
-                                        printf(",");
-                                    }
-                                }
-                            }
+                			if (isfront && !dq.empty()) {
+                				printf("%d", dq.front());
+                				dq.pop_front();
+                				while (!dq.empty()) {
+                                    printf(",%d", dq.front());
+                					dq.pop_front();
+                				}
+                			}
+                			else if(!isfront && !dq.empty()) {
+                				printf("%d", dq.back());
+                				dq.pop_back();
+                				while (!dq.empty()) {
+                                    printf(",%d", dq.back());
+                					dq.pop_back();
+                				}
+                			}
                             printf("]\n");
-                        }
-                    }
-                    return 0;
+                		}
+                	}
                 }
             ]
             실행 결과는 다음과 같습니다.
