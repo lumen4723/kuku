@@ -1,7 +1,9 @@
 <script>
 	import { browser } from "$app/env";
 	import { writable } from "svelte/store";
+	import { user } from "$lib/user.js";
 	import { page } from "$app/stores";
+	import { goto } from "$app/navigation";
 
 	let isLoading = false;
 	let email, password;
@@ -48,7 +50,13 @@
 					}
 				});
 
-				location.href = "/";
+				user.set({
+					email: json.email,
+					id: json.id,
+					username: json.username,
+				});
+
+				goto("/");
 				isLoading = false;
 			})
 			.catch((e) => {

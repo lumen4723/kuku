@@ -8,7 +8,7 @@ from urllib import parse
 DATABASE_CONFIG = Config.MariaDB
 DATABASE_URL = f'mysql://{DATABASE_CONFIG["user"]}:{parse.quote(DATABASE_CONFIG["password"])}@{DATABASE_CONFIG["host"]}/{DATABASE_CONFIG["database"]}'
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args={"connect_timeout": 3})
 
 
 def get_db():
@@ -18,5 +18,8 @@ def get_db():
 
     try:
         yield databaseSession()
+    except:
+        databaseSession.rollback()
+        raise
     finally:
-        databaseSession.close()
+        databaseSession.remove()
