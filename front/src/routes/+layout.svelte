@@ -30,7 +30,7 @@
 		user.set(null);
 
 		if (username != null) {
-			await fetch(`//api.eyo.kr:8081/user/logout`, {
+			await fetch(`//api.eyo.kr/user/logout`, {
 				method: "POST",
 				headers: {
 					Accept: "application/json",

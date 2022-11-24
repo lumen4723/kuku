@@ -6,7 +6,7 @@
 
   const getArticle = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/list/article/${article_id}`,
+      `//api.eyo.kr/board/qna/list/article/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -24,14 +24,11 @@
   $: article = getArticle($page.params.id);
 
   const delArticle = async (article_id) => {
-    const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/delete/${article_id}`,
-      {
-        method: "DELETE",
-        mode: "cors",
-        credentials: "include",
-      }
-    );
+    const res = await fetch(`//api.eyo.kr/board/qna/delete/${article_id}`, {
+      method: "DELETE",
+      mode: "cors",
+      credentials: "include",
+    });
 
     if (res.ok) {
       return article;
@@ -78,7 +75,7 @@
   }
 
   const like_qna = async (article_id) => {
-    await fetch(`//api.eyo.kr:8081/board/qna/${article_id}/like`, {
+    await fetch(`//api.eyo.kr/board/qna/${article_id}/like`, {
       method: "POST",
       mode: "cors",
       credentials: "include",
@@ -106,7 +103,7 @@
   };
 
   const dislike_qna = async (article_id) => {
-    await fetch(`//api.eyo.kr:8081/board/qna/article/${article_id}/dislike`, {
+    await fetch(`//api.eyo.kr/board/qna/article/${article_id}/dislike`, {
       method: "POST",
       mode: "cors",
       credentials: "include",
@@ -134,7 +131,7 @@
   };
 
   const whoami = async () => {
-    await fetch("//api.eyo.kr:8081/user/whoami", {
+    await fetch("https://api.eyo.kr/user/whoami", {
       method: "GET",
       headers: {
         Aceept: "application/json",

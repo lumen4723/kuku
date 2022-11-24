@@ -12,7 +12,7 @@
       ClassicEditor.create(document.querySelector("#editor"), {
         simpleUpload: {
           // The URL that the images are uploaded to.
-          uploadUrl: "//api.eyo.kr:8081/upload/",
+          uploadUrl: "https://api.eyo.kr/upload/",
 
           // Enable the XMLHttpRequest.withCredentials property.
           withCredentials: true,
@@ -27,7 +27,7 @@
   });
 
   const postArticle = () =>
-    fetch(`//api.eyo.kr:8081/board/free/create`, {
+    fetch(`//api.eyo.kr/board/free/create`, {
       method: "POST",
       headers: {
         Aceept: "application/json",

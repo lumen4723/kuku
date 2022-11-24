@@ -23,7 +23,7 @@
   });
 
   const postArticle = () =>
-    fetch(`//api.eyo.kr:8081/board/qna/answer`, {
+    fetch(`//api.eyo.kr/board/qna/answer`, {
       method: "POST",
       headers: {
         Aceept: "application/json",

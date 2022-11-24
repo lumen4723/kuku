@@ -12,15 +12,62 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+run_submit_user = {}
 
-@router.post("/", dependencies=[Depends(cookie)])
+
+@router.post("/", dependencies=[])
 async def main(
     form: schema.run_request,
     db: Session = Depends(utils.database.get_db),
-    session_data: SessionData = Depends(verifier),
+    session_id=Depends(cookie)
+    # session_data: SessionData = Depends(verifier),
 ):
-    if session_data.type != 0:
-        return throwMsg("권한이 없습니다.")
+    # if session_data.type != 0:
+    # return throwMsg("권한이 없습니다.")
 
     form = database.code_jobs(**form.dict(), status="que")
-    return database.create_run_requst(form, db).map_err(throwMsg).unwrap()
+    run_id = database.create_run_requst(form, db).map_err(throwMsg).unwrap()
+
+    run_submit_user[run_id] = session_id
+    return run_id
+
+
+@router.get("/{run_id}/", dependencies=[Depends(cookie)])
+async def get_run(
+    run_id: int,
+    db: Session = Depends(utils.database.get_db),
+    session_id=Depends(cookie),
+):
+    if run_submit_user[run_id] != session_id:
+        return throwMsg("권한이 없습니다.")
+
+    result = database.get_run_requst(run_id, db).map_err(throwMsg).unwrap()
+    if result.status != "que" and result.last_read_line is None:
+        result.last_read_line = 0
+
+    output = result.output
+    if result.output != None:
+        output = result.output.split("\n")
+        output = output[result.last_read_line :]
+
+        database.update_run_request_last_read_line(run_id, len(output), db)
+
+    return {
+        "status": result.status,
+        "status_updated": result.status_updated,
+        "output": output,
+        "last_read_line": result.last_read_line,
+    }
+
+@router.put("/{run_id}/input", dependencies=[Depends(cookie)])
+async def pass_input_to_program(
+    run_id: int,
+    db: Session = Depends(utils.database.get_db),
+    session_id=Depends(cookie),
+):
+    if run_submit_user[run_id] != session_id:
+        return throwMsg("권한이 없습니다.")
+
+    result = database.get_run_requst(run_id, db).map_err(throwMsg).unwrap()
+    return result.status
+)

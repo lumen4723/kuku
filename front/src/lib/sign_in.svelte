@@ -15,7 +15,7 @@
 	}
 	const login = async () => {
 		isLoading = true;
-		await fetch("//api.eyo.kr:8081/user/login", {
+		await fetch("https://api.eyo.kr/user/login", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",

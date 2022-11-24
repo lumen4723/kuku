@@ -193,6 +193,7 @@ def get_article(
             .limit(1)
             .all()
         )
+        print(data)
         if len(data) == 0:
             return Ok(Option.NONE())
 

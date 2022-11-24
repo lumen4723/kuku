@@ -43,7 +43,7 @@
 	};
 
 	const check_username = async () =>
-		await fetch(`//api.eyo.kr:8081/user/check?username=${username}`, {
+		await fetch(`//api.eyo.kr/user/check?username=${username}`, {
 			method: "GET",
 			headers: {
 				Aceept: "application/json",
@@ -79,7 +79,7 @@
 
 	const updateUser = async () => {
 		isLoading = true;
-		await fetch("//api.eyo.kr:8081/user/update", {
+		await fetch("https://api.eyo.kr/user/update", {
 			method: "PUT",
 			headers: {
 				Aceept: "application/json",
@@ -127,7 +127,7 @@
 	};
 
 	const emailcheck = async () => {
-		await fetch("//api.eyo.kr:8081/user/sendEmailBySesson", {
+		await fetch("https://api.eyo.kr/user/sendEmailBySesson", {
 			method: "POST",
 			headers: {
 				Aceept: "application/json",
@@ -155,7 +155,7 @@
 
 	const getUser = async () => {
 		const email = window.sessionStorage.getItem("user.email");
-		const res = await fetch(`//api.eyo.kr:8081/user/?email=${email}`, {
+		const res = await fetch(`//api.eyo.kr/user/?email=${email}`, {
 			mode: "cors",
 			credentials: "include",
 		});

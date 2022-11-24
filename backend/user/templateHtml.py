@@ -35,7 +35,7 @@ def emailTemplate(token: str) -> str:
                     <p style="margin-top: 1rem;">저희 KUKU 에 가입해주셔서 감사합니다.</p>
                     <p style="margin-top: 1rem;">이메일 인증을 완료 하셔야 KUKU의 모든 기능을 이용 하실 수 있으십니다.</p>
                     <br>
-                    <a href="http://api.eyo.kr:8081/user/emailConfirm?token={token}"
+                    <a href="https://api.eyo.kr/user/emailConfirm?token={token}"
                         target="_blank"
                         style = "margin-top: 1rem;
                     padding: 1rem;

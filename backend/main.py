@@ -20,12 +20,7 @@ app.include_router(study.router)
 app.include_router(upload.router)
 app.include_router(run.router)
 
-origins = [
-    "http://local.eyo.kr:5173",
-    "http://ksu-527.eyo.kr:5173",
-    "https://eyo.kr:8081",
-    "http://eyo.kr:8081",
-]
+origins = ["https://eyo.kr", "https://www.eyo.kr"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

@@ -387,6 +387,7 @@
 .ck-content .table {
 	margin: 0.9em auto;
 	display: table;
+	width: 90%
 }
 
 /* ckeditor5-table/theme/table.css */

@@ -5,7 +5,7 @@ import gmttolocal from "$lib/time.js";
 
   const getBoardList = async (pageIdx, pageLimit) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
+      `//api.eyo.kr/board/free/list/${pageIdx}?limit=${pageLimit}`,
       {
         mode: "cors",
         credentials: "include",
@@ -20,7 +20,7 @@ import gmttolocal from "$lib/time.js";
   };
   const getNoticeList = async (pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/notice/list?limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/notice/list?limit=${pageLimit}`,
 			{
 				mode: "cors",
   			credentials: "include",
@@ -35,7 +35,7 @@ import gmttolocal from "$lib/time.js";
 	};
 	const getqnalist = async (pageIdx, pageLimit) => {
     const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+			`//api.eyo.kr/board/qna/list/${pageIdx}?limit=${pageLimit}`,
 			{
 				mode: "cors",
     		credentials: "include",

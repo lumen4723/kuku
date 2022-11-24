@@ -21,7 +21,7 @@
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/list/${pageIdx}?limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -39,7 +39,7 @@
 	};
 	const searchTitle = async (title, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/title/${title}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/search/title/${title}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -57,7 +57,7 @@
 	};
 	const searchUser = async (user, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/username/${user}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/search/username/${user}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -75,7 +75,7 @@
 	};
 	const searchContent = async (content, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/content/${content}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/search/content/${content}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",

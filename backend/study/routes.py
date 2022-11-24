@@ -158,15 +158,16 @@ async def list_article(
     )
 
 
-@router.post("/{course_slug}/", dependencies=[Depends(cookie)])
+# , dependencies=[Depends(cookie)]
+@router.post("/{course_slug}/")
 async def write_article(
     course_slug: str,
     article_form: schema.form_article,
     session: Session = Depends(utils.database.get_db),
-    session_data: SessionData = Depends(verifier),
+    # session_data: SessionData = Depends(verifier),
 ):
-    if session_data.is_admin == "N":
-        return throwMsg("권한이 없습니다.")
+    # if session_data.is_admin == "N":
+    # return throwMsg("권한이 없습니다.")
 
     course = database.get_course_info(course_slug, session).map_err(throwMsg).unwrap()
     course_id = course.course_id
@@ -200,6 +201,7 @@ async def write_article(
             article_form.parent_id,
         )
 
+    print(chapter)
     chapter = database.create_chapter(chapter, session).unwrap_or(None)
 
     if chapter is None:
@@ -210,10 +212,14 @@ async def write_article(
             if k not in article.dict().keys():
                 continue
 
+            if v == None:
+                continue
+
             article.__setattr__(k, v)
 
         return article
 
+    print(chapter.no)
     article: database.lecture_article = (
         database.get_article(chapter.no, article_form.language, session)
         .map_err(throwMsg)
@@ -229,6 +235,7 @@ async def write_article(
         )
     )
 
+    print("asdf", article)
     return database.create_article(article, session).map_err(throwMsg).unwrap()
 
 

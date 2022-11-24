@@ -1,5 +1,5 @@
 <script>
-	import { afterUpdate, tick } from "svelte";
+	import { afterUpdate, beforeUpdate, onDestroy, tick } from "svelte";
 	import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
 	import env from "$lib/env.js";
@@ -32,12 +32,24 @@
 	let selected_language = "";
 
 	let run_token = "";
-	let run_output = "";
+	let run_output = " >> 실행 버튼을 눌려주세요";
 
 	let chapter_tree = [];
 	let chapter_kv = {};
 
+	let cancelation_token = null;
 	let get_editor_code = () => "";
+
+	onDestroy(() => {
+		if (cancelation_token != null) {
+			cancelation_token.cancel();
+		}
+	});
+	beforeUpdate(() => {
+		if (cancelation_token != null) {
+			cancelation_token.cancel();
+		}
+	});
 
 	async function async_chapter_list(course_id) {
 		console.log(chapter_tree.length);
@@ -141,7 +153,8 @@
 				const max_count = 10;
 				let try_count = 0;
 				cancelation_token = setInterval(() => {
-					if (try_count > max_count) {
+					// 기본적으로 카운트를 까되, pending 상태면 보상을 하는 방식으로 구현
+					if (try_count++ > max_count) {
 						clearInterval(cancelation_token);
 						return;
 					}
@@ -151,7 +164,7 @@
 						return;
 					}
 
-					fetch(`${env.baseUrl}/study/run/${token}`, {
+					fetch(`${env.baseUrl}/run/${token}/`, {
 						method: "GET",
 						headers: {
 							Accept: "application/json",
@@ -204,7 +217,13 @@
 		if (element_article) {
 			prism.highlightAllUnder(element_article);
 		}
+
+		return "";
 	}
+	afterUpdate(() => {
+		highlight_code();
+	});
+
 	function change_chapter(e) {
 		goto(`/study/${course_id}/${e.target.value}`);
 	}
@@ -240,7 +259,7 @@
 				</div>
 			{:then}
 				{@html get_article(chapter_id, selected_language)}
-				{highlight_code()}
+				{highlight_code() === null || ""}
 			{/await}
 		</article>
 	</aside>

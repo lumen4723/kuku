@@ -6,7 +6,7 @@
 
   const getArticle = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/article_id/${article_id}`,
+      `//api.eyo.kr/board/free/article_id/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -23,7 +23,7 @@
 
   const delArticle = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/delete/${article_id}`,
+      `//api.eyo.kr/board/free/delete/${article_id}`,
       {
         method: "DELETE",
         mode: "cors",
@@ -77,7 +77,7 @@
   };
   const getComment = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/comment/${article_id}`,
+      `//api.eyo.kr/board/free/comment/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -94,7 +94,7 @@
 
   const Like = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/article/${article_id}/like`,
+      `//api.eyo.kr/board/free/article/${article_id}/like`,
       {
         method: "POST",
         headers: {
@@ -111,7 +111,7 @@
 
   const disLike = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/article/${article_id}/dislike`,
+      `//api.eyo.kr/board/free/article/${article_id}/dislike`,
       {
         method: "PUT",
         headers: {
@@ -142,7 +142,7 @@
   let comment_content = "";
   const create_comment = async (article_id) => {
     return await fetch(
-      `//api.eyo.kr:8081/board/free/comment/create/${article_id}`,
+      `//api.eyo.kr/board/free/comment/create/${article_id}`,
       {
         method: "POST",
         headers: {
@@ -179,7 +179,7 @@
       });
   };
   const delete_comment = async (comment_id) => {
-    await fetch(`//api.eyo.kr:8081/board/free/comment/delete/${comment_id}`, {
+    await fetch(`//api.eyo.kr/board/free/comment/delete/${comment_id}`, {
       method: "PUT",
       headers: {
         Aceept: "application/json",

@@ -12,7 +12,7 @@
     ClassicEditor.create(document.querySelector("#editor"), {
       simpleUpload: {
         // The URL that the images are uploaded to.
-        uploadUrl: "//api.eyo.kr:8081/upload/",
+        uploadUrl: "https://api.eyo.kr/upload/",
 
         // Enable the XMLHttpRequest.withCredentials property.
         withCredentials: true,
@@ -29,7 +29,7 @@
   const getArticle = async (article_id) => {
     if (isNaN(article_id)) return false;
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/article_id/${article_id}`,
+      `//api.eyo.kr/board/free/article_id/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -49,22 +49,19 @@
   let article = getArticle($page.params.id);
 
   const putArticle = async (article_id) => {
-    const res = await fetch(
-      `//api.eyo.kr:8081/board/free/update/${article_id}`,
-      {
-        method: "PUT",
-        headers: {
-          Aceept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: article_data.title,
-          content: ckeditorInstance.getData(),
-        }),
-        mode: "cors",
-        credentials: "include",
-      }
-    )
+    const res = await fetch(`//api.eyo.kr/board/free/update/${article_id}`, {
+      method: "PUT",
+      headers: {
+        Aceept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: article_data.title,
+        content: ckeditorInstance.getData(),
+      }),
+      mode: "cors",
+      credentials: "include",
+    })
       .then((res) => {
         if (res.ok == false) return Promise.reject(res);
         return res.json();
