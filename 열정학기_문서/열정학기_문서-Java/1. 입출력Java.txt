@@ -1,0 +1,244 @@
+[]가 쳐져있는 부분은 언어에따라 유동적으로 입력해야함
+
+1.1. helloworld 출력
+대부분의 프로그래밍언어에서는 출력하는 함수가 존재하고, 이를 통해 출력을 할 수 있습니다.
+이번에는 [java]언어에서 출력하는 명령어를 알아봅시다.
+알고리즘 입문자들은 보통 "Hello World"를 출력하는 프로그램을 작성해보는 것을 시작으로 합니다.
+전통에 맞게 helloworld를 출력해보겠습니다. 다음과 같이 작성하고 실행해보세요.
+[
+    public class Main{
+    public static void main(String[] arags){
+        System.out.println("Hello World");
+    }
+]
+실행 결과는 다음과 같습니다.
+Hello World
+
+1.2. a = 10, b = 20, a + b 출력
+출력의 경우 문자열(문자), 정수, 실수 등을 출력할 수 있습니다.
+다음과 같이 작성하고 실행해보세요.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 10;
+            int b = 20;
+            System.out.println(a + " + " + b + " = " + (a+b)); // 각 정수출력 위치%d에 a, b, a + b를 출력합니다.
+        }
+}
+]
+실행 결과는 다음과 같습니다.
+10 + 20 = 30
+
+1.3. a = 1.2, b = 2.4, a - b 출력
+실수를 출력하는 방법은 다음과 같습니다.
+다음과 같이 작성하고 실행해보세요.
+[
+    public class Main{
+        public static void main(String[] arags){
+            float a = 1.2f;  //float은 뒤에 f를 붙여줍니다.
+            float b = 2.4f;
+            System.out.println(a + " - " + b + " = " + (a-b) ); // 각 실수출력 위치%f에 a, b, a - b를 출력합니다.
+        }
+]
+실행 결과는 다음과 같습니다.
+1.200000 - 2.400000 = -1.200000
+
+1.4. 개행, 탭, 역슬래시, (작은, 큰)따옴표 출력
+개행, 탭, 역슬래시, (작은, 큰)따옴표는 입출력할 때 사용되는 특수한 문자들입니다.
+그래서 이들을 출력하려하면 다른 것들과 충돌이 일어날 수 있습니다.
+그렇다면 이들을 정상 출력하는 방법은 어떻게 될까요?
+다음과 같이 작성하고 실행해보세요.
+[
+    public class Main{
+        public static void main(String[] arags){
+            System.out.println("개행을 출력하면 \n입니다.\n");
+            System.out.println("탭을 출력하면 \t입니다.\n");
+            System.out.println("역슬래시문자를 출력하면 \\입니다.\n");
+            System.out.println("작은따옴표문자를 출력하면 \'입니다.\n");
+            System.out.println("큰따옴표문자를 출력하면 \"입니다.\n");
+        }
+    }
+]
+실행 결과는 다음과 같습니다.
+개행을 출력하면
+입니다.
+탭을 출력하면     입니다.
+역슬래시문자를 출력하면 \입니다.
+작은따옴표문자를 출력하면 '입니다.
+큰따옴표문자를 출력하면 "입니다.
+
+1.5. 소수점 조절 출력
+실수를 출력할 때 소수점 이하 자리수를 조절할 수 있습니다.
+다음과 같이 작성하고 실행해보세요.
+[
+    public class Main{
+        public static void main(String[] arags){
+            // printf는 출력할 때 특정한 형식을 지정할 수 있습니다.
+            float a = 1.23456789f;
+            System.out.printf("%f\n", a); // 기본은 소수점 이하 6자리까지 출력합니다.
+            System.out.printf("%.2f\n", a); // 소수점 이하 2자리까지 출력합니다.
+            System.out.printf("%.5f\n", a); // 소수점 이하 5자리까지 출력합니다.
+            System.out.printf("%.9f\n", a); // 소수점 이하 9자리까지 출력합니다.
+        }
+    }
+]
+실행 결과는 다음과 같습니다.
+1.234568
+1.23
+1.23457
+1.234567890
+
+
+1.6.1. 문자 입력 받고 출력
+다음은 키보드로 부터 입력을 받아서 출력을 해봅시다.
+다음과 같이 작성하고 실행해보세요.
+[
+    import java.util.Scanner;
+    public class Main{
+        public static void main(String[] arags){
+            Scanner sc = new Scanner(System.in); // Scanner 객체를 생성합니다. 
+            char input; // 문자를 저장할 곳을 생성합니다.
+            System.out.println("문자를 입력하세요: "); 
+            input = sc.next().charAt(0); // 입력받은 문자열 중 첫번째 문자를 가져옵니다.
+            System.out.println(input); // 입력받은 문자열을 출력합니다.
+            sc.close(); // 생성한 Scanner 객체를 닫습니다.
+        }
+    }
+]
+실행 결과는 다음과 같습니다.
+문자를 입력하세요: (예를들어 a를 입력)
+입력한 문자는 a 입니다.
+
+1.6.2. 문자열 입력 받고 출력
+[
+    //문자열을 입력 받을 때는 next() 를 사용합니다.
+    //next() 는 공백을 기준으로 문자열을 입력 받습니다.
+    //만약 공백을 포함한 문자열을 입력 받고 싶다면 nextLine() 을 사용하면 됩니다.
+    //다음과 같이 작성하고 실행해보세요.
+    import java.util.Scanner;
+    public class Main{
+        public static void main(String[] arags){
+            Scanner sc = new Scanner(System.in); // Scanner 객체를 생성합니다. 
+            String input; // 문자열을 저장할 곳을 생성합니다.
+            System.out.println("문자열을 입력하세요: ");
+            input = sc.nextLine(); // 입력받은 문자열을 가져옵니다.
+            System.out.println(input); // 입력받은 문자열을 출력합니다.
+            sc.close(); // 생성한 Scanner 객체를 닫습니다.
+        }
+    }
+]
+실행 결과는 다음과 같습니다.
+문자열을 입력하세요: (예를들어 hello를 입력)
+입력한 문자열은 hello 입니다.
+[
+    문자를 입력 받는 것은 문자열을 입력 받는 것과 비슷합니다.
+    문자를 한꺼번에 지정하는 '배열'을 사용하여 문자열을 입력 받습니다.
+    다음과 같이 작성하고 실행해보세요.
+    public class Main{
+        public static void main(String[] arags){
+            Scanner sc = new Scanner(System.in); // Scanner 객체를 생성합니다. 
+            char[] input = new char[100]; // 문자열을 저장할 곳을 생성합니다.
+            System.out.println("문자열을 입력하세요: ");
+            input = sc.nextLine().toCharArray(); // 입력받은 문자열을 가져와 이를 한글자씩 배열로 만들어 저장합니다.
+            System.out.println(input); // 입력받은 문자열을 출력합니다.
+            sc.close(); // 생성한 Scanner 객체를 닫습니다.
+        }
+    }
+]
+
+1.7. 정수 입력 받고 출력
+정수를 입력 받는 것은 문자를 입력 받는 것과 비슷합니다.
+다음과 같이 작성하고 실행해보세요.
+[
+    import java.util.Scanner;
+    public class Main{
+        public static void main(String[] arags){
+            Scanner sc = new Scanner(System.in); // Scanner 객체를 생성합니다. 
+            int input; // 정수를 저장할 곳을 생성합니다.
+            System.out.println("정수를 입력하세요: ");
+            input = sc.nextInt(); // 입력받은 정수를 가져옵니다.
+            System.out.println(input); // 입력받은 정수를 출력합니다.
+            sc.close(); // 생성한 Scanner 객체를 닫습니다.
+        }
+    }
+]
+실행 결과는 다음과 같습니다.
+정수를 입력하세요: (예를들어 123을 입력)
+입력한 정수는 123 입니다.
+정수의 입력은 숫자가 아닌부분까지 입력받습니다.(예를들어 123abc를 입력 => 123출력)
+
+8. 실수 입력 받고 출력
+실수를 입력 받는 것 역시 문자를 입력 받는 것과 비슷합니다.
+다음과 같이 작성하고 실행해보세요.
+[
+    import java.util.Scanner;
+    public class Main{
+        public static void main(String[] arags){
+            Scanner sc = new Scanner(System.in); // Scanner 객체를 생성합니다. 
+            float input; // 실수를 저장할 곳을 생성합니다.
+            System.out.println("실수를 입력하세요: ");
+            input = sc.nextFloat(); // 입력받은 실수를 가져옵니다.
+            System.out.println(input); // 입력받은 실수를 출력합니다.
+            sc.close(); // 생성한 Scanner 객체를 닫습니다.
+        }
+    }
+]
+실행 결과는 다음과 같습니다.
+실수를 입력하세요: (예를들어 123.456을 입력)
+입력한 실수는 123.456000 입니다.
+실수의 입력은 숫자가 아닌부분까지 입력받습니다.(예를들어 123.456abc를 입력 => 123.456출력)
+
+9. 입력단위를 다르게 입력받고 출력
+[
+    printf("???", 변수) 함수는 출력단위를 다양하게 지정할 수 있습니다.
+    %d는 정수를 입력받는 입력단위입니다.
+        예를들어 123을 입력받을 수 있습니다.
+
+    %f는 실수를 입력받는 입력단위입니다.
+        예를들어 123.456을 입력받을 수 있습니다.
+
+    %c는 문자를 입력받는 입력단위입니다.
+        예를들어 a를 입력받을 수 있습니다.
+
+    %s는 문자열을 입력받는 입력단위입니다.
+        예를들어 abc를 입력받을 수 있습니다.
+
+    %x는 16진수를 입력받는 입력단위입니다. (16진수는 0x로 시작합니다.)
+        예를들어 0x123을 입력받을 수 있습니다.
+
+    %o는 8진수를 입력받는 입력단위입니다. (8진수는 0으로 시작합니다.)
+        예를들어 0123을 입력받을 수 있습니다.
+
+    %u는 부호없는 정수를 입력받는 입력단위입니다. (부호없는 정수는 음수가 없습니다.)
+        예를들어 123을 입력받을 수 있습니다.
+
+    %e는 지수표기법으로 실수를 입력받는 입력단위입니다. (지수표기법은 1.23e4와 같이 e뒤에 지수를 붙입니다.)
+        예를들어 1.23e4를 입력받을 수 있습니다. (%e는 항상 ...e...의 형태로 입력해야 합니다.)
+
+    %g는 %f와 %e중 더 짧은것으로 실수를 입력받는 입력단위입니다. (...e...의 형태도 입력받을 수 있습니다.)
+        예를들어 123.456을 입력받을 수 있습니다. 
+        또한 1.23e4를 입력받을 수 있습니다.
+
+    다른 입력함수로는 BufferedReader 함수가 있습니다. 
+    BufferedReader 함수는 입력버퍼를 통하여 효율적으로 읽을 수 있습니다.
+    다음과 같이 작성하고 실행해보세요.
+    import java.io.*;
+    class BufferedReaderEx1 {
+        public static void main(String[] args){
+            try{ //예외처리 또는 throwsIOException을 해주는 것이 좋습니다.
+                //콘솔에서 입력 받을 경우
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); 
+                //String이 리턴값이며 라인단위로 받아들입니다.
+                String input = br.readLine();   
+                System.out.println(input);
+                br.close(); //입출력이 끝난 후 생성한 객체를 닫아주어야 합니다.
+            } catch (IOException e){ //
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+    실행결과는 다음과 같습니다.
+    (예를들어 입력값이 abc de fg일때)
+    abc de fg
+]

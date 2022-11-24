@@ -1,0 +1,269 @@
+4.1. 변수와 상수
+이번장에서는 변수와 상수에대해서 알아보겠습니다.
+변수는 변하는 수를 의미하고 상수는 변하지 않는 수를 의미합니다.
+변수는 값을 변경할 수 있고 상수는 값을 변경할 수 없습니다.
+변수와 상수는 다음과 같이 선언합니다.
+[
+    public class Main{
+        static final int b =2; //상수 선언
+        public static void main(String[] arags){
+            int a = 1; //변수 선언
+            a = 3;
+            //b = 4; //해당 코드는 에러를 발생시킵니다.
+            System.out.println(a);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+10 20 30
+변수 a는 10에서 30으로 변경가능하지만
+상수 b는 20에서 40으로 변경하려고 시도하면 에러가 발생합니다.
+
+java에서는 c언어에서의 const를 지원하지 않습니다.
+처음부터 끝까지, 어떤 값을 그냥 당연히 갖게 되는 const란 예약어를 
+객체지향에 집어넣기에는 어려움이 있기 때문입니다.
+하지만 상수 개념이 존재하지 않은것은 아니고 final을 사용하여 상수를 처럼 사용할 수 있습니다.
+이떄 final은 수학에서의 정의로도, 프로그래밍에서의 정의로도 상수와는 거리가 멀다는 것을
+인지하고 사용하셔야 합니다.
+-https://sslblog.tistory.com/23 참고
+
+실행결과는 다음과 같습니다.
+3.140000
+
+4.2. 자료형
+자료형은 변수의 종류를 의미합니다.
+자료형은 다음과 같이 선언합니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 10; //정수형 변수 선언
+            float b = (float)3.14; //실수형 변수 선언
+            char c = 'A'; //문자형 변수 선언
+            System.out.println(a+" "+b+" "+c);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+10 3.14 A
+
+추가로 int와 비슷한 자료형은 다음과 같습니다.
+[
+    short a = 10;           // int보다 작은 정수형 변수 선언
+    long b = 20;            // int보다 큰 정수형 변수 선언
+]
+추가로 float와 비슷한 자료형은 다음과 같습니다.
+[
+    double a = 3.14;            // float보다 큰 실수형 변수 선언
+]
+
+4.3. 연산자
+4.3.1. 산술연산자
+연산자는 변수와 변수를 산술연산하는 기호를 의미합니다.
+연산자는 다음과 같이 선언합니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 91;
+            int b = 19;
+            int c = a + b;  //덧셈
+            int d = a - b;  //뺄셈
+            int e = a * b;  //곱셈
+            int f = a / b;  //나눗셈
+            int g = a % b; //나머지
+            System.out.println(c+" "+d+" "+e+" "+f+" "+g);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+110 72 1729 4 15
+
+추가로 다음과 같은 연산자가 있습니다.
+해당연산자들은 특정경우에 코드를 간단하게 만들어줍니다.
+[
+    a += b;     // a = a + b;
+    a -= b;     // a = a - b;
+    a *= b;     // a = a * b;
+    a /= b;     // a = a / b;
+    a %= b;     // a = a % b;
+
+    a++;        // a = a + 1;
+    a--;        // a = a - 1;
+    ++a;        // a = a + 1;
+    --a;        // a = a - 1;
+]
+
+4.3.2. 비교연산자
+비교연산자는 두 변수를 비교하는 연산자입니다.
+대개 두 값을 비교하여 참과 거짓(bool)의 형태로 반환합니다.
+비교연산자는 다음과 같이 선언합니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 10;
+            int b = 20;
+            boolean c = a == b; //a와 b가 같은지 비교
+            boolean d = a != b; //a와 b가 다른지 비교
+            boolean e = a > b;  //a가 b보다 큰지 비교
+            boolean f = a < b;  //a가 b보다 작은지 비교
+            boolean g = a >= b; //a가 b보다 크거나 같은지 비교
+            boolean h = a <= b; //a가 b보다 작거나 같은지 비교
+            System.out.println(c+" "+d+" "+e+" "+f+" "+g+" "+h);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+false true false true false true
+
+추가로 삼항연산자가 있습니다.
+삼항연산자는 다음과 같이 선언합니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 10;
+            int b = 20;
+            int c = a > b ? a : b;  //a가 b보다 크면 a를 반환하고 아니면 b를 반환
+            System.out.println(c);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+20
+
+4.3.3. 논리연산자
+논리연산자는 두 변수를 논리적으로 연산하는 연산자입니다.
+대개 두 bool값을 연산하여 bool의 형태로 반환합니다.
+논리연산자는 다음과 같이 선언합니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            boolean a = true;
+            boolean b = false;
+            boolean c = a && b;  // AND 연산 (a와 b가 모두 참일때 참)
+            boolean d = a || b;  // OR 연산 (a와 b중 하나라도 참일때 참)
+            boolean e = !a;     // NOT 연산 (c가 참이면 거짓, 거짓이면 참)
+            boolean f = a ^ b; // XOR 연산 (a와 b중 하나만 참일때 참)
+            System.out.println(c+" "+d+" "+e+" "+f);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+false true false true
+
+4.3.4. 비트연산자
+-이번장은 변수가 이진수로 저장되는 개념을 이해하고
+    읽어보는것을 권장합니다.-
+비트연산자는 두 변수를 비트단위로 연산하는 연산자입니다.
+대개 두 int값을 연산하여 int의 형태로 반환합니다.
+
+일반적인 정수값들은 2진수(비트)로 저장 됩니다.
+그래서 두 값을 각자리의 비트끼리 연산 할수도 있을것입니다.
+'두 값의 각자리 비트끼리 연산'의 개념을 사용한것이 비트연산자입니다.
+비트연산자는 다음과 같이 선언합니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 10;         // 10은 2진수로 1010
+            int b = 12;         // 12은 2진수로 1100
+            int c = a & b;      // AND 연산 (a와 b가 모두 1일때 1)
+            int d = a | b;      // OR 연산 (a와 b중 하나라도 1일때 1)
+            int e = ~a;         // NOT 연산 (a의 비트를 반전)
+            int f = a ^ b;      // XOR 연산 (a와 b중 하나만 1일때 1)
+            System.out.println(c+" "+d+" "+e+" "+f);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+8 14 -11 6 (각 이진수는 1000, 1110, 10101, 0110)
+(NOT의 경우 4byte와 2의 보수를 공부하면 이해하기 수월합니다.)
+
+추가로 시프트 연산자도 있습니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 10;         // 10은 2진수로 1010
+            int b = 12;         // 12은 2진수로 1100
+            int c = a << 1;     // a를 왼쪽으로 1비트 이동
+            int d = a >> 1;     // a를 오른쪽으로 1비트 이동
+            System.out.println(c+" "+d);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+20 5 (각 이진수는 10100, 101) 
+
+4.4. 함수
+함수는 프로그램을 작성할때 가장 중요한 개념입니다.
+함수는 특정한 기능을 수행하는 코드의 집합입니다.
+함수를 사용하면 코드의 재사용성이 높아지고 유지보수가 쉬워집니다.
+함수는 다음과 같이 선언합니다.
+
+반환되는 타입 함수이름(매개변수) {
+    함수의 내용
+    return 반환값;
+}
+
+반환되는 타입은 함수가 반환하는 값의 타입입니다.
+매개변수는 함수에 전달되는 값입니다.
+함수의 내용은 함수가 수행하는 코드입니다.
+return은 함수의 실행을 종료하고 반환값을 반환합니다.
+
+함수는 다음과 같이 사용합니다.
+[
+    public class Main{
+        public static void main(String[] arags){
+            int a = 10;
+            int b = 20;
+            int c = add(a, b);
+            System.out.println(c);
+        }
+        public static int add(int a, int b){
+            return a + b;
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+30
+
+4.4.1. 함수의 반환되는 타입
+함수의 반환되는 타입에는 다음과 같은 것들이 있습니다.
+[
+    void : 반환되는 값이 없는 경우
+    int : 정수를 반환하는 경우
+    float : 실수를 반환하는 경우
+    char : 문자를 반환하는 경우
+    char[] : 문자열을 반환하는 경우     
+    int[] : 정수 배열을 반환하는 경우
+    float[] : 실수 배열을 반환하는 경우
+    string[] : 문자열 배열을 반환하는 경우
+
+    함수의 매개변수에도 'void를 제외한' 위와 같은 타입들이 사용됩니다.
+    반환이 없는 void를 제외하고는 모두 return문을 사용해서
+    지정된 타입의 값을 반환해야 합니다.
+]
+
+4.4.2. 1부터 k까지 합을 구하는 함수sum(k)를 사용하여 sum(1)부터 sum(n)까지 합을 구하기
+[
+    import java.util.Scanner;
+    public class Main{
+        public static void main(String[] arags){
+            int n;
+            Scanner sc = new Scanner(System.in);
+            n = sc.nextInt();
+            int sum = 0;
+            for(int i = 1; i <= n; i++){  // sum(1)부터 sum(n)까지 합을 구합니다.
+                sum += sum(i);
+            }
+            System.out.println(sum);
+        }
+        public static int sum(int k){
+            int sum = 0;
+            for(int i = 1; i <= k; i++){
+                sum += i;
+            }
+            return sum;
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+(예를 들어 n = 5이라고 입력하면)
+35 ( == 1 + 3 + 6 + 10 + 15)
