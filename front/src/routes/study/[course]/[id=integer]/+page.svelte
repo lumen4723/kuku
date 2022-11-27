@@ -33,19 +33,14 @@
 
 	let run_token = "";
 	let run_output = " >> 실행 버튼을 눌려주세요";
+	let cancelation_token = null;
 
 	let chapter_tree = [];
 	let chapter_kv = {};
 
-	let cancelation_token = null;
 	let get_editor_code = () => "";
 
 	onDestroy(() => {
-		if (cancelation_token != null) {
-			cancelation_token.cancel();
-		}
-	});
-	beforeUpdate(() => {
 		if (cancelation_token != null) {
 			cancelation_token.cancel();
 		}
@@ -146,20 +141,24 @@
 			})
 			.then((data) => {
 				run_token = data;
+				run_output =
+					'>> <span style="color: #9ab2ff">실행 준비중</span><br>';
 
 				return Promise.resolve(data);
 			})
 			.then((token) => {
 				const max_count = 10;
-				let try_count = 0;
+				var try_count = 0;
 				cancelation_token = setInterval(() => {
 					// 기본적으로 카운트를 까되, pending 상태면 보상을 하는 방식으로 구현
 					if (try_count++ > max_count) {
+						console.log("stop by try_count");
 						clearInterval(cancelation_token);
 						return;
 					}
 
 					if (token != run_token) {
+						console.log("stop by token");
 						clearInterval(cancelation_token);
 						return;
 					}
@@ -174,11 +173,22 @@
 					})
 						.then((resp) => resp.json())
 						.then((data) => {
-							run_done = data.done;
-							run_output = data.output;
-
+							let run_done = data.status == "done";
 							if (run_done) {
+								run_output =
+									run_output +
+									'>> <span style="color: #ffb59a">실행 종료됨</span>';
 								clearInterval(cancelation_token);
+							}
+
+							if (data.output != null && data.output.length > 0) {
+								for (let i = 0; i < data.output.length; i++) {
+									run_output =
+										run_output +
+										`>> <span style="color: white">${escapeHtml(
+											data.output[i]
+										)}</span><br>`;
+								}
 							}
 						});
 				}, 1000);
@@ -209,6 +219,7 @@
 			return "";
 		}
 
+		run_output = " >> 실행 버튼을 눌려주세요";
 		return article[0].code;
 	}
 
@@ -226,6 +237,19 @@
 
 	function change_chapter(e) {
 		goto(`/study/${course_id}/${e.target.value}`);
+	}
+
+	function escapeHtml(str) {
+		var map = {
+			"&": "&amp;",
+			"<": "&lt;",
+			">": "&gt;",
+			'"': "&quot;",
+			"'": "&#039;",
+		};
+		return str.replace(/[&<>"']/g, function (m) {
+			return map[m];
+		});
 	}
 </script>
 
@@ -279,7 +303,9 @@
 			language={selected_language}
 			code={get_code(chapter_id, selected_language, articles)}
 		/>
-		<section id="output" class="p-2 is-family-code">{run_output}</section>
+		<section id="output" class="p-2 is-family-code">
+			{@html run_output}
+		</section>
 	</section>
 </main>
 
@@ -306,6 +332,7 @@
 		overflow-y: scroll;
 	}
 	#editor #output {
+		border-top: 1px solid white;
 		height: 150px;
 		overflow-y: scroll;
 		white-space: pre;

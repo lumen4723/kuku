@@ -2,15 +2,18 @@ pub mod cpp;
 pub mod java;
 pub mod python;
 
+use std::future::Future;
+
 pub use cpp::CPlusPlus;
 pub use java::Java;
 pub use python::Python;
+
+use crate::{ControlReceiver, ControlSender};
 
 #[derive(Debug)]
 pub struct Submission {
     pub id: u64,
     pub language: String,
-    pub input: String,
     pub code: String,
     pub status_updated: mysql_async::Value,
 }
@@ -18,14 +21,12 @@ impl Submission {
     pub fn new(
         id: u64,
         language: String,
-        input: String,
         code: String,
         status_updated: mysql_async::Value,
     ) -> Self {
         Self {
             id,
             language,
-            input,
             code,
             status_updated,
         }
@@ -56,10 +57,41 @@ impl RunResult {
 pub trait Language {
     fn new(submission: Submission) -> Self;
 
-    fn run(mut self: Self) -> RunResult
-    where
-        Self: Sized,
-    {
-        unimplemented!();
+    fn get_no(&self) -> u64;
+
+    fn error_from_signal(job_id: u64, signal: i32) -> Option<RunResult> {
+        match signal {
+            3 => {
+                return Some(RunResult::error(job_id, "SIGQUIT".to_string()));
+            }
+            4 => {
+                return Some(RunResult::error(job_id, "SIGILL".to_string()));
+            }
+            5 => {
+                return Some(RunResult::error(job_id, "SIGTRAP".to_string()));
+            }
+            6 => {
+                return Some(RunResult::error(job_id, "SIGABRT".to_string()));
+            }
+            7 => {
+                return Some(RunResult::error(job_id, "SIGBUS".to_string()));
+            }
+            8 => {
+                return Some(RunResult::error(job_id, "SIGFPE".to_string()));
+            }
+            11 => {
+                return Some(RunResult::error(job_id, "SIGSEGV".to_string()));
+            }
+            13 => {
+                return Some(RunResult::error(job_id, "SIGPIPE".to_string()));
+            }
+            16 => {
+                return Some(RunResult::error(job_id, "SIGSTKFLT".to_string()));
+            }
+            24 => {
+                return Some(RunResult::error(job_id, "SIGXCPU".to_string()));
+            }
+            _ => return None,
+        }
     }
 }
