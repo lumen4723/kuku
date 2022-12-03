@@ -110,10 +110,16 @@ async fn main_loop() {
                 tokio::spawn(async move {
                     let job_id = job.get_no();
 
-                    let result = job.run(manager_tx.clone(), job_rx).await;
-                    job_count_ref.fetch_sub(1, std::sync::atomic::Ordering::Release);
+                    let timeout = tokio::time::timeout(
+                        std::time::Duration::from_secs(10),
+                        job.run(manager_tx.clone(), job_rx),
+                    );
 
-                    println!("result {:?}", result);
+                    let result = match timeout.await {
+                        Ok(result) => result,
+                        Err(_) => RunResult::error(job_id, "실행시간 초과 (10초)".to_string()),
+                    };
+                    job_count_ref.fetch_sub(1, std::sync::atomic::Ordering::Release);
 
                     if let Err(err) = result.result {
                         manager_tx.send(Control::new(None, job_id, ControlType::Error(err)));

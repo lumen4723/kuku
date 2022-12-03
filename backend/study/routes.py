@@ -181,6 +181,7 @@ async def write_article(
             .unwrap()
         )
 
+        chapter.__setattr__("category", article_form.category)
         chapter.__setattr__("title", article_form.title)
     else:
         chapter = (
@@ -201,7 +202,6 @@ async def write_article(
             article_form.parent_id,
         )
 
-    print(chapter)
     chapter = database.create_chapter(chapter, session).unwrap_or(None)
 
     if chapter is None:
@@ -219,7 +219,6 @@ async def write_article(
 
         return article
 
-    print(chapter.no)
     article: database.lecture_article = (
         database.get_article(chapter.no, article_form.language, session)
         .map_err(throwMsg)
@@ -235,7 +234,6 @@ async def write_article(
         )
     )
 
-    print("asdf", article)
     return database.create_article(article, session).map_err(throwMsg).unwrap()
 
 

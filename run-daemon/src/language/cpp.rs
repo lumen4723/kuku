@@ -98,8 +98,11 @@ impl CPlusPlus {
                             spawn.kill().await;
                             return RunResult::error(self.submission.id, "killed".to_string());
                         }
-                        crate::ControlType::Input(s) => {
-                            stdin.write(s.as_bytes());
+                        crate::ControlType::Input(mut s) => {
+                            s.push_str("\n");
+
+                            stdin.write(s.as_bytes()).await;
+                            println!("--> input: {}", s);
                         }
                         _ => (),
                     }

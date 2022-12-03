@@ -1,6 +1,7 @@
 use bytes::*;
 use std::io::Write;
 use std::os::unix::process::ExitStatusExt;
+use std::process::Stdio;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
@@ -44,8 +45,11 @@ impl Python {
             .arg("--cpus=1")
             .arg(format!("--memory={}m", maxium_memory_MB))
             .arg("-v")
-            .arg(format!("/tmp/{}:/app/Main.java", filename))
-            .arg("container-java")
+            .arg(format!("/tmp/{}:/app/main.py", filename))
+            .arg("container-python")
+            .stderr(Stdio::piped())
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
             .spawn();
 
         let mut spawn = match result {

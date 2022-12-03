@@ -19,7 +19,6 @@ pub async fn main_loop(
     mut manager_rx: ControlReceiver,
     mut bridge_rx: tokio::sync::mpsc::UnboundedReceiver<(u64, ControlSender)>,
 ) {
-    let mut job_ongoing: u64 = 0;
     let mut job_controller: HashMap<u64, (ControlSender, String)> = HashMap::with_capacity(128);
 
     let mut job_update_queue: Vec<JobDbUpdate> = Vec::with_capacity(128);
@@ -61,8 +60,6 @@ pub async fn main_loop(
 
 
                 let (job_id, sender) = msg;
-                job_ongoing = job_id;
-
                 job_update_queue.push(JobDbUpdate::Status(job_id, "start".to_string()));
                 job_controller.insert(job_id, (sender, String::new()));
             },
@@ -70,14 +67,13 @@ pub async fn main_loop(
                 if let Ok(mut controls) = list_controls().await {
                     let completed_commands = controls
                         .drain(..)
-                        .filter(|ctrl| ctrl.job_id <= job_ongoing)
                         .map(|ctrl| {
-                            match (job_controller.get(&ctrl.job_id), ctrl.data) {
-                                (Some((sender, _)), _) => {
+                            match job_controller.get(&ctrl.job_id) {
+                                Some((sender, _)) => {
                                     sender.send(Control {
                                         cmd_id: ctrl.cmd_id,
                                         job_id: ctrl.job_id,
-                                        data: ControlType::Stop,
+                                        data: ctrl.data,
                                     });
                                 }
                                 _ => {
@@ -96,7 +92,6 @@ pub async fn main_loop(
                 let mut db_status = Vec::with_capacity(128);
 
                 for update in job_update_queue.drain(..) {
-                    println!("update {:?}", update);
                     match update {
                         JobDbUpdate::Output(job_id, output, error) => {
                             db_output.push(JobDbUpdateOutput(job_id, output, error));
@@ -120,15 +115,15 @@ async fn list_controls() -> Result<Vec<Control>, &'static str> {
 
     let result = conn
         .query_map::<(u64, u64, String, String), _, _, _>(
-            "SELECT id, data FROM code_controls WHERE status = 0",
-            |(cmd_id, id, ctrl, data)| -> Control {
+            "SELECT id, job_id, ctrl, data FROM code_control WHERE status = 0",
+            |(cmd_id, job_id, ctrl, data)| -> Control {
                 let ctrl = match ctrl.as_str() {
                     "input" => ControlType::Input(data),
                     "stop" => ControlType::Stop,
                     _ => ControlType::Stop,
                 };
 
-                Control::new(Some(cmd_id), id, ctrl)
+                Control::new(Some(cmd_id), job_id, ctrl)
             },
         )
         .await
@@ -242,7 +237,7 @@ async fn update_control_status(cmd_id: Vec<u64>, status: usize) {
             continue;
         }
 
-        let update_result = r"UPDATE code_controls SET status = :status WHERE id IN (:id)"
+        let update_result = r"UPDATE code_control SET status = :status WHERE id = :id"
             .with(cmd_id.iter().map(|cmd_id| {
                 params! {
                     "id" => cmd_id,

@@ -1,6 +1,7 @@
 use bytes::*;
 use std::io::Write;
 use std::os::unix::process::ExitStatusExt;
+use std::process::Stdio;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
@@ -46,6 +47,9 @@ impl Java {
             .arg("-v")
             .arg(format!("/tmp/{}:/app/Main.java", filename))
             .arg("container-java")
+            .stderr(Stdio::piped())
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
             .spawn();
 
         let mut spawn = match result {

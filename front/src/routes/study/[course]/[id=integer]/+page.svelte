@@ -17,6 +17,7 @@
 	import "$lib/ckeditor/styles.css";
 	import ChapterListItem from "./chapterListItem.svelte";
 	import CodeEditor from "$lib/codeEditor.svelte";
+	import RunOutput from "./runOutput.svelte";
 
 	prism.manual = true;
 	prism.plugins.customClass.map({ number: "prism-number", tag: "prism-tag" });
@@ -31,20 +32,12 @@
 	let supported_language = [];
 	let selected_language = "";
 
-	let run_token = "";
-	let run_output = " >> 실행 버튼을 눌려주세요";
-	let cancelation_token = null;
+	let run_id = "";
 
 	let chapter_tree = [];
 	let chapter_kv = {};
 
 	let get_editor_code = () => "";
-
-	onDestroy(() => {
-		if (cancelation_token != null) {
-			cancelation_token.cancel();
-		}
-	});
 
 	async function async_chapter_list(course_id) {
 		console.log(chapter_tree.length);
@@ -134,70 +127,13 @@
 			}),
 		})
 			.then((resp) => {
-				console.log(resp);
-
 				if (!resp.ok) return Promise.reject(resp);
 				return resp.json();
 			})
-			.then((data) => {
-				run_token = data;
-				run_output =
-					'>> <span style="color: #9ab2ff">실행 준비중</span><br>';
-
-				return Promise.resolve(data);
-			})
-			.then((token) => {
-				const max_count = 10;
-				var try_count = 0;
-				cancelation_token = setInterval(() => {
-					// 기본적으로 카운트를 까되, pending 상태면 보상을 하는 방식으로 구현
-					if (try_count++ > max_count) {
-						console.log("stop by try_count");
-						clearInterval(cancelation_token);
-						return;
-					}
-
-					if (token != run_token) {
-						console.log("stop by token");
-						clearInterval(cancelation_token);
-						return;
-					}
-
-					fetch(`${env.baseUrl}/run/${token}/`, {
-						method: "GET",
-						headers: {
-							Accept: "application/json",
-						},
-						mode: "cors",
-						credentials: "include",
-					})
-						.then((resp) => resp.json())
-						.then((data) => {
-							let run_done = data.status == "done";
-							if (run_done) {
-								run_output =
-									run_output +
-									'>> <span style="color: #ffb59a">실행 종료됨</span>';
-								clearInterval(cancelation_token);
-							}
-
-							if (data.output != null && data.output.length > 0) {
-								for (let i = 0; i < data.output.length; i++) {
-									run_output =
-										run_output +
-										`>> <span style="color: white">${escapeHtml(
-											data.output[i]
-										)}</span><br>`;
-								}
-							}
-						});
-				}, 1000);
-			})
-			.catch((err) => {
-				console.log(err);
+			.then((resp) => {
+				run_id = resp;
 			});
 	}
-
 	function get_article(chapter_id, language) {
 		if (chapter_id == null) {
 			return "";
@@ -219,7 +155,7 @@
 			return "";
 		}
 
-		run_output = " >> 실행 버튼을 눌려주세요";
+		run_id = "";
 		return article[0].code;
 	}
 
@@ -237,19 +173,6 @@
 
 	function change_chapter(e) {
 		goto(`/study/${course_id}/${e.target.value}`);
-	}
-
-	function escapeHtml(str) {
-		var map = {
-			"&": "&amp;",
-			"<": "&lt;",
-			">": "&gt;",
-			'"': "&quot;",
-			"'": "&#039;",
-		};
-		return str.replace(/[&<>"']/g, function (m) {
-			return map[m];
-		});
 	}
 </script>
 
@@ -303,9 +226,7 @@
 			language={selected_language}
 			code={get_code(chapter_id, selected_language, articles)}
 		/>
-		<section id="output" class="p-2 is-family-code">
-			{@html run_output}
-		</section>
+		<RunOutput {run_id} />
 	</section>
 </main>
 
@@ -331,12 +252,7 @@
 		max-height: calc(100vh - 52px);
 		overflow-y: scroll;
 	}
-	#editor #output {
-		border-top: 1px solid white;
-		height: 150px;
-		overflow-y: scroll;
-		white-space: pre;
-	}
+
 	#editor {
 		/* width: 700px;
 		float: right; */
@@ -352,6 +268,9 @@
 	}
 	#editor header > * {
 		height: 36px;
+	}
+	#run-input {
+		width: 100%;
 	}
 	main {
 		height: calc(100vh - 52px);
