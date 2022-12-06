@@ -19,6 +19,52 @@ n^k를 계산하는 문제이다.
 
 입력은 n과 k이다.(단, 1<n<100, 1<k<100)
 제곱셈 문제를 분할정복으로 풀면 다음과 같다.
+
+[
+import java.util.Scanner;
+
+public class Main {
+	public static int power(int n, int k) {
+		if (k == 0)
+			return 1;
+		if (k % 2 == 0) {
+			int tmp = power(n, k / 2);
+			return tmp * tmp;
+		}
+		return n * power(n, k - 1);
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int n = sc.nextInt();
+		int k = sc.nextInt();
+		System.out.println(power(n, k));
+	}
+}
+]
+실행결과는 다음과 같다.
+(예를들어 2 10을 입력)
+1024
+
+12.2. 피보나치 수열문제
+이번에는 피보나치 수열을 분할정복으로 풀어봅시다.
+피보나치 수열은 다음과 같습니다.
+F(0) = 0, F(1) = 1, F(n) = F(n-1) + F(n-2) (n>=2)
+
+이를 행렬 연산으로 표현한다면
+1 1
+1 0 을 n-1번 곱하면 됩니다.
+
+이유는 행렬곱셈의 원리를 생각하면 알수있습니다.
+행렬곱셈은 각 행렬의 행과 열을 곱한 값들을 더한 값이기 때문에
+f(n) f(n-1)      1 1          f(n+1) f(n)
+f(n-1) f(n-2) 와 1 0 을 곱하면 f(n) f(n-1)이 나오게 됩니다.
+
+행렬곱셈은 교횐법칙은 성립하지 않지만 결합법칙은 성립합니다.
+그렇다면 하나씩 곱하지않고 반으로 분할하는 아이디어로 문제를 접근한다면
+
+행렬 제곱셈의 시간복잡도로 피보나치 수열을 구할 수 있습니다.
+
 [
 	import java.util.Scanner;
 	public class Main {

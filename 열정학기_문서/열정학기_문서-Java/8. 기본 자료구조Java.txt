@@ -24,7 +24,7 @@
             스택을 구현하는 문제입니다.
             정수를 저장하는 스택을 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하시오.
             명령은 총 다섯 가지이다.
-
+    
                 push X: 정수 X를 스택에 넣는 연산이다.
                 pop: 스택에서 가장 위에 있는 정수를 빼고, 그 수를 출력한다. 만약 스택에 들어있는 정수가 없는 경우에는 -1을 출력한다.
                 size: 스택에 들어있는 정수의 개수를 출력한다.
@@ -716,28 +716,31 @@
             [
                 //이진탐색트리를 배열로 구현 하고 중위순회
                 import java.util.ArrayList;
-                public class Main {
-                    public static void main(String[] args) {
-                        ArrayList<String> tree = new ArrayList<String>();
-                        tree.add("root");
-                        tree.add("left child");
-                        tree.add("right child");
-                        tree.add("left grandchild");
-                        tree.add("right grandchild");
-                        
-                        System.out.println(tree.get(0));
-                        inOrder(tree, 0);
-                    }
 
-                    public static void inOrder(ArrayList<String> tree, int node) {
-                        if (node >= tree.size()) {
-                            return;
-                        }
-                        inOrder(tree, node * 2 + 1);
-                        System.out.println(tree.get(node));
-                        inOrder(tree, node * 2 + 2);
-                    }
-                }
+                public class Main {
+	            public static void main(String[] args) {
+		            String[] tree = new String[2 * 2 * 2];
+		            tree[0] = "root";
+		            tree[0 * 2 + 1] = "left child"; // node = 0 -> 1
+		            tree[0 * 2 + 2] = "right child"; // node = 0 -> 2
+		            tree[1 * 2 + 1] = "left grandchild"; // node = 0 -> 1 -> 3
+		            tree[2 * 2 + 2] = "right grandchild"; // node = 0 -> 1 -> 4
+
+		            inOrder(tree, 0);
+	            }
+
+	            public static void inOrder(String[] tree, int node) {
+		            if (node >= tree.length) {
+			            return;
+		            }
+		            inOrder(tree, node * 2 + 1);
+
+		            if (tree[node] != null)
+			            System.out.println(tree[node]);
+
+		            inOrder(tree, node * 2 + 2);
+	            }
+        }
             ]
             실행결과는 다음과 같습니다.
             left grandchild
