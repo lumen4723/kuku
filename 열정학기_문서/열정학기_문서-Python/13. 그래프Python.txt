@@ -82,14 +82,14 @@ for i in range(N+1):
     
     이를 인접리스트 방식으로 출력하시오.
 
-N, M = map(int, input().split())
 class Node:
     def __init__(self, vertex, weight):
         self.vertex = vertex    # 도착점
         self.weight = weight    # 가중치
         self.next = None    # 다음 노드
 
-graph = [Node(N,N) for _ in range(N + 1)]   
+N, M = map(int, input().split())
+graph = [Node(None,None) for _ in range(N + 1)]     
 
 for i in range(M):
     a, b, c = map(int, input().split())
@@ -101,7 +101,7 @@ for i in range(1, N + 1):
     cur = graph[i]  # 현재 노드
     print(i,": ", end='')
     
-    while cur != None:
+    while cur.vertex != None:    # 현재 노드가 None이 아닐때까지 반복
         print("%d (%d)"% (cur.vertex, cur.weight), end=' ') # 현재 노드의 도착점과 가중치 출력
         cur = cur.next  # 다음 노드로 이동
     print()
@@ -181,7 +181,7 @@ DFS(graph, 1)
 
 class Node:
     def __init__(self, vertex):
-        self.vertex = vertex    # 도착점
+        self.vertex = vertex
         self.next = None
 
 class Queue:
@@ -189,15 +189,14 @@ class Queue:
         self.vertex = vertex
         self.next = None
 
+visited = [0]*100
 def BFS(graph, v):
     head = Queue(None)
     tail = Queue(None)
     cur = Queue(None)
-
     curNode = Node(None)
 
-    newNode = Queue()  # 큐에 삽입
-    newNode.vertex = v
+    newNode = Queue(v)
     newNode.next = None
 
     head = newNode
@@ -209,14 +208,13 @@ def BFS(graph, v):
         if head == None:
             tail = None
 
-        if visited[curNode.vertex] == 0:
-            visited[curNode.vertex] = 1
-            print(curNode.vertex, end=' ')
-            curNode = graph[curNode.vertex]
+        if visited[cur.vertex] == 0:
+            visited[cur.vertex] = 1
+            print(cur.vertex, end=' ')
+            curNode = graph[cur.vertex]
             while curNode != None:
                 if visited[curNode.vertex] == 0:
-                    newNode = Queue()
-                    newNode.vertex = curNode.vertex
+                    newNode = Queue(curNode.vertex)
                     newNode.next = None
                     if tail == None:
                         head = newNode
@@ -236,6 +234,7 @@ for i in range (M):
     graph[a] = newNode
 
 BFS(graph, 1)
+
 
     13.3. 한 붓 그리기 문제
     한 붓 그리기 문제는 정해진 그림을 그리는데 붓을 떼지않고 한번에 그려야하는 문제입니다.
@@ -301,44 +300,45 @@ print("YES")
     미로를 탈출하기 위해 움직여야하는 최소 칸의 개수를 출력하는 프로그램을 작성하세요.
 
 from queue import Queue
+import sys
 
-N, M = map(int, input().split())
 qu = Queue()
-graph = [[0]*100 for _ in range(100)]
 
-def macro(x, y, N, M, count):
-    if (x >= 0 and x < N) and (y >= 0 and y < M):
-        if graph[x][y] == 1:
-            graph[x][y] = count + 1
-            qu.put((x, y)) 
-            return 1
-    return 0
+def macro(x, y, N, M, count):   
+  if (x >= 0 and x < N) and (y >= 0 and y < M):
+    if graph[x][y] == 1:    # 갈 수 있는 길이면
+      qu.put((x, y)) # 큐에 넣고
+      graph[x][y] = count + 1   # 카운트를 더해준다.
+      return 1  # 갈 수 있는 길이면 1을 리턴
+  return 0  # 갈 수 없는 길이면 0을 리턴
 
 def BFS(x, y, N, M):
-    if x == N - 1 and y == M - 1:
-        return graph[x][y]
-    count = graph[x][y]
-    do_count = 0
+  if x == N - 1 and y == M - 1: # 출구에 도착하면
+    return graph[x][y]  # 
+  count = graph[x][y]   # 현재 카운트를 저장
+  do_count = 0  # 갈 수 있는 길의 개수
 
-    do_count += macro(x - 1, y, N, M, count)
-    do_count += macro(x + 1, y, N, M, count)
-    do_count += macro(x, y - 1, N, M, count)
-    do_count += macro(x, y + 1, N, M, count)
+  do_count += macro(x - 1, y, N, M, count)  # 상하좌우로 갈 수 있는지 확인
+  do_count += macro(x + 1, y, N, M, count)
+  do_count += macro(x, y - 1, N, M, count)
+  do_count += macro(x, y + 1, N, M, count)
 
-    for i in range(do_count):
-        a = (qu.get())
+  for i in range(do_count): # 갈 수 있는 길의 개수만큼 반복
+    a = (qu.get())
 
-        out = BFS(a[0], a[1], N, M)
-        if out != 0:
-            return out
+    out = BFS(a[0], a[1], N, M) # 재귀호출하는 이유는 갈 수 있는 길이 여러개일 수 있기 때문
+    if out != 0:    # 갈 수 있는 길이 있으면
+      return out
 
-for i in range(N):
-    for j in range(M):
-        graph[i][j] = int(input())
+  return 0
 
-graph[0][0] = 2
+N, M = map(int, input().split())    # 미로의 크기
+graph = [list(map(int, input().strip())) for _ in range(N)] # 미로의 정보
+
+graph[0][0] = 2 # 시작점을 2로 바꿔준다.
 out = BFS(0, 0, N, M)
-print(out-1)
+print(out-1)    # 출구까지 가는데 필요한 칸의 개수
+
 
 13.5. 트리
     트리는 그래프의 일종으로 노드와 간선으로 이루어진 자료구조입니다.
@@ -518,33 +518,46 @@ from queue import Queue
 qu = Queue()
 N = int(input())
 graph = [[] for _ in range(N+1)]
-visit = [for _ in range(N+1)]
+visit = [-1]*(N+1)  # -1로 초기화(방문하지 않은 노드는 -1로 초기화)
 
 def BFS(index):
-    maxid = index
-    for i in range(len(graph[index])):
-        next = graph[index][i][0]
-        if visit[next] == -1:
-            visit[next] = visit[index] + graph[index][i][1]
-            qu.put(next)
-    while not qu.empty():
-        next = qu.get()
-        out = BFS(next)
-        if visit[out] > visit[maxid]:
-            maxid = out
-    return maxid
+  global graph
+  global visit
+  global qu
+
+  maxid = index
+  for i in range(len(graph[index])):
+    next = graph[index][i][0]   # 다음 노드
+    if visit[next] == -1:   # 방문하지 않은 노드라면
+      visit[next] = visit[index] + graph[index][i][1] # 현재 노드의 거리 + 다음 노드의 거리
+      qu.put(next)
+  while qu.qsize() > 0:  # 큐에 노드가 남아있다면
+    next = qu.get()
+    out = BFS(next)  # 다음 노드의 BFS
+    if visit[out] > visit[index]:   # 다음 노드의 BFS가 더 크다면
+      maxid = out   # 다음 노드의 BFS를 maxid로 설정
+    else: maxid=index   # 아니라면 현재 노드를 maxid로 설정
+  return maxid
 
 for i in range(N):
-    x = list(map(int, input().split()))
-    while True:
-        y, z = map(int, input().split())
-        if y == -1:
-            break
-        graph[x].append([y, z])
+  inputs = list(map(int, input().split()))  # 입력받은 노드들을 리스트로 저장
+  x = inputs.pop(0)  # 첫번째 노드를 x에 저장
 
-visit[1] = 0
+  while True:   # -1이 나올때까지 반복
+    y = inputs.pop(0)
+    if y == -1:
+      break
+      
+    z = inputs.pop(0)   # 거리를 z에 저장
+      
+    # print('add ', x, ' -> ', y, z)
+    graph[x].append([y, z]) # graph[x]=[[y, z], ...] 형태로 저장
 
-start = BFS(1)
 
-visit[start] = 0
-print(visit[BFS(start)])
+visit = [-1]*(N+1)      
+visit[1] = 0    # 1번 노드를 시작점으로 설정
+start = BFS(1)  # BFS를 통해 가장 먼 노드를 start에 저장
+
+visit = [-1]*(N+1)  
+visit[start] = 0    # start를 시작점으로 설정
+print(visit[BFS(start)])    # start에서 가장 먼 노드의 거리를 출력

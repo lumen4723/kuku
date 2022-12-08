@@ -140,21 +140,17 @@ print(count)
         입력으로 스도쿠 판이 주어졌을때, 스도쿠 판을 채우는 방법을 구하시오.
         (1 ≤ N < 15)
 
-sudo = [[0]*9 for _ in range(9)]
-row = [[0]*9 for _ in range(9)]
-col = [[0]*9 for _ in range(9)]
-box = [[0]*9 for _ in range(9)]
+sudo = [list(map(int, input().split())) for _ in range(9)]    # 스도쿠 판을 입력받음
+prob = [(0, 0)] * 81    # 빈칸의 위치를 저장할 리스트, (행, 열) 형태로 저장 (최대 81개)
 
+# row는 행, col은 열, val은 값(1~9) 
 def ispos(row, col, val):   # 3개 모두 지나가면 True, 아니면 False
     for i in range (9):
         if sudo[row][i] == val and i != col:
             return False
         if sudo[i][col] == val and i != row:
             return False
-#        if sudo[row//3*3+i//3][col//3*3+i%3] == val:
-#            return False
-    
-    if row < 3:
+    if row < 3: 
         minr = 0
         maxr = 2
     elif row < 6:
@@ -173,37 +169,36 @@ def ispos(row, col, val):   # 3개 모두 지나가면 True, 아니면 False
     else:
         minc = 6
         maxc = 8
-
-    for i in range(minr, maxr + 1):
+    for i in range(minr, maxr + 1):     # 작은 판 안에 중복되는 숫자가 있는지 확인
         for j in range (minc, maxc + 1):
-            if sudo[i][j] == val and i != row and j != col:
+            if sudo[i][j] == val and i != row and j != col:  # 자기 자신은 제외
                 return False
     return True
 
-endf = False
-def solve stage(stage):
-    if stage == len(prob):
+endf = False    # 끝났는지 확인하는 변수, 시간 효율을 위함
+def solve (stage):  # stage는 현재 스테이지
+    global endf
+    if stage == len(prob):  # 끝까지 왔으면
         endf = True
         return
     for i in range(1, 10):
         if ispos(prob[stage][0], prob[stage][1], i):    # 여부판단
-            sudo[prob[stage][0]][prob[stage][1]] = i    // 1. 값을 일단 대입
-            stage(stage+1)  // 2.다음 스테이지로 이동
+            sudo[prob[stage][0]][prob[stage][1]] = i    # 1. 값을 일단 대입
+            solve(stage+1)  # 2.다음 스테이지로 이동
         if endf:
             return
-        sudo[prob[stage][0]][prob[stage][1]] = 0
+        sudo[prob[stage][0]][prob[stage][1]] = 0    # 3. 2의 과정에서 값이 다돌면(=길이없으면) 기존의 값을 초기화 후 이전 스테이지로 리턴
 
+tmp=[0, 0]  # 
 for i in range(9):
     for j in range(9):
-        sudo = list(map(int, input().split()))
         if sudo[i][j] == 0:
-            tmp[0] = i
-            tmp[1] = j
+            tmp[0] = i  # 행
+            tmp[1] = j  # 열
             prob.append(tmp)
-            #prob.append([i, j])
 solve(0)
 
 for i in range (9):
     for j in range (9):
         print(sudo[i][j], end = ' ')
-    
+    print()

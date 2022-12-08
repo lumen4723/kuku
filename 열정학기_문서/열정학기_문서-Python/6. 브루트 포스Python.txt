@@ -92,18 +92,21 @@ for i in range(1 &lt;&lt; n):  # << : 비트연산자,
     생성자가 여러 개인 자연수 중에서 가장 작은 수는 10,000입니다.
     입력은 다음과 같이 주어집니다.
     첫째 줄에 자연수 N(1 ≤ N ≤ 1,000,000)이 주어집니다.
-n = int(input("n: "))
+n = int(input())
+flag = False    # 생성자가 있는지 없는지 판단하는 변수
 for i in range(1, n):
-    sum = i # 생성자
-    temp = i    # 자릿수를 구하기 위한 변수
-    while temp: # 자릿수를 구하는 반복문
-        sum += temp % 10    # 자릿수를 더해줌
-        temp //= 10 # 자릿수를 없애줌
-    if sum == n:    # 생성자가 n과 같으면
-        print(i)    # 생성자 출력
-        break
-    else:
-        print(0)    # 생성자가 없으면 0 출력
+   sum = i # 생성자
+   temp = i    # 자릿수를 구하기 위한 변수
+   while temp: # 자릿수를 구하는 반복문
+       sum += temp % 10    # 자릿수를 더해줌
+       temp //= 10 # 자릿수를 없애줌
+   if sum == n:    # 생성자가 n과 같으면
+       print(i)    # 생성자 출력
+       flag = True
+       break
+
+if not flag:    # 생성자가 없는 경우
+    print(0)
 
 
 n = int(input("n: "))

@@ -132,26 +132,26 @@
 
 
         < 방법 2>
-            a = input("a: ")
-            b = input("b: ")
-            result = ""  # 결과를 저장할 변수
-            carry = 0   # 올림수
-            s1 = len(a)
-            s2 = len(b)
-            while s1 &gt; 0 or s2 &gt; 0:
-                if s1 &gt; 0:
-                    s1 -= 1
-                    carry += int(a[s1])
-                    
-                if s2 &gt; 0:
-                    s2 -= 1
-                    carry += int(b[s2])
-                result = str(carry % 10) + result
-                carry //= 10
-            for i in range(s1-1, -1, -1):
-                if result[i] == "0":
-                    print(result[i:])
-                    break
+a = input("a: ")
+b = input("b: ")
+result = ""  # 결과를 저장할 변수
+carry = 0   # 올림수
+s1 = len(a)
+s2 = len(b)
+while s1 &gt; 0 or s2 &gt; 0:
+    if s1 &gt; 0:
+        s1 -= 1
+        carry += int(a[s1])
+        
+    if s2 &gt; 0:
+        s2 -= 1
+        carry += int(b[s2])
+    result = str(carry % 10) + result
+    carry //= 10
+for i in range(s1-1, -1, -1):
+    if result[i] == "0":
+        print(result[i:])
+        break
     
 
 
