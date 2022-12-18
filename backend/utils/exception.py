@@ -49,6 +49,7 @@ class DefaultException(HTTPException):
 
 def throwMsg(msg):
     if isinstance(msg, HTTPException):
+        print('error ->', msg)
         raise msg
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=msg)
 

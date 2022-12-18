@@ -1,11 +1,11 @@
 <script>
-import Carousel from "$lib/carousel.svelte";
-import { userIsLogged } from "$lib/user.js";
-import gmttolocal from "$lib/time.js";
+  import Carousel from "$lib/carousel.svelte";
+  import { userIsLogged } from "$lib/user.js";
+  import gmttolocal from "$lib/time.js";
 
   const getBoardList = async (pageIdx, pageLimit) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
+      `https://api.eyo.kr/board/free/list/${pageIdx}?limit=${pageLimit}`,
       {
         mode: "cors",
         credentials: "include",
@@ -19,40 +19,40 @@ import gmttolocal from "$lib/time.js";
     }
   };
   const getNoticeList = async (pageLimit) => {
-		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/notice/list?limit=${pageLimit}`,
-			{
-				mode: "cors",
-  			credentials: "include",
-			}
-		);
-		const freeBoard = await res.json();
-		if (res.ok) {
-    	return freeBoard;
-		} else {
-			throw new Error(freeBoard);
-    }
-	};
-	const getqnalist = async (pageIdx, pageLimit) => {
     const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
-			{
-				mode: "cors",
-    		credentials: "include",
-			}
-		);
-		const freeBoard = await res.json();
+      `https://api.eyo.kr/board/free/notice/list?limit=${pageLimit}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    const freeBoard = await res.json();
     if (res.ok) {
-			return freeBoard;
-		} else {
-			throw new Error(freeBoard);
-		}
+      return freeBoard;
+    } else {
+      throw new Error(freeBoard);
+    }
+  };
+  const getqnalist = async (pageIdx, pageLimit) => {
+    const res = await fetch(
+      `https://api.eyo.kr/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    const freeBoard = await res.json();
+    if (res.ok) {
+      return freeBoard;
+    } else {
+      throw new Error(freeBoard);
+    }
   };
   let isLogged = userIsLogged();
 
-	let boardList = getBoardList(1, 8);
-	let NoticeList = getNoticeList(8);
-	let qnaList = getqnalist(1, 8);
+  let boardList = getBoardList(1, 8);
+  let NoticeList = getNoticeList(8);
+  let qnaList = getqnalist(1, 8);
 </script>
 
 <section class="hero is-primary is-halfheight">
@@ -192,87 +192,85 @@ import gmttolocal from "$lib/time.js";
         			text-align: center;
         			table-layout: fixed;
         			"
-					>
-						<thead>
-							<tr>
-								<th colspan="2">공지사항</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#await NoticeList then freenotice}
-								{#each freenotice["list"] as free}
-									<tr>
-										<td
-											><a
-												href="/board/free/article/{free.article_id}"
-												>{free.title}</a
-											></td
-										>
-										<td>
-											{gmttolocal(free.created)}
-										</td>
-									</tr>
-								{/each}
-							{:catch error}
-								<tr>
-									<td colspan="2">{error.message}</td>
-								</tr>
-							{/await}
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="column">
-				<div class="table-container">
-					<table
-						class="table
+          >
+            <thead>
+              <tr>
+                <th colspan="2">공지사항</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#await NoticeList then freenotice}
+                {#each freenotice["list"] as free}
+                  <tr>
+                    <td
+                      ><a href="/board/free/article/{free.article_id}"
+                        >{free.title}</a
+                      ></td
+                    >
+                    <td>
+                      {gmttolocal(free.created)}
+                    </td>
+                  </tr>
+                {/each}
+              {:catch error}
+                <tr>
+                  <td colspan="2">{error.message}</td>
+                </tr>
+              {/await}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="column">
+        <div class="table-container">
+          <table
+            class="table
 					is-bordered
         			is-hoverable"
             style="
         			text-align: center;
         			table-layout: fixed;
         			"
-					>
-						<thead>
-							<tr>
-								<th colspan="2">새로운 질문과 답변</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#await qnaList then qnaBoard}
-								{#each qnaBoard["list"] as qna}
-									<tr>
-										<td
-											><a
-												href="/board/qna/article/{qna.article_id}"
-												>{qna.title}</a
-											></td
-										>
-										<td>{qna.state}</td>
-									</tr>
-								{/each}
-							{:catch error}
-								<tr>
-									<td colspan="2">{error.message}</td>
-								</tr>
-							{/await}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+          >
+            <thead>
+              <tr>
+                <th colspan="2">새로운 질문과 답변</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#await qnaList then qnaBoard}
+                {#each qnaBoard["list"] as qna}
+                  <tr>
+                    <td
+                      ><a href="/board/qna/article/{qna.article_id}"
+                        >{qna.title}</a
+                      ></td
+                    >
+                    <td>{qna.state}</td>
+                  </tr>
+                {/each}
+              {:catch error}
+                <tr>
+                  <td colspan="2">{error.message}</td>
+                </tr>
+              {/await}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <style>
-	thead tr {
-		background-color: #10e1c2;
-	}
-	thead th {
-		text-align: center;
-		color: #ffffff;
-	}
-	table.table {
-		width: 100%;
-	}
+  thead tr {
+    background-color: #10e1c2;
+  }
+  thead th {
+    text-align: center;
+    color: #ffffff;
+  }
+  table.table {
+    width: 100%;
+  }
 </style>

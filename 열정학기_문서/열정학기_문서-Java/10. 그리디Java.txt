@@ -1,0 +1,185 @@
+10. 그리디
+이번장에서는 단순한 알고리즘을 넘어 보다 효율적인 알고리즘들을 배워봅시다.
+그리디 알고리즘은 다른것들을 고려하지 않고
+현재 상황에서 가장 최적인 것만 선택하는 알고리즘입니다.
+그리디 알고리즘은 브루트포스나 백트래킹등의 단순한 알고리즘보다는 효율적이지만
+최종결과가 최적이라는 보장은 없습니다.
+(당장의 효율적인 선택만을 고려하니까 조금만 생각해보면 최종결과가 최적이 아닐수도 있겠죠?)
+
+10.1. 거스름돈 문제
+거스름돈 문제는 가장 기본적인 그리디 알고리즘 문제로
+거스름돈을 가장 적은 수의 동전으로 주는 방법을 구하는 문제입니다.
+
+입력으로 거스름돈의 금액R과 사용가능 동전의 수N, 각 동전의 가치가 주어졌을때
+거스름돈을 줄 수있는 가장 적은 동전의 수를 출력하는 문제입니다.
+
+[
+    import java.util.Scanner;
+    public class Main {
+        public static void main(String[] args) {
+            Scanner sc = new Scanner(System.in);
+            int R = sc.nextInt();
+            int N = sc.nextInt();
+            int[] coin = new int[N];
+            for(int i=0; i<N; i++) {
+                coin[i] = sc.nextInt();
+            }
+            int count = 0,min;
+            for (int i = 0; i < N; i++) {
+                min = i;
+                for (int j = i + 1; j < N; j++) {
+                    if (coin[min] < coin[j]) {
+                        min = j;
+                    }
+                } 
+            }
+            for(int i=0; i<N; i++) {
+                if( R >= coin[i] ) {
+                    count += R/coin[i];
+                    R = R%coin[i];
+                }
+            }
+            System.out.println(count);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+(예를 들어
+1260 4
+500 100 50 10
+을 입력)
+6
+
+10.2. 대기열 문제
+대기열 문제는 그리디 알고리즘의 또다른 기본적인 문제로
+대기열에 있는 사람들의 총 대기시간을 최소화하는 문제입니다.
+로스트아크의 게임을 아시나요?
+예전에 대기열이 굉장히 길었던걸로 유명한 게임이었던 걸로 아는데
+그 당시 대기열 관련한 내용 중에서 게임 시작 버튼을 누르고
+집안일이나 잡일들을 하면서 대기시간을 보낸다고 한 유저들이 많았습니다.
+물론 집안일이나 잡일을 하는것도 좋지만 대기시간을 조금 더 줄이는 방법은 없을까요?
+
+그리디 알고리즘으로 대기시간을 최소화하는 방법을 생각해봤습니다.
+
+입력으로 대기열에 있는 사람의 수N과 각 사람이 게임을 시작하기까지 걸리는 시간이 주어졌을때
+대기열에 있는 사람들의 총 대기시간을 최소화하는 문제입니다.
+
+[
+    import java.util.Scanner;
+    public class Main {
+        public static void main(String[] args) {
+            Scanner sc = new Scanner(System.in);
+            int N = sc.nextInt();
+            int[] time = new int[N];
+            for(int i=0; i<N; i++) {
+                time[i] = sc.nextInt();
+            }
+            int min;
+            for (int i = 0; i < N; i++) {
+                min = i;
+                for (int j = i + 1; j < N; j++) {
+                    if (time[min] > time[j]) {
+                        min = j;
+                    }
+                } 
+                int temp = time[i];
+                time[i] = time[min];
+                time[min] = temp;
+            }
+            int sum = 0;
+            for(int i=0; i<N; i++) {
+                sum += time[i]*(N-i);
+            }
+            System.out.println(sum);
+        }
+    }
+]
+실행결과는 다음과 같습니다.
+(예를 들어
+5
+3 1 4 3 2
+을 입력)
+32
+
+사실 이 방법은 좋은 방법은 아닙니다.
+컴퓨터가 안 좋을수록 대기열이 밀리기 때문에 대기시간이 더욱더 길어질 수 있습니다.
+그렇다면 컴퓨터가 좋지 않은 사용자는 화가 날 수도 있겠죠?
+운영체제에서는 이런 문제를 기아현상(starvation)이라고 합니다.
+
+10.3. SJF(Shortest Job First) 스케줄링 문제
+운영체제에서 프로세스를 스케줄링하는 방법중 하나인
+SJF(Shortest Job First) 스케줄링 문제를 그리디 알고리즘으로 풀어봅시다.
+
+SJF는 하나 이상의 프로세스를 준비 큐에 넣고 준비 큐에 있는 프로세스중
+가장 작은 실행시간을 가진 프로세스(최소 비용 프로세스)를 선택하여 실행하는 방법입니다.
+각 프로세스는 cpu 사용시간, 도착 시간을 가지고 있습니다.
+cpu 사용시간은 프로세스가 cpu를 사용하는데 걸리는 총 시간을 의미하고
+도착 시간은 프로세스가 준비 큐에 들어가기 까지 걸린 시간을 의미합니다.
+
+cpu는 해당 프로세스를 실행하려면 먼저 해당 프로세스가 준비 큐에 들어가야합니다.
+즉, 해당 프로세스를 실행하기 위해서는 프로세스의 도착 시간보다 현재시간이 지나
+준비큐에 들어갔을 때 실행할 수 있습니다.
+
+총 반환 시간은 모든 프로세스가 실행-종료되는데 걸린 시간을 의미하고
+총 대기 시간은 모든 프로세스가 준비 큐에 들어간 후 실행되기 까지 걸린 시간을 의미합니다.
+
+예를 들어
+p1은 cpu 사용시간이 4, 도착 시간이 0
+p2는 cpu 사용시간이 6, 도착 시간이 2
+p3는 cpu 사용시간이 3, 도착 시간이 4
+일때
+p1이 도착시간이 0이기때문에 먼저 사용되고
+p2와 p3은 도착시간이 2와 4이기때문에 p1이 종료되고 난 후 둘다 실행가능 하지만
+p3의 cpu 사용시간이 p2보다 작기때문에 p3이 먼저 실행됩니다.
+이후 p3이 종료되고 p2가 실행되고 p2가 종료되면 모든 프로세스가 종료됩니다.
+
+총 반환 시간은
+(p1의 (cpu사용시간=4) + (실행 시작시간=0)) +
+(p2의 (cpu사용시간=6) + (실행 시작시간=7)) +
+(p3의 (cpu사용시간=3) + (실행 시작시간=4))
+= 4+0+6+7+3+4 = 24
+
+입력으로 프로세스의 수N과 각 프로세스의 cpu 사용시간과 도착시간이 주어졌을때
+SJF 스케줄링을 했을때 총 반환시간을 출력하는 문제입니다.
+
+[
+    import java.util.Scanner;
+    public class Main{
+        public static void main(String[] args){
+            Scanner sc = new Scanner(System.in);
+            int n = sc.nextInt();
+            int cpu[] = new int[n];
+            int arrive[] = new int[n];
+            for (int i = 0; i < n; i++){
+                cpu[i] = sc.nextInt();
+                arrive[i] = sc.nextInt();
+            }
+            int time = 0;
+            int total = 0;
+            for (int i = 0; i < n; i++){
+                int min = 100000;
+                int min_idx = 0;
+                for (int j = 0; j < n; j++){
+                    if (arrive[j] <= time && cpu[j] < min){
+                        min = cpu[j];
+                        min_idx = j;
+                    }
+                }
+                time += cpu[min_idx];
+                total += time;
+                cpu[min_idx] = 100000;
+            }
+            System.out.println(total);
+        }
+    }
+]
+실행 결과는 다음과 같습니다.
+(예를들어
+5
+4 0
+6 2
+3 4
+2 5
+1 6
+을 입력)
+45

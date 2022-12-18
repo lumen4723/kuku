@@ -1,0 +1,831 @@
+8. 자료구조
+자료구조는 데이터들을 효율적으로 관리하기 위해 데이터를 저장하는 방법과
+데이터를 사용하는 방법을 특이하게 구성한 것입니다.
+자료구조를 어떤것들이 있고 어떻게 쓰이는지 알아봅시다.
+    8.1. 선형구조
+    선형구조는 데이터들이 일렬로 나열된 형태를 말합니다.
+    선형구조는 데이터들이 일렬로 나열되어 있기 때문에 데이터의 삽입과 삭제가
+    빠르게 이루어집니다.
+        8.1.1. 링크드 리스트
+        링크드 리스트는 데이터들이 일렬로 나열되어 있고
+        각각의 데이터들은 다음 데이터를 가리키는 포인터를 가지고 있습니다.
+        링크드 리스트는 데이터의 삽입과 삭제가 빠르게 이루어지지만 O(1)
+        데이터를 찾는데는 시간이 오래 걸립니다. O(n)
+        8.1.2. 스택
+        스택은 링크드 리스트 기반으로 데이터들이 일렬로 나열되어 있고
+        가장 마지막에 삽입된 데이터가 가장 먼저 삭제됩니다.(LIFO방식이라 불립니다.)
+
+            8.1.2.1. 스택의 구현
+            스택은 링크드 리스트를 기반으로 구현할 수 있습니다만,
+            이번 장에서는 알고리즘을 푸는데에 초점을 두어
+            배열을 기반으로 구현하겠습니다.
+
+            https://www.acmicpc.net/problem/10828
+            스택을 구현하는 문제입니다.
+            정수를 저장하는 스택을 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하시오.
+            명령은 총 다섯 가지이다.
+    
+                push X: 정수 X를 스택에 넣는 연산이다.
+                pop: 스택에서 가장 위에 있는 정수를 빼고, 그 수를 출력한다. 만약 스택에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+                size: 스택에 들어있는 정수의 개수를 출력한다.
+                empty: 스택이 비어있으면 1, 아니면 0을 출력한다.
+                top: 스택의 가장 위에 있는 정수를 출력한다. 만약 스택에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+            첫째 줄에 주어지는 명령의 수 N (1 ≤ N ≤ 10,000)이 주어진다. 둘째 줄부터 N개의 줄에는 명령이 하나씩 주어진다.
+            주어지는 정수는 1보다 크거나 같고, 100,000보다 작거나 같다. 문제에 나와있지 않은 명령이 주어지는 경우는 없다.
+
+            [
+                import java.util.Scanner;
+                public class Main {
+                    static int[] stack = new int[10000];
+                    static int ptr = -1;
+                    public static void main(String[] args) {
+                        Scanner scanner = new Scanner(System.in);
+                        int n = scanner.nextInt();
+                        while (n-- > 0) {
+                            String str = scanner.next();
+                            if (str.charAt(0) == 'p' && str.charAt(1) == 'u'){
+                                int x;
+                                x = scanner.nextInt();
+                                push(x);
+                            }
+                            else if (str.charAt(0) == 'p' && str.charAt(1) == 'o'){
+                                System.out.print(pop());
+                            }
+                            else if (str.charAt(0) == 's' && str.charAt(1) == 'i'){
+                                System.out.print(size());
+                            }
+                            else if (str.charAt(0) == 'e'){
+                                System.out.print(empty());
+                            }
+                            else if (str.charAt(0) == 't'){
+                                System.out.print(top());
+                            }
+                            System.out.println();
+                        }
+                    }
+                    static void push(int x){ // push 함수
+                        stack[++ptr] = x;
+                    }
+                    static int pop(){ // pop 함수
+                        if (ptr == -1){
+                            return -1;
+                        }
+                        else {
+                            return stack[ptr--];
+                        }
+                    }
+                    static int size(){ // size 함수
+                        return ptr + 1;
+                    }
+                    static int empty(){ // empty 함수
+                        if (ptr == -1){
+                            return 1;
+                        }
+                        else {
+                            return 0;
+                        }
+                    }
+                    static int top(){ // top 함수
+                        if (ptr == -1){
+                            return -1;
+                        }
+                        else {
+                            return stack[ptr];
+                        }
+                    }
+                }
+            ]
+            실행결과는 다음과 같습니다.
+            (예를 들어
+            14
+            push 1
+            push 2
+            top
+            size
+            empty
+            pop
+            pop
+            pop
+            size
+            empty
+            pop
+            push 3
+            empty
+            top
+            을 입력)
+            2
+            2
+            0
+            2
+            1
+            -1
+            0
+            1
+            -1
+            0
+            3
+
+            8.1.2.2. 괄호
+            Daejeon Nationalwide Internet Competition 2012 G번
+            괄호 문자열(Parenthesis String, PS)은 두 개의 괄호 기호인 ‘(’ 와 ‘)’ 만으로 구성되어 있는 문자열이다.
+            그 중에서 괄호의 모양이 바르게 구성된 문자열을 올바른 괄호 문자열(Valid PS, VPS)이라고 부른다.
+            한 쌍의 괄호 기호로 된 “( )” 문자열은 기본 VPS 이라고 부른다.
+            만일 x 가 VPS 라면 이것을 하나의 괄호에 넣은 새로운 문자열 “(x)”도 VPS 가 된다.
+            그리고 두 VPS x 와 y를 접합(concatenation)시킨 새로운 문자열 xy도 VPS 가 된다.
+            예를 들어 “(())()”와 “((()))” 는 VPS 이지만 “(()(”, “(())()))” , 그리고 “(()” 는 모두 VPS 가 아닌 문자열이다.
+            여러분은 입력으로 주어진 괄호 문자열이 VPS 인지 아닌지를 판단해서 그 결과를 YES 와 NO 로 나타내어야 한다.
+            (단, 입력받는 문자열의 수는 100을 넘지않는다.)
+
+            [
+                import java.util.Scanner;
+                public class Main {
+                    public static void main(String[] args) {
+                        Scanner scanner = new Scanner(System.in);
+                        int n = scanner.nextInt();
+                        while (n-- > 0){
+                            String str = scanner.next();
+                            int cnt = 0;
+                            for (int i = 0; i < str.length(); i++){
+                                if (str.charAt(i) == '('){
+                                    cnt++;
+                                }
+                                else {
+                                    cnt--;
+                                }
+                                if (cnt < 0){
+                                    break;
+                                }
+                            }
+                            if (cnt == 0){
+                                System.out.println("YES");
+                            }
+                            else {
+                                System.out.println("NO");
+                            }
+                        }
+                    }
+                }
+            ]
+            실행결과는 다음과 같습니다.
+            (예를 들어
+            6
+            (())())
+            (((()())()
+            (()())((()))
+            ((()()(()))(((())))()
+            ()()()()(()()())()
+            (()((())()(
+            을 입력)
+            NO
+            NO
+            YES
+            NO
+            YES
+            NO
+
+        8.1.3. 큐
+        큐는 링크드 리스트 기반으로 데이터들이 일렬로 나열되어 있고
+        가장 먼저 삽입된 데이터가 가장 먼저 삭제됩니다.(FIFO방식이라 불립니다.)
+
+            8.1.3.1. 큐의 구현
+            큐는 링크드 리스트를 이용하여 구현할 수 있습니다만,
+            이번 장에서는 알고리즘을 푸는데에 초점을 두어
+            배열을 기반으로 구현하겠습니다.
+
+            https://www.acmicpc.net/problem/10845
+            큐를 구현하는 문제입니다.
+            정수를 저장하는 큐를 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하시오.
+            명령은 총 여섯 가지이다.
+
+            push X: 정수 X를 큐에 넣는 연산이다.
+            pop: 큐에서 가장 앞에 있는 정수를 빼고, 그 수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+            size: 큐에 들어있는 정수의 개수를 출력한다.
+            empty: 큐가 비어있으면 1, 아니면 0을 출력한다.
+            front: 큐의 가장 앞에 있는 정수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+            back: 큐의 가장 뒤에 있는 정수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+            첫째 줄에 주어지는 명령의 수 N (1 ≤ N ≤ 10,000)이 주어진다. 둘째 줄부터 N개의 줄에는 명령이 하나씩 주어진다.
+            주어지는 정수는 1보다 크거나 같고, 100,000보다 작거나 같다. 문제에 나와있지 않은 명령이 주어지는 경우는 없다.
+
+            [
+                import java.util.Scanner;
+                public class Main {
+                    static int queue[] = new int[10000];
+                    static int front = 0;
+                    static int back = 0;
+                    public static void main(String[] args) {
+                        Scanner sc = new Scanner(System.in);
+                        int n = sc.nextInt();
+                        while (n-- > 0){
+                            String str = sc.next();
+                            if (str.equals("push")){
+                                int x = sc.nextInt();
+                                push(x);
+                            } else if (str.equals("pop")){
+                                System.out.println(pop());
+                            } else if (str.equals("size")){
+                                System.out.println(size());
+                            } else if (str.equals("empty")){
+                                System.out.println(empty());
+                            } else if (str.equals("front")){
+                                System.out.println(front());
+                            } else if (str.equals("back")){
+                                System.out.println(back());
+                            } 
+                        }
+                    }
+                    static void push(int x){
+                        queue[back++] = x;
+                    }
+                    static int pop(){
+                        if (front == back){
+                            return -1;
+                        }
+                        return queue[front++];
+                    }
+                    static int size(){
+                        return back - front;
+                    }
+                    static int empty(){
+                        if (front == back){
+                            return 1;
+                        }
+                        return 0;
+                    }
+                    static int front(){
+                        if (front == back){
+                            return -1;
+                        }
+                        return queue[front];
+                    }
+                    static int back(){
+                        if (front == back){
+                            return -1;
+                        }
+                        return queue[back-1];
+                    }
+
+                }
+            ]
+            실행 결과는 다음과 같습니다.
+            (예를 들어
+            15
+            push 1
+            push 2
+            front
+            back
+            size
+            empty
+            pop
+            pop
+            pop
+            size
+            empty
+            pop
+            push 3
+            empty
+            front
+            을 입력)
+            1
+            2
+            2
+            0
+            1
+            2
+            -1
+            0
+            1
+            -1
+            0
+            3
+
+            8.1.3.2. 요세푸스 문제
+            요세푸스 문제는 다음과 같다.
+            N명의 사람이 원을 이루면서 앉아있고, 양의 정수 K(≤ N)가 주어진다. 이제 순서대로 K번째 사람을 제거한다.
+            한 사람이 제거되면 남은 사람들로 이루어진 원을 따라 이 과정을 계속해 나간다.
+            이 과정은 N명의 사람이 모두 제거될 때까지 계속된다.
+            원에서 사람들이 제거되는 순서를 (N, K)-요세푸스 순열이라고 한다.
+            예를 들어 (7, 3)-요세푸스 순열은 <3, 6, 2, 7, 5, 1, 4>이다.
+
+            N과 K가 주어지면 (N, K)-요세푸스 순열을 구하는 프로그램을 작성하시오.
+
+            [
+                import java.util.Scanner;
+                import java.util.LinkedList;
+                import java.util.Queue;
+                public class Main {
+                    public static void main(String[] args) {
+                        Scanner sc = new Scanner(System.in);
+                        int n = sc.nextInt();
+                        int k = sc.nextInt();
+                        Queue<Integer> q = new LinkedList<>();
+                        for (int i=1; i<=n; i++){
+                            q.add(i);
+                        }
+                        System.out.print("<");
+                        while (!q.isEmpty()){
+                            for (int i=0; i<k-1; i++){
+                                q.add(q.remove());
+                            }
+                            System.out.print(q.remove());
+                            if (!q.isEmpty()) System.out.print(", ");
+                        }
+                        System.out.print(">");
+                    }
+                }
+            ]
+            실행 결과는 다음과 같습니다.
+            (예를 들어 7 3을 입력)
+            <3, 6, 2, 7, 5, 1, 4>
+
+        8.1.4. 덱
+        덱은 큐와 스택의 기능을 모두 가지고 있습니다.
+
+            8.1.4.1. 덱의 구현
+            덱은 큐와 스택의 기능을 모두 가지고 있습니다.
+            링크드 리스트를 기반으로 구현할 수 있습니다만,
+            배열을 기반으로 구현하겠습니다.
+
+            https://www.acmicpc.net/problem/10866
+            덱을 구현하는 문제입니다.
+
+            정수를 저장하는 덱(Deque)를 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하시오.
+            명령은 총 여덟 가지이다.
+
+            push_front X: 정수 X를 덱의 앞에 넣는다.
+            push_back X: 정수 X를 덱의 뒤에 넣는다.
+            pop_front: 덱의 가장 앞에 있는 수를 빼고, 그 수를 출력한다. 만약, 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+            pop_back: 덱의 가장 뒤에 있는 수를 빼고, 그 수를 출력한다. 만약, 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+            size: 덱에 들어있는 정수의 개수를 출력한다.
+            empty: 덱이 비어있으면 1을, 아니면 0을 출력한다.
+            front: 덱의 가장 앞에 있는 정수를 출력한다. 만약 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+            back: 덱의 가장 뒤에 있는 정수를 출력한다. 만약 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+
+            첫째 줄에 주어지는 명령의 수 N (1 ≤ N ≤ 10,000)이 주어진다. 둘째 줄부터 N개의 줄에는 명령이 하나씩 주어진다.
+            주어지는 정수는 1보다 크거나 같고, 100,000보다 작거나 같다. 문제에 나와있지 않은 명령이 주어지는 경우는 없다.
+            
+            [
+                import java.util.Scanner;
+                public class Main {
+                    static final int MAX = 100000;
+                    static int[] deque = new int[MAX];
+                    static int front = 0;
+                    static int back = 0;
+                    static int size = 0;
+                    public static void main(String[] args) {
+                        Scanner sc = new Scanner(System.in);
+                        int n = sc.nextInt();
+                        while (n-- > 0){
+                            String cmd = sc.next();
+                            if (cmd.equals("push_front")){
+                                push_front(sc.nextInt());
+                            } else if (cmd.equals("push_back")){
+                                push_back(sc.nextInt());
+                            } else if (cmd.equals("pop_front")){
+                                System.out.println(pop_front());
+                            } else if (cmd.equals("pop_back")){
+                                System.out.println(pop_back());
+                            } else if (cmd.equals("size")){
+                                System.out.println(size);
+                            } else if (cmd.equals("empty")){
+                                System.out.println(size == 0);
+                            } else if (cmd.equals("front")){
+                                if (size == 0 ) {
+                                    System.out.println("-1\n");
+                                }else {
+                                    System.out.println(deque[front]);
+                                }
+                            } else if (cmd.equals("back")){
+                                if (size == 0 ) {
+                                    System.out.println("-1\n");
+                                }else {
+                                    System.out.println(deque[(back - 1 + MAX) % MAX]);
+                                }
+                            }
+                        }
+
+                    }
+                    static void push_front(int x) {
+                        if (size == MAX) {
+                            return;
+                        }
+                        front = (front - 1 + MAX) % MAX;
+                        deque[front] = x;
+                        size++;
+                    }
+                    static void push_back(int x) {
+                        if (size == MAX) {
+                            return;
+                        }
+                        deque[back] = x;
+                        back = (back + 1) % MAX;
+                        size++;
+                    }
+                    static int pop_front() {
+                        if (size == 0) {
+                            return -1;
+                        }
+                        int x = deque[front];
+                        front = (front + 1) % MAX;
+                        size--;
+                        return x;
+                    }
+                    static int pop_back() {
+                        if (size == 0) {
+                            return -1;
+                        }
+                        back = (back - 1 + MAX) % MAX;
+                        int x = deque[back];
+                        size--;
+                        return x;
+                    }
+                }
+            ]
+            실행 결과는 다음과 같습니다.
+            (예를 들어
+            15
+            push_back 1
+            push_front 2
+            front
+            back
+            size
+            empty
+            pop_front
+            pop_back
+            pop_front
+            size
+            empty
+            pop_back
+            push_front 3
+            empty
+            front
+
+            을 입력)
+            2
+            1
+            2
+            0
+            2
+            1
+            -1
+            0
+            1
+            -1
+            0
+            3
+
+            8.1.4.2. AC 문제
+            BAPC 2012 I번
+            AC는 정수 배열에 연산을 하기 위해 만든 언어이다. 이 언어에는 두 가지 함수 R(뒤집기)과 D(버리기)가 있다.
+            함수 R은 배열에 있는 수의 순서를 뒤집는 함수이고, D는 첫 번째 수를 버리는 함수이다.
+            배열이 비어있는데 D를 사용한 경우에는 에러가 발생한다.
+            함수는 조합해서 한 번에 사용할 수 있다. 예를 들어, "AB"는 A를 수행한 다음에 바로 이어서 B를 수행하는 함수이다.
+            예를 들어, "RDD"는 배열을 뒤집은 다음 처음 두 수를 버리는 함수이다.
+            배열의 초기값과 수행할 함수가 주어졌을 때, 최종 결과를 구하는 프로그램을 작성하시오.
+
+            첫째 줄에 테스트 케이스의 개수 T가 주어진다. T는 최대 100이다.
+            각 테스트 케이스의 첫째 줄에는 수행할 함수 p가 주어진다.
+            (1 ≤ p의 길이 ≤ 100,000)
+            다음 줄에는 배열에 들어있는 수의 개수 n이 주어진다.
+            (0 ≤ n ≤ 100,000)
+            다음 줄에는 [x1,...,xn]과 같은 형태로 배열에 들어있는 정수가 주어진다.
+            (1 ≤ xi ≤ 100)
+            전체 테스트 케이스에 주어지는 p의 길이의 합과 n의 합은 70만을 넘지 않는다.
+
+            각 테스트 케이스에 대해서, 주어진 연산을 수행한 결과를 출력한다.
+            만약, 에러가 발생한 경우에는 error를 출력한다.
+            [
+                import java.util.ArrayDeque;
+                import java.util.Deque;
+                import java.util.Scanner;
+                public class Main {
+                    public static void main(String[] args) {
+                        Scanner sc = new Scanner(System.in);
+                        int T = sc.nextInt();
+                        for (int i = 0; i < T; i++) {
+                            String act = sc.next();
+                            int size = sc.nextInt();
+                            String arr = sc.next();
+                            Deque<Integer> dq = new ArrayDeque<>();
+                            int index = 1, indata = 0;
+                            boolean isfront = true, iserror = false;
+                            while (true) {
+                                if (arr.charAt(index) >= '0' && arr.charAt(index) <= '9') {
+                                    indata = indata * 10 + (arr.charAt(index) - '0');
+                                }
+                                else if (arr.charAt(index) == ',') {
+                                    dq.addLast(indata);
+                                    indata = 0;
+                                }
+                                else {
+                                    if (indata != 0) {
+                                        dq.addLast(indata);
+                                    }
+                                    indata = 0;
+                                    break;
+                                }
+                                index++;
+                            }
+                            for (int j = 0; j < act.length(); j++) {
+                                if (act.charAt(j) == 'R') {
+                                    isfront = !isfront;
+                                }
+                                else if (act.charAt(j) == 'D' && !dq.isEmpty()) {
+                                    if (isfront) {
+                                        dq.removeFirst();
+                                    }
+                                    else {
+                                        dq.removeLast();
+                                    }
+                                }
+                                else {
+                                    System.out.println("error");
+                                    iserror = true;
+                                    break;
+                                }
+                            }
+                            if (!iserror) {
+                                System.out.print("[");
+                                if (isfront && !dq.isEmpty()) {
+                                    System.out.print(dq.getFirst());
+                                    dq.removeFirst();
+                                    while (!dq.isEmpty()) {
+                                        System.out.print("," + dq.getFirst());
+                                        dq.removeFirst();
+                                    }
+                                }
+                                else if(!isfront && !dq.isEmpty()) {
+                                    System.out.print(dq.getLast());
+                                    dq.removeLast();
+                                    while (!dq.isEmpty()) {
+                                        System.out.print("," + dq.getLast());
+                                        dq.removeLast();
+                                    }
+                                }
+                                System.out.println("]");
+                            }
+                        }
+                    }
+                }
+            ]
+            실행 결과는 다음과 같습니다.
+            (예를 들어
+            4
+            RDD
+            4
+            [1,2,3,4]
+            DD
+            1
+            [42]
+            RRD
+            6
+            [1,1,2,3,5,8]
+            D
+            0
+            []
+            을 입력)
+            [2,1]
+            error
+            [1,2,3,5,8]
+            error
+
+        8.1.5. 해시 테이블(맵, 집합)
+        해시 테이블은 데이터들을 키와 값의 쌍으로 저장하는 자료구조입니다.
+        해시 테이블은 데이터의 삽입과 삭제가 빠르게 이루어지면서도 O(1)
+        데이터를 찾는것도 빠르게 할 수 있습니다. O(1)
+        해시 테이블은 데이터를 저장할 때 키를 해시 함수를 이용해 해시값으로 변환하고
+        해시값을 인덱스로 사용하여 데이터를 저장합니다.
+
+            8.1.5.1. 해시 테이블의 구현(map)
+            해시 테이블은 데이터를 저장할 때 키를 해시 함수를 이용해 해시값으로 변환하고
+            해시값을 인덱스로 사용하여 데이터를 저장합니다.
+
+            해시 테이블을 구현하기 위해서는 키와 키를 이용하는 해시 함수가 필요합니다.
+            해시함수는 해시충돌이 나지 않으면서도 밀집되게 설계되어야 합니다.
+            여기서는 자세한 내용을 다루지 않고 만들어진 해시map을 사용하는 방법만 다루겠습니다.
+
+            해시map은 다음과 같이 사용할 수 있습니다.
+            [
+                import java.util.HashMap;
+                import java.util.Map;
+                //map 사용 예제
+                public class Main {
+                    public static void main(String[] args) {
+                        Map<String, Integer> map = new HashMap<>();
+                        map.put("one", 1);
+                        map.put("two", 2);
+                        map.put("three", 3);
+                        map.put("four", 4);
+                        map.put("five", 5);
+                        
+                        System.out.println("키 one의 값 = " + map.get("one")); 
+                        System.out.println("키 four의 값 = " + map.get("four")); 
+                        System.out.println("키 six의 값 = " + map.get("six")); 
+                    }
+                }
+            ]
+            실행 결과는 다음과 같습니다.
+            키 one 의 값 = 1
+            키 four 의 값 = 4
+            키 six 의 값 = null
+
+            8.1.5.2. 해시 테이블의 구현(set)
+            해시 테이블을 이용하여 집합을 구현할 수 있습니다.
+            집합은 데이터의 중복을 허용하지 않는 자료구조입니다.
+            집합을 구현하기 위해서는 키와 키를 이용하는 해시 함수가 필요합니다.
+            여기서는 자세한 내용을 다루지 않고 만들어진 해시set을 사용하는 방법만 다루겠습니다.
+
+            해시set은 다음과 같이 사용할 수 있습니다.
+            [
+                import java.util.HashSet;
+                import java.util.Set;
+                //set 사용 예제
+                public class Main {
+                    public static void main(String[] args) {
+                        Set<String> set = new HashSet<String>();
+                        set.add("one");
+                        set.add("two");
+                        set.add("three");
+                        set.add("four");
+                        set.add("five");
+                        
+                        System.out.println("키 one 의 값 = " + set.contains("one")); 
+                        System.out.println("키 four 의 값 = " + set.contains("four"));
+                        System.out.println("키 six 의 값 = " + set.contains("six"));
+                    }
+                }
+            ]
+            실행 결과는 다음과 같습니다.
+            키 one 의 값 = 1
+            키 four 의 값 = 1
+            키 six 의 값 = 0
+
+    8.2. 비선형구조
+    비선형구조는 데이터들이 일렬로 나열되어 있지 않기 때문에
+    데이터의 삽입과 삭제가 선형구조에 비해 느리게 이루어집니다.
+    대신 대부분의 비선형구조는 데이터를 찾는데 빠르게 이루어집니다.
+        8.2.1. 트리
+        트리는 데이터들이 부모와 자식의 관계로 이루어진 비선형구조입니다.
+        트리는 데이터의 삽입과 삭제가 느리게 이루어지지만 O(log n)
+        데이터를 찾는데는 빠르게 이루어집니다. O(log n)
+            8.2.1.1. 이진트리
+            이진트리는 트리의 일종으로 자식 노드가 최대 2개인 트리입니다.
+            이진트리는 노드형태의 자료구조로 구현할 수 있지만,
+            실전에서는 배열을 이용하여 구현하는 것이 효율적입니다.
+            그렇다면 배열은 선형인데 어떻게 하면 비선형구조인 이진트리를 구현할 수 있을까요?
+
+            이진트리를 배열로 구현할 때는 다음과 같은 규칙을 따릅니다.
+            1. 루트 노드는 배열의 첫 번째 요소입니다.
+            2. 부모 노드의 인덱스가 i라면 왼쪽 자식 노드의 인덱스는 2i입니다.
+            3. 부모 노드의 인덱스가 i라면 오른쪽 자식 노드의 인덱스는 2i+1입니다.
+            4. 자식 노드의 인덱스가 i라면 부모 노드의 인덱스는 i/2입니다.
+
+            이를 구현하면 다음과 같습니다.
+            [
+                import java.util.ArrayList;
+                public class Main {
+                    public static void main(String[] args) {
+                        ArrayList<String> tree = new ArrayList<String>();
+                        tree.add("root");
+                        tree.add("left child");
+                        tree.add("right child");
+                        tree.add("left grandchild");
+                        tree.add("right grandchild");
+
+                        System.out.println("루트 노드 = " + tree.get(0));
+                        System.out.println("왼쪽 자식 노드 = " + tree.get(1));
+                        System.out.println("오른쪽 자식 노드 = " + tree.get(2));
+                        System.out.println("왼쪽 자식의 왼쪽 자식 노드 = " + tree.get(3));
+                        System.out.println("왼쪽 자식의 오른쪽 자식 노드 = " + tree.get(4));
+                    }
+                }
+            ]
+            실행결과는 다음과 같습니다.
+            루트 노드 = root
+            왼쪽 자식 노드 = left child
+            오른쪽 자식 노드 = right child
+            왼쪽 자식의 왼쪽 자식 노드 = left grandchild
+            왼쪽 자식의 오른쪽 자식 노드 = right grandchild
+
+            8.2.1.2. 이진탐색트리 구현
+            이진탐색트리는 이진트리의 일종으로 다음과 같은 규칙을 따릅니다.
+            1. 노드의 왼쪽 서브트리에는 해당 노드의 값보다 작은 값들이 저장되어 있습니다.
+            2. 노드의 오른쪽 서브트리에는 해당 노드의 값보다 큰 값들이 저장되어 있습니다.
+            3. 왼쪽과 오른쪽 서브트리도 이진탐색트리입니다.
+
+            이를 구현하면 다음과 같습니다.
+            [
+                //이진탐색트리를 배열로 구현 하고 중위순회
+                import java.util.ArrayList;
+
+                public class Main {
+	            public static void main(String[] args) {
+		            String[] tree = new String[2 * 2 * 2];
+		            tree[0] = "root";
+		            tree[0 * 2 + 1] = "left child"; // node = 0 -> 1
+		            tree[0 * 2 + 2] = "right child"; // node = 0 -> 2
+		            tree[1 * 2 + 1] = "left grandchild"; // node = 0 -> 1 -> 3
+		            tree[2 * 2 + 2] = "right grandchild"; // node = 0 -> 1 -> 4
+
+		            inOrder(tree, 0);
+	            }
+
+	            public static void inOrder(String[] tree, int node) {
+		            if (node >= tree.length) {
+			            return;
+		            }
+		            inOrder(tree, node * 2 + 1);
+
+		            if (tree[node] != null)
+			            System.out.println(tree[node]);
+
+		            inOrder(tree, node * 2 + 2);
+	            }
+        }
+            ]
+            실행결과는 다음과 같습니다.
+            left grandchild
+            left child
+            root
+            right child
+            right grandchild
+
+            순회는 트리의 모든 노드를 한 번씩 방문하는 것을 말합니다.
+            순회의 종류로는 전위, 중위, 후위 순회가 있습니다.
+            중위순회는 왼쪽끝부터 오른쪽끝까지 좌우 위치순서로 출력하는 것입니다.
+            순회에 대한 원리와 구조는 여기서는 깊게 다루지않고
+            이진탐색트리를 출력하는데에 사용되는 기법정도만 이해하고 넘어가겠습니다.
+
+            8.2.1.3. 힙 구현
+            힙은 이진트리의 일종으로 다음과 같은 규칙을 따릅니다.
+            1. 노드의 왼쪽 서브트리에는 해당 노드의 값보다 작은 값들이 저장되어 있습니다.
+            2. 노드의 오른쪽 서브트리에는 해당 노드의 값보다 큰 값들이 저장되어 있습니다.
+            3. 왼쪽과 오른쪽 서브트리도 힙입니다.
+
+            힙은 라이브러리가 존재하여 사용하는 예제정도로만 다루겠습니다.
+            [
+                import java.util.PriorityQueue;
+                public class Main {
+                    public static void main(String[] args) {
+                        // 힙 구현
+                        PriorityQueue<Integer> pq = new PriorityQueue<Integer>();
+                        pq.add(5);
+                        pq.add(3);
+                        pq.add(2);
+                        pq.add(4);
+                        pq.add(1);
+
+                        while (!pq.isEmpty()) {
+                            System.out.println(pq.poll());
+                        }
+                    }
+                }
+            ]
+            실행결과는 다음과 같습니다.
+            1
+            2
+            3
+            4
+            5
+
+            위의 힙을 최소힙이라고도 합니다.
+            추가로 최대힙은 큰값이 루트쪽으로 오도록 구현한 것입니다.
+            최대힙은 std::greater 대신 std::less를 사용하면 됩니다.
+
+            우선순위 큐는 큐와 비슷하지만 우선순위가 높은 데이터가 먼저 나오는 큐입니다.
+            유선순위 큐는 고급 자료구조에서 자세하게 다룰 예정입니다.
+
+        8.2.2. 그래프 구현
+        그래프는 데이터들이 정점과 간선으로 이루어진 비선형구조입니다.
+        그래프는 2차원 배열의 형태와 2차 링크드 리스트의 형태로 구현할 수 있습니다.
+        2차원 배열의 경우 인접행렬이라고 하며 2차 링크드 리스트의 경우 인접리스트라고 합니다.
+        
+        이번 장에서는 2차원 배열을 이용한 인접행렬을 이용한 그래프만 다루겠습니다.
+        2차 또는 1차 링크드 리스트를 이용한 인접리스트는 고급 자료구조에서
+        사용하는 이유와 실제 구현을 경험해볼 수 있습니다.
+        
+        2차원 배열을 이용한 인접행렬은 다음과 같이 구현할 수 있습니다.
+        [
+            //그래프 구현
+            public class Main {
+                static final int INF = 1000000000;
+                public static void main(String[] args) {
+                    // 그래프 구현
+                    int[][] graph = new int[][]{
+                            {0, 7, 5},
+                            {7, 0, INF},
+                            {5, INF, 0}
+                    };
+                    for (int i = 0; i < 3; i++) {
+                        for (int j = 0; j < 3; j++) {
+                            System.out.print(graph[i][j] + " ");
+                        }
+                        System.out.println();
+                    }
+                }
+            }
+        ]
+        실행결과는 다음과 같습니다.
+        0 7 5
+        7 0 1000000000
+        5 1000000000 0
+        

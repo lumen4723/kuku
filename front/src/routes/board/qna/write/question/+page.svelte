@@ -24,7 +24,7 @@
   });
 
   const postArticle = () =>
-    fetch(`//api.eyo.kr:8081/board/qna/question`, {
+    fetch(`//api.eyo.kr/board/qna/question`, {
       method: "POST",
       headers: {
         Aceept: "application/json",
@@ -81,7 +81,7 @@
 
   // 태그 가져오기
   const getTags = async () => {
-    const res = await fetch(`//api.eyo.kr:8081/board/tag/list`, {
+    const res = await fetch(`//api.eyo.kr/board/tag/list`, {
       mode: "cors",
       credentials: "include",
     });

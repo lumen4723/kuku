@@ -5,7 +5,7 @@
 	let email, password;
 
 	const user_delete = async () => {
-		await fetch("//api.eyo.kr:8081/user/delete", {
+		await fetch("https://api.eyo.kr/user/delete", {
 			method: "DELETE",
 			headers: {
 				Accept: "application/json",

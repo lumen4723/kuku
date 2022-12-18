@@ -21,7 +21,7 @@
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/list/${pageIdx}?limit=${pageLimit}`,
+			`//api.eyo.kr/board/qna/list/${pageIdx}?limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -39,7 +39,7 @@
 	};
 	const searchTitle = async (title, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/search/title/${title}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/qna/search/title/${title}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -57,7 +57,7 @@
 	};
 	const searchUser = async (user, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/search/username/${user}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/qna/search/username/${user}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -75,7 +75,7 @@
 	};
 	const searchContent = async (content, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/qna/search/content/${content}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/qna/search/content/${content}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",

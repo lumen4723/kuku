@@ -15,7 +15,7 @@
 
   const getSlugList = async (slug, pageIdx, pageLimit) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/list/slug/${slug}/${pageIdx}?limit=${pageLimit}`,
+      `//api.eyo.kr/board/qna/list/slug/${slug}/${pageIdx}?limit=${pageLimit}`,
       {
         mode: "cors",
         credentials: "include",
@@ -34,7 +34,7 @@
 
   const getName = async (slug) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/tag/get_name_by_slug/${slug}`,
+      `//api.eyo.kr/board/tag/get_name_by_slug/${slug}`,
       {
         mode: "cors",
         credentials: "include",

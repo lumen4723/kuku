@@ -17,18 +17,20 @@ router = APIRouter(
 
 
 @router.get("/list")
-async def user(session: Session = Depends(utils.database.get_db)):
+def list(session: Session = Depends(utils.database.get_db)):
     return database.list_article(session, all=True).map_err(throwMsg).unwrap()
 
+
 @router.get("/notice/list")
-async def user(session: Session = Depends(utils.database.get_db)):
+def notice_list(session: Session = Depends(utils.database.get_db)):
     return database.list_notice(session, all=True).map_err(throwMsg).unwrap()
+
 
 # create article router
 @router.post(
     "/create", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
 )
-async def create_article(
+def create_article(
     article: board_free_create,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -42,7 +44,7 @@ async def create_article(
 
 # get article start ~ end page router
 @router.get("/list/{start_page}")
-async def list_article(
+def list_article(
     start_page: int, limit: int = 20, session: Session = Depends(utils.database.get_db)
 ):
     return (
@@ -54,7 +56,7 @@ async def list_article(
 
 # get article by id router
 @router.get("/article_id/{article_id}")
-async def get_article_by_id(
+def get_article_by_id(
     article_id: int, session: Session = Depends(utils.database.get_db)
 ):
     return database.get_article_by_id(article_id, session).map_err(throwMsg).unwrap()
@@ -62,15 +64,13 @@ async def get_article_by_id(
 
 # get article by uid router
 @router.get("/uid/{uid}")
-async def get_article_by_uid(
-    uid: int, session: Session = Depends(utils.database.get_db)
-):
+def get_article_by_uid(uid: int, session: Session = Depends(utils.database.get_db)):
     return database.get_article_by_uid(uid, session).map_err(throwMsg).unwrap()
 
 
 # delete articles from database
 @router.delete("/delete/{article_id}", dependencies=[Depends(cookie)])
-async def delete_article(
+def delete_article(
     article_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -84,7 +84,7 @@ async def delete_article(
 
 # update article
 @router.put("/update/{article_id}", dependencies=[Depends(cookie)])
-async def update_article(
+def update_article(
     article_id: int,
     article: board_free_create,
     session: Session = Depends(utils.database.get_db),
@@ -103,7 +103,7 @@ async def update_article(
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_201_CREATED,
 )
-async def like_article_by_id(
+def like_article_by_id(
     article_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -120,7 +120,7 @@ async def like_article_by_id(
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_201_CREATED,
 )
-async def dislike_article_by_id(
+def dislike_article_by_id(
     article_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -134,7 +134,7 @@ async def dislike_article_by_id(
 
 # get article start ~ end page router
 @router.get("/list/like/get/{start_page}")
-async def list_article(
+def list_article(
     start_page: int, limit: int = 20, session: Session = Depends(utils.database.get_db)
 ):
     return (
@@ -145,7 +145,7 @@ async def list_article(
 
 
 @router.get("/list/like/getall")
-async def user(session: Session = Depends(utils.database.get_db)):
+def notice_list(session: Session = Depends(utils.database.get_db)):
     return (
         database.list_article(session, all=True, like=True).map_err(throwMsg).unwrap()
     )
@@ -157,7 +157,7 @@ async def user(session: Session = Depends(utils.database.get_db)):
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_201_CREATED,
 )
-async def create_comment(
+def create_comment(
     comment: board_free_comment_create,
     article_id: int,
     session: Session = Depends(utils.database.get_db),
@@ -172,7 +172,7 @@ async def create_comment(
 
 # get comment by article id router
 @router.get("/comment/{article_id}")
-async def get_comment_by_article_id(
+def get_comment_by_article_id(
     article_id: int, session: Session = Depends(utils.database.get_db)
 ):
     return get_comment(article_id, session).map_err(throwMsg).unwrap()
@@ -180,7 +180,7 @@ async def get_comment_by_article_id(
 
 # change comment state to delete
 @router.put("/comment/delete/{comment_id}", dependencies=[Depends(cookie)])
-async def delete_comment_by_comment_id(
+def delete_comment_by_comment_id(
     comment_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -192,7 +192,7 @@ async def delete_comment_by_comment_id(
 
 # get article by title
 @router.get("/search/title/{title}")
-async def search_article_by_title(
+def search_article_by_title(
     page: int,
     title: str,
     limit: int = 20,
@@ -207,7 +207,7 @@ async def search_article_by_title(
 
 # get article by username
 @router.get("/search/username/{username}")
-async def search_article_by_username(
+def search_article_by_username(
     page: int,
     username: str,
     limit: int = 20,
@@ -222,7 +222,7 @@ async def search_article_by_username(
 
 # get article by content
 @router.get("/search/content/{content}")
-async def search_article_by_content(
+def search_article_by_content(
     page: int,
     content: str,
     limit: int = 20,

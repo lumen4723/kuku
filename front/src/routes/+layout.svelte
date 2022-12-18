@@ -2,6 +2,7 @@
 	import "bulma/css/bulma.css";
 	import "@fortawesome/fontawesome-free/css/all.css";
 	import "sweetalert2/dist/sweetalert2.min.css";
+	import { user } from "$lib/user.js";
 	import { page } from "$app/stores";
 	import { browser } from "$app/env";
 
@@ -10,17 +11,26 @@
 	let loginBtnStr = "Login";
 	let loginBtnactivate = true;
 	let username = null;
-	if (browser) {
-		username = window.sessionStorage.getItem("user.username");
-		if (username != null) {
-			loginBtnStr = username;
+
+	user.subscribe((user) => {
+		if (user != null) {
+			loginBtnStr = user.username;
 			loginBtnactivate = false;
+		} else {
+			loginBtnStr = "Login";
+			loginBtnactivate = true;
 		}
-	}
+	});
 
 	const logout = async () => {
+		window.sessionStorage.removeItem("user.email");
+		window.sessionStorage.removeItem("user.id");
+		window.sessionStorage.removeItem("user.username");
+
+		user.set(null);
+
 		if (username != null) {
-			await fetch(`//api.eyo.kr:8081/user/logout`, {
+			await fetch(`//api.eyo.kr/user/logout`, {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -32,11 +42,7 @@
 					if (res.ok == false) return Promise.reject(res);
 				})
 				.then(() => {
-					if (browser) {
-						window.sessionStorage.removeItem("user.email");
-						window.sessionStorage.removeItem("user.id");
-						window.sessionStorage.removeItem("user.username");
-					}
+					if (browser) document.cookie = "";
 					location.href = "/";
 				})
 				.catch((e) => {

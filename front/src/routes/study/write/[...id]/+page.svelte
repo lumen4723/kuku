@@ -49,7 +49,7 @@
 	let getCodeData;
 
 	if (browser) {
-		fetch("//api.eyo.kr:8081/study/courses", {
+		fetch("https://api.eyo.kr/study/courses", {
 			method: "GET",
 			headers: {
 				Accept: "application/json",
@@ -62,7 +62,7 @@
 				courses = data;
 			});
 
-		fetch("//api.eyo.kr:8081/study/categories", {
+		fetch("https://api.eyo.kr/study/categories", {
 			method: "GET",
 			headers: {
 				Accept: "application/json",
@@ -76,7 +76,7 @@
 			});
 
 		if (chapter_id != undefined) {
-			fetch("//api.eyo.kr:8081/study/chapter/" + chapter_id, {
+			fetch("https://api.eyo.kr/study/chapter/" + chapter_id, {
 				method: "GET",
 				headers: {
 					Accept: "application/json",
@@ -104,7 +104,7 @@
 	$: update_courses(selected_course);
 	async function update_courses(selected_course) {
 		if (browser && selected_course != undefined && selected_course != "") {
-			return fetch(`//api.eyo.kr:8081/study/${selected_course}/list`, {
+			return fetch(`//api.eyo.kr/study/${selected_course}/list`, {
 				method: "GET",
 				headers: {
 					Accept: "application/json",
@@ -155,7 +155,7 @@
 			parent_chapter = chapter.parent_id ?? "null";
 			category = chapter.category;
 
-			fetch(`//api.eyo.kr:8081/study/${selected_course}/${chapter_id}/`, {
+			fetch(`//api.eyo.kr/study/${selected_course}/${chapter_id}/`, {
 				method: "GET",
 				headers: {
 					Accept: "application/json",
@@ -193,7 +193,7 @@
 			ClassicEditor.create(document.querySelector("#editor"), {
 				simpleUpload: {
 					// The URL that the images are uploaded to.
-					uploadUrl: "//api.eyo.kr:8081/upload/",
+					uploadUrl: "https://api.eyo.kr/upload/",
 
 					// Enable the XMLHttpRequest.withCredentials property.
 					withCredentials: true,
@@ -224,7 +224,7 @@
 			code: getCodeData(),
 		};
 
-		fetch(`//api.eyo.kr:8081/study/${selected_course}/`, {
+		fetch(`//api.eyo.kr/study/${selected_course}/`, {
 			method: "POST",
 			headers: {
 				Accept: "application/json",

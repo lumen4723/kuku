@@ -1,5 +1,6 @@
 <script>
 	import { userIsLogged } from "$lib/user.js";
+	import gmttolocal from "$lib/time.js";
 
 	const pageLimits = [
 		{ value: 10, label: "10개씩 보기" },
@@ -21,7 +22,7 @@
 
 	const getBoardList = async (pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/list/${pageIdx}?limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/list/${pageIdx}?limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -39,7 +40,7 @@
 	};
 	const searchTitle = async (title, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/title/${title}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/search/title/${title}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -57,7 +58,7 @@
 	};
 	const searchUser = async (user, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/username/${user}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/search/username/${user}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -75,7 +76,7 @@
 	};
 	const searchContent = async (content, pageIdx, pageLimit) => {
 		const res = await fetch(
-			`//api.eyo.kr:8081/board/free/search/content/${content}?page=${pageIdx}&limit=${pageLimit}`,
+			`//api.eyo.kr/board/free/search/content/${content}?page=${pageIdx}&limit=${pageLimit}`,
 			{
 				mode: "cors",
 				credentials: "include",
@@ -133,7 +134,7 @@
 							</a>
 						</td>
 						<td>{free.username}</td>
-						<td>{free.created}</td>
+						<td>{gmttolocal(free.created)}</td>
 						<td>{free.like}</td>
 						<td>{free.views}</td>
 					</tr>
@@ -224,7 +225,7 @@
 		<form method="get" on:submit|preventDefault={changeList}>
 			<div class="field is-horizontal">
 				<div class="field-body">
-					<div class="select">
+					<div class="select mr-1">
 						<select bind:value={currentST}>
 							{#each searchTypes as st}
 								<option value={st.value}>
@@ -233,7 +234,7 @@
 							{/each}
 						</select>
 					</div>
-					<div class="control is-expanded has-icons-left">
+					<div class="control is-expanded has-icons-left mr-1">
 						<input
 							class="input"
 							type="text"

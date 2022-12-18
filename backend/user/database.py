@@ -71,11 +71,20 @@ def create_user(object_in: User, db: Session) -> Result:
     try:
         object_in.password = get_password_hash(object_in.password)
         user = User.from_orm(object_in)
+        user.state = 1
+
         db.add(user)
-        if isinstance(emailCertificationByEmail(db, object_in.email), Err):
-            return Err(DefaultException(detail="email send error"))
+        
+        # email_send_result = emailCertificationByEmail(db, object_in.email)
+        # if isinstance(email_send_result, Err):
+        #     db.rollback()
+        #     return Err(DefaultException(detail="email send error"))
+
         db.commit()
         db.refresh(user)
+
+
+
         return Ok(
             UserInformation(
                 userid=user.uid,
@@ -86,6 +95,7 @@ def create_user(object_in: User, db: Session) -> Result:
         )
 
     except Exception as e:
+        print(e)
         err_msg = str(e).lower()
 
         if "username_unique" in err_msg:
@@ -151,6 +161,7 @@ def emailCertificationByEmail(db: Session, email: str) -> Result:
         if isinstance(token_generator_by_email(email), Ok):
             token = str(token_generator_by_email(email).unwrap())
         else:
+            print('token err')
             return Err(DefaultException(detail="token generator error"))
         content = Content("text/html", templateHtml.emailTemplate(token))
         mail = Mail(from_email, to_email, subject, content)
@@ -164,6 +175,7 @@ def emailCertificationByEmail(db: Session, email: str) -> Result:
         else:
             return Ok("email send success")
     except Exception as e:
+        print(e)
         return Err(DefaultException(detail="unknown error"))
 
 
@@ -215,32 +227,32 @@ def emailCertification(db: Session, uid: int) -> Result:
         return Err(DefaultException(detail="unknown error"))
 
 
-def emailCertificationByEmail(db: Session, email: str) -> Result:
-    try:
-        check = db.query(User).filter_by(email=email).first()
-        if check is None:
-            return Err(NotFound())
-        sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
-        from_email = Email("noreply@eyo.kr")  # Change to your verified sender
-        to_email = To(email)  # Change to your recipient
-        subject = "Sending with SendGrid is Fun"
-        if isinstance(token_generator_by_email(email), Ok):
-            token = str(token_generator_by_email(email).unwrap())
-        else:
-            return Err(DefaultException(detail="token generator error"))
-        content = Content("text/html", templateHtml.emailTemplate(token))
-        mail = Mail(from_email, to_email, subject, content)
-        # Get a JSON-ready representation of the Mail object
-        mail_json = mail.get()
+# def emailCertificationByEmail(db: Session, email: str) -> Result:
+#     try:
+#         check = db.query(User).filter_by(email=email).first()
+#         if check is None:
+#             return Err(NotFound())
+#         sg = sendgrid.SendGridAPIClient(api_key=Config.sendGridKey)
+#         from_email = Email("noreply@eyo.kr")  # Change to your verified sender
+#         to_email = To(email)  # Change to your recipient
+#         subject = "Sending with SendGrid is Fun"
+#         if isinstance(token_generator_by_email(email), Ok):
+#             token = str(token_generator_by_email(email).unwrap())
+#         else:
+#             return Err(DefaultException(detail="token generator error"))
+#         content = Content("text/html", templateHtml.emailTemplate(token))
+#         mail = Mail(from_email, to_email, subject, content)
+#         # Get a JSON-ready representation of the Mail object
+#         mail_json = mail.get()
 
-        # Send an HTTP POST request to /mail/send
-        response = sg.client.mail.send.post(request_body=mail_json)
-        if str(response.status_code).lower() in "error":
-            return Err(DefaultException(detail="email send error"))
-        else:
-            return Ok("email send success")
-    except Exception as e:
-        return Err(DefaultException(detail="unknown error"))
+#         # Send an HTTP POST request to /mail/send
+#         response = sg.client.mail.send.post(request_body=mail_json)
+#         if str(response.status_code).lower() in "error":
+#             return Err(DefaultException(detail="email send error"))
+#         else:
+#             return Ok("email send success")
+#     except Exception as e:
+#         return Err(DefaultException(detail="unknown error"))
 
 
 def emailConform(token: str, db: Session) -> Result:
@@ -308,8 +320,8 @@ def delete_user(object_in: loginuser, db: Session) -> Result:
 
 # check username
 def check_username(username: str, db: Session) -> Result:
-    user = db.query(User).filter_by(username=username, state=1).first()
-    if user is not None:
+    user_count = db.query(User).filter_by(username=username, state=1).count()
+    if user_count > 0:
         return Err(AlreadyExists())
     else:
         return Ok(True)

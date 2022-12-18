@@ -28,6 +28,7 @@
 		"ckeditor5-svelte": "^0.0.10",
 		"js-snackbar": "^1.1.2",
 		"monaco-editor": "^0.34.1",
+		"prismjs": "^1.29.0",
 		"sweetalert2": "^11.5.1"
 	}
 }

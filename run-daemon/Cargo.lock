@@ -1091,9 +1091,12 @@ dependencies = [
 name = "run-daemon"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "mysql_async",
+ "num_cpus",
  "rayon",
  "tokio",
+ "trace",
 ]
 
 [[package]]
@@ -1403,6 +1406,17 @@ dependencies = [
  "pin-project-lite",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "trace"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "593f20eabd47262794270bba246594d8e106221a22694a5e4164dc347f0520d3"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

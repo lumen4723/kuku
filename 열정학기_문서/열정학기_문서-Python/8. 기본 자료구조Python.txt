@@ -1,0 +1,888 @@
+8. 자료구조
+자료구조는 데이터들을 효율적으로 관리하기 위해 데이터를 저장하는 방법과
+데이터를 사용하는 방법을 특이하게 구성한 것입니다.
+자료구조를 어떤것들이 있고 어떻게 쓰이는지 알아봅시다.
+자료구조는 데이터들을 저장하는 방법에 따라 선형구조와 비선형구조로 나뉩니다. 
+
+8.1. 선형구조
+선형구조는 데이터들이 일렬로 나열된 형태를 말합니다.
+선형구조는 데이터들이 일렬로 나열되어 있기 때문에 데이터의 삽입과 삭제가 빠르게 이루어집니다.
+
+8.1.1. 연결 리스트(Linked List)
+연결 리스트는 데이터들이 일렬로 나열되어 있고 각각의 데이터들은 다음 데이터를 가리키는 포인터를 가지고 있습니다.
+연결 리스트는 데이터의 삽입과 삭제가 빠르게 이루어지지만 O(1)
+데이터를 찾는데는 시간이 오래 걸립니다. O(n)
+
+8.1.2. 스택
+스택은 링크드 리스트 기반으로 데이터들이 일렬로 나열되어 있고
+가장 마지막에 삽입된 데이터가 가장 먼저 삭제됩니다.(LIFO방식이라 불립니다.)
+
+8.1.2.1. 스택의 구현
+스택은 링크드 리스트를 기반으로 구현할 수 있습니다만,
+이번 장에서는 알고리즘을 푸는데에 초점을 두어 배열을 기반으로 구현하겠습니다.
+
+백준 10828번 스택
+https://www.acmicpc.net/problem/10828
+
+스택을 구현하는 문제입니다.
+정수를 저장하는 스택을 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하세요.
+명령은 총 다섯 가지입니다.
+
+push X: 정수 X를 스택에 넣는 연산이다.
+pop: 스택에서 가장 위에 있는 정수를 빼고, 그 수를 출력한다. 만약 스택에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+size: 스택에 들어있는 정수의 개수를 출력한다.
+empty: 스택이 비어있으면 1, 아니면 0을 출력한다.
+top: 스택의 가장 위에 있는 정수를 출력한다. 만약 스택에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+(입력)
+첫째 줄에 주어지는 명령의 수 N(1 ≤ N ≤ 10,000)이 주어진다. 둘째 줄부터 N개의 줄에는 명령이 하나씩 주어진다.
+주어지는 정수는 1보다 크거나 같고, 100,000보다 작거나 같다. 문제에 나와있지 않은 명령이 주어지는 경우는 없다.
+
+(출력)
+출력해야하는 명령이 주어질 때마다, 한 줄에 하나씩 출력한다.
+
+
+ptr = -1
+stack = [0] * 10000 # 스택의 크기를 10000으로 설정
+n = int(input("n: "))
+
+def push(x):
+    global ptr
+    ptr += 1
+    stack[ptr] = x
+
+def pop():
+    global ptr
+    if ptr == -1:
+        print(-1)
+    else:
+        print(stack[ptr])
+        ptr -= 1
+
+def size():
+    print(ptr + 1)
+
+def empty():
+    if ptr == -1:
+        print(1)
+    else:
+        print(0)
+
+def top():
+    if ptr == -1:
+        print(-1)
+    else:
+        print(stack[ptr])
+
+for i in range(n):
+    command = input("명령을 입력하세요: ")
+    if command == "push":
+        x = int(input(""))
+        push(x)
+    elif command == "pop":
+        pop()
+    elif command == "size":
+        size()
+    elif command == "empty":
+        empty()
+    elif command == "top":
+        top()
+    else:
+        print("잘못된 명령입니다.")
+
+
+실행 결과는 다음과 같습니다.
+
+n: 14
+명령을 입력하세요: push
+1
+명령을 입력하세요: push
+2
+명령을 입력하세요: top
+2
+명령을 입력하세요: size
+2
+명령을 입력하세요: empty
+0
+명령을 입력하세요: pop
+2
+명령을 입력하세요: pop
+1
+명령을 입력하세요: pop
+-1
+명령을 입력하세요: size
+0
+명령을 입력하세요: empty
+1
+명령을 입력하세요: pop
+-1
+명령을 입력하세요: push
+3
+명령을 입력하세요: empty
+0
+명령을 입력하세요: top
+3
+
+
+
+
+8.1.2.2 괄호
+
+Daejeon Nationalwide Internet Competition 2012 G번
+
+괄호 문자열(Parenthesis String, PS)은 두 개의 괄호 기호인 '(' 와 ')' 만으로 구성되어 있는 문자열이다.
+그 중에서 괄호의 모양이 바르게 구성된 문자열을 올바른 괄호 문자열(Valid PS, VPS)이라고 부른다.
+한 쌍의 괄호 기호로 된 "()" 문자열은 기본 VPS이다.
+만일 x가 VPS라면 이 두 문자열을 붙인 "xy"도 VPS가 된다.
+그리고 x가 VPS고 y가 VPS라면 두 문자열을 붙인 "xy"도 VPS가 된다.
+예를 들어 "(()())()", "(()()())", "(())()"는 모두 VPS이지만, ")(", "(()(", "(()))(" 는 모두 VPS가 아닌 문자열이다.
+여러분은 입력으로 주어진 괄호 문자열이 VPS인지 아닌지를 판단해서 그 결과를 YES와 NO로 나타내어야 한다.
+
+(입력)
+입력 데이터는 표준 입력을 사용한다. 입력은 T개의 테스트 데이터로 주어진다.
+입력의 첫 번째 줄에는 입력 데이터의 수를 나타내는 정수 T가 주어진다.
+각 테스트 데이터의 첫째 줄에는 괄호 문자열이 한 줄에 주어진다.
+하나의 괄호 문자열의 길이는 2 이상 50 이하이다.
+
+(출력)
+출력은 표준 출력을 사용한다.
+만일 입력 괄호 문자열이 올바른 괄호 문자열(VPS)이면 "YES", 아니면 "NO"를 한 줄에 하나씩 차례대로 출력해야 한다.
+
+
+n = int(input("n: "))
+while(n>0):
+    s = input("")
+    cnt = 0
+    slen = len(s)
+    for i in range(slen):   #문자열 길이만큼 반복
+        if s[i] == '(':
+            cnt+=1
+        else:
+            cnt -= 1
+
+        if cnt &lt; 0:
+            break
+    if cnt == 0:
+        print("YES")
+    else:
+        print("NO")
+    n -= 1
+
+
+실행결과는 다음과 같습니다.
+
+
+n: 6
+(())())
+(((()())()
+(()())((()))
+((()()(()))(((())))()
+()()()()(()()())()
+(()((())()
+NO  # 결과
+NO
+YES
+NO
+YES
+NO
+
+
+8.1.3 큐
+큐는 링크드 리스트 기반으로 데이터들이 일렬로 나열되어 있고,
+가장 먼저 삽입된 데이터가 가장 먼저 삭제됩니다.(FIFO방식이라 불립니다.)
+
+8.1.3.1 큐의 구현
+큐는 링크드 리스트를 이용하여 구현할 수 있습니다.
+하지만 이번 장에서는 알고리즘을 푸는데에 초점을 두어 배열을 기반으로 구현하겠습니다.
+
+백준 10845번 문제
+https://www.acmicpc.net/problem/10845
+
+큐를 구현하는 문제입니다.
+정수를 저장하는 큐를 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하세요.
+명령은 총 여섯 가지입니다.
+push X: 정수 X를 큐에 넣는 연산이다.
+pop: 큐에서 가장 앞에 있는 정수를 빼고, 그 수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+size: 큐에 들어있는 정수의 개수를 출력한다.
+empty: 큐가 비어있으면 1, 아니면 0을 출력한다.
+front: 큐의 가장 앞에 있는 정수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+back: 큐의 가장 뒤에 있는 정수를 출력한다. 만약 큐에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+
+(입력)
+첫째 줄에 주어지는 명령의 수 N(1 ≤ N ≤ 10,000)이 주어진다.
+둘째 줄부터 N개의 줄에는 명령이 하나씩 주어진다.
+주어지는 정수는 1보다 크거나 같고, 100,000보다 작거나 같다.
+문제에 나와있지 않은 명령이 주어지는 경우는 없다.
+
+(출력)
+출력해야하는 명령이 주어질 때마다, 한 줄에 하나씩 출력한다.
+    
+
+f = 0   # front 함수명이 있기 때문에 f로 표현
+b = 0   # back 함수명이 있기 때문에 f로 표현
+queue = [0] * 10000     # 큐의 크기를 10000으로 설정
+
+def push (x):
+    global b    # 전역변수 b를 사용하겠다는 의미
+    queue[b] = x    # 큐의 맨 뒤에 x를 삽입
+    b += 1 
+def pop():
+    global f
+    global b
+    if f == b:  # 큐가 비어있는 경우 
+        print(-1)
+    else:
+        f += 1  # 큐의 맨 앞에 있는 원소를 삭제
+        print(queue[f-1])   # 삭제된 원소를 출력
+    
+def size():
+    print(b-f)
+def empty():
+    if f == b:  # 큐가 비어있는 경우
+        print(1)
+    else:   # 큐가 비어있지 않은 경우
+        print(0)
+def front():
+    if f == b:  # 큐가 비어있는 경우
+        print(-1)
+    else:   # 큐가 비어있지 않은 경우
+        print(queue[f])
+def back():
+    if f == b:  # 큐가 비어있는 경우
+        print(-1)
+    else:   # 큐가 비어있지 않은 경우
+        print(queue[b-1])
+
+n = int(input("n: "))
+for i in range(n):
+    command = input()
+    if command == 'push':
+        v = int(input())
+        push(v)
+    elif command == 'pop':
+        pop()
+    elif command == 'size':
+        size()
+    elif command == 'empty':
+        empty()
+    elif command == 'front':
+        front()
+    elif command == 'back':
+        back()
+
+
+실행결과는 다음과 같습니다.
+
+n: 15
+push
+1
+push
+2
+front
+back
+size
+empty
+pop
+pop
+pop
+size
+empty
+pop
+push
+3
+empty
+front
+1
+2
+2
+0
+1
+2
+-1
+0
+1
+-1
+0
+3
+
+
+8.1.3.2. 요세푸스 문제
+요세푸스 문제는 다음과 같다.
+N명의 사람이 원을 이루면서 앉아있고, 양의 정수 K(≤ N)가 주어진다.
+이제 순서대로 K번째 사람을 제거한다.
+한 사람이 제거되면 남은 사람들로 이루어진 원을 따라 이 과정을 계속해 나간다.
+이 과정은 N명의 사람이 모두 제거될 때까지 계속된다.
+원에서 사람들이 제거되는 순서를 (N, K)-요세푸스 순열이라고 한다.
+예를 들어 (7, 3)-요세푸스 순열은 [3, 6, 2, 7, 5, 1, 4]이다.
+N과 K가 주어지면 (N, K)-요세푸스 순열을 구하는 프로그램을 작성하시오.
+
+(입력)
+첫째 줄에 N과 K가 빈 칸을 사이에 두고 순서대로 주어진다. (1 ≤ K ≤ N ≤ 5,000)
+
+(출력)
+예제와 같이 요세푸스 순열을 출력한다.
+
+
+from queue import Queue
+n, k = map(int, input().split())
+que = Queue()   # 큐 생성
+for i in range(1, n+1):
+    que.put(i)    # 큐에 1부터 n까지의 수를 삽입
+print('&lt;', end='')
+while que.qsize() > 0:
+    for i in range(k-1):    # k-1번째까지는 맨 뒤로 보냄
+        que.put(que.get())
+    print(que.get(), end='')
+    if que.qsize() != 0:
+        print(", ", end='')
+print('>')   # 큐의 상태 출력
+'''
+함수의 기본값인 end는 줄바꿈이다. 
+end=''를 사용하면 줄바꿈을 하지 않는다.
+'''
+<!-- 
+# list를 이용한 풀이(queue를 사용하는 것보다 느리다.)
+queue = list(range(1, n+1)) # 1부터 n까지의 수를 큐에 삽입
+answer = [] # 정답을 저장할 리스트
+while queue:    # 큐가 비어있지 않은 동안 반복
+    for _ in range(k-1):    # (반복문에서) _ : 사용하지 않는 변수
+        queue.append(queue.pop(0))# 큐의 맨 앞에 있는 원소를 정답 리스트에 추가
+    answer.append(queue.pop(0))  
+print("&lt;", ", ".join(list(map(str, answer))), ">", sep='') 
+'''
+pop(0) : 큐의 맨 앞에 있는 원소를 제거하고 반환
+join(): 리스트의 원소들을 문자열로 합쳐줌
+list: 리스트로 형변환
+map: 리스트의 원소들을 지정된 함수로 처리해줌
+str: 문자열로 형변환
+sep='': 구분자를 지정해줌
+''' -->
+
+
+
+실행결과는 다음과 같습니다.
+
+7 3
+&lt;3, 6, 2, 7, 5, 1, 4>
+
+8.1.4. 덱
+덱은 양쪽 끝에서 삽입과 삭제가 모두 가능한 자료구조이다.
+덱은 스택과 큐의 기능을 모두 가지고 있는 자료구조이다.
+
+8.1.4.1 덱 구현
+링크드 리스트를 기반으로 구현할 수 있습니다만, 배열을 기반으로 구현하겠습니다.
+
+백준 10866번 문제
+https://www.acmicpc.net/problem/10866
+
+덱을 구현하는 문제입니다.
+정수를 저장하는 덱(Deque)를 구현한 다음, 입력으로 주어지는 명령을 처리하는 프로그램을 작성하시오.
+명령은 총 여덟 가지이다.
+
+push_front X: 정수 X를 덱의 앞에 넣는다.
+push_back X: 정수 X를 덱의 뒤에 넣는다.
+pop_front: 덱의 가장 앞에 있는 정수를 빼고, 그 수를 출력한다. 만약 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+pop_back: 덱의 가장 뒤에 있는 정수를 빼고, 그 수를 출력한다. 만약 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+size: 덱에 들어있는 정수의 개수를 출력한다.
+empty: 덱이 비어있으면 1을, 아니면 0을 출력한다.
+front: 덱의 가장 앞에 있는 정수를 출력한다. 만약 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+back: 덱의 가장 뒤에 있는 정수를 출력한다. 만약 덱에 들어있는 정수가 없는 경우에는 -1을 출력한다.
+
+(입력)
+첫째 줄에 주어지는 명령의 수 N(1 ≤ N ≤ 10,000)이 주어진다. 
+둘째 줄부터 N개의 줄에는 명령이 하나씩 주어진다. 
+주어지는 정수는 1보다 크거나 같고, 100,000보다 작거나 같다. 
+문제에 나와있지 않은 명령이 주어지는 경우는 없다.
+
+(출력)
+출력해야하는 명령이 주어질 때마다, 한 줄에 하나씩 출력한다.
+
+
+f = 0
+b = 0
+size = 0
+max = 100000
+deque = [0] * max
+
+def push_front(x):
+    global f, b, size
+    if(size == max):
+        return
+    f = (f - 1 + max) % max 
+    deque[f] = x
+    size += 1
+def push_back(x):
+    global f, b, size
+    if(size == max):
+        return
+    deque[b] = x
+    b = (b + 1) % max
+    size += 1
+def pop_front():
+    global f, b, size
+    if(size == 0):
+        return -1
+    x = deque[f]
+    f = (f + 1) % max
+    size -= 1
+    return x
+def pop_back():
+    global f, b, size
+    if(size == 0):
+        return -1
+    b = (b - 1 + max) % max
+    x = deque[b]
+    size -= 1
+    return x
+
+n = int(input())
+while n>0:
+    cmd = input()
+    if cmd == "push_front":
+        x = int(input())
+        push_front(x)
+    elif cmd == "push_back":
+        x = int(input())
+        push_back(x)
+    elif cmd == 'pop_front':
+        print(pop_front())
+    elif cmd == 'pop_back':
+        print(pop_back())
+    elif cmd == 'size':
+        print(size)
+    elif cmd == 'empty':
+        print(int(size==0))
+    elif cmd == 'front':
+        if size == 0:
+            print(-1)
+        else:
+            print(deque[f])
+    elif cmd == 'back':
+        if size == 0:
+            print(-1)
+        else:
+            print(deque[(b-1+max)%max])
+
+
+실행 결과는 다음과 같습니다.
+
+
+15
+push_back
+1
+push_front
+2
+front
+back
+size
+empty
+pop_front
+pop_back
+pop_front
+size
+empty
+pop_back
+push_front
+3
+empty
+front
+
+2
+1
+2
+0
+2
+1
+-1
+0
+1
+-1
+0
+3
+
+
+8.1.4.2. AC 문제
+
+BAPC 2012 I번
+
+AC는 정수 배열에 연산을 하기 위해 만든 언어이다.
+이 언어에는 두 가지 함수 R(뒤집기)과 D(버리기)가 있다.
+함수 R은 배열에 있는 수의 순서를 뒤집는 함수이고, D는 첫 번째 수를 버리는 함수이다.
+배열이 비어있는데 D를 사용한 경우에는 에러가 발생한다.
+함수는 조합해서 한 번에 사용할 수 있다. 예를 들어, "AB"는 A를 수행한 다음에 바로 이어서 B를 수행하는 함수이다.
+예를 들어, "RDD"는 배열을 뒤집은 다음 처음 두 수를 버리는 함수이다.
+배열의 초기값과 수행할 함수가 주어졌을 때, 최종 결과를 구하는 프로그램을 작성하시오.
+
+(입력)
+첫째 줄에 테스트 케이스의 개수 T가 주어진다. T는 최대 100이다.
+각 테스트 케이스의 첫째 줄에는 수행할 함수 p가 주어진다.
+(1 ≤ p의 길이 ≤ 100,000)
+다음 줄에는 배열에 들어있는 수의 개수 n이 주어진다.
+(0 ≤ n ≤ 100,000)
+다음 줄에는 [x1,...,xn]과 같은 형태로 배열에 들어있는 정수가 주어진다.
+(1 ≤ xi ≤ 100)
+전체 테스트 케이스에 주어지는 p의 길이의 합과 n의 합은 70만을 넘지 않는다.
+
+(출력)
+각 테스트 케이스에 대해서, 주어진 연산을 수행한 결과를 출력한다.
+만약, 에러가 발생한 경우에는 error를 출력한다.
+
+
+import sys
+from collections import deque
+
+T = int(input())
+indata = 0
+while T>0:
+    dq = deque()
+    index = 1
+    isfront = True
+    iserror = False
+
+    act = sys.stdin.readline().strip()
+    size = int(sys.stdin.readline())
+    arr = sys.stdin.readline().strip()
+
+    while True:
+        if arr[index] >= '0' and arr[index] <= '9':
+            indata = indata*10 + int(arr[index])
+        elif arr[index] == ',':
+            dq.append(indata)
+            indata = 0
+        else:
+            if indata != 0:
+                dq.append(indata)
+            indata = 0
+            break
+        index += 1
+
+    for i in range(len(act)):
+        if act[i] == 'R':
+            isfront = not isfront
+        elif act[i] == 'D'and len(dq) != 0:
+            if isfront:
+                dq.popleft()    # 가장 왼쪽에 있는 원소를 삭제
+            else:
+                dq.pop()    #  가장 오른쪽에 있는 원소를 삭제
+        else:
+            print("error")
+            iserror = True
+            break
+
+    if not iserror:
+        print("[", end='')
+        if isfront and len(dq) != 0:
+            print(dq.popleft(), end='')
+            while len(dq) > 0:
+                print(',',dq.popleft(), end='')
+        elif not isfront and len(dq) != 0:
+            print(dq.pop(), end='')
+            while len(dq) > 0:
+                print(',', dq.pop(), end='')
+        print("]")
+
+        
+'''
+import sys  # 시간초과를 피하기 위해 sys.stdin.readline()을 사용합니다.
+t = int(sys.stdin.readline().strip())
+max = 100000
+while t > 0:
+    deque = [0]*max
+    front = 0
+    back = 0
+    size = 0
+    error = 0
+    r = 0   # 뒤집기 함수를 사용했는지 확인하는 변수입니다.
+    p = sys.stdin.readline().strip()  # 함수(A, R, D)
+    n = int(sys.stdin.readline().strip())  # 리스트 길이
+
+
+    deque = eval(sys.stdin.readline().strip())
+    back = (back + 1) % max
+    size = len(deque)
+
+    for i in range(len(p)):     # 함수 수행
+        if p[i] == 'R':
+            r = arr[::-1] # 뒤집기
+        elif p[i] == 'D':
+            if size == 0:
+                error = 1
+                break
+            if r == 0:
+                front = (front+1) % max
+            else:
+                back = (back-1+max) % max
+            size -= 1
+    t -= 1
+
+    if error == 1:
+        print("error")
+    else:
+        print("[", end="")
+        if r == 0:
+            for i in range(size):   
+                print(deque[(front+i) % max], end="")
+                if i != size-1:
+                    print(",", end="")
+        else:
+            for i in range(size):
+                print(deque[(back - 1 - i + max) % max], end="")
+                if i != size-1:
+                    print(",", end="")
+        print("]")
+'''
+
+쓰인 함수
+eval() : 문자열을 실행 가능한 코드로 변환해주는 함수
+strip() : 문자열의 양쪽 공백을 제거해주는 함수
+end="" : print() 함수의 출력을 줄바꿈 없이 이어서 출력해주는 함수
+sys.stdin.readline(): 한 줄씩 입력받는 함수 (import sys 필요)
+
+실행 결과는 다음과 같습니다.
+
+
+    4
+    RDD
+    4
+    [1,2,3,4]
+    DD
+    1
+    [42]
+    RRD
+    6
+    [1,1,2,3,5,8]
+    D
+    0
+    []
+
+    [2,1]
+    error
+    [1,2,3,5,8]
+    error
+
+
+
+
+8.1.5. 해시 테이블(Map, Set)
+해시 테이블은 데이터들을 키와 값의 쌍으로 저장하는 자료구조입니다.
+해시 테이블은 데이터의 삽입과 삭제가 빠르게 이루어지면서도 O(1)
+데이터를 찾는것도 빠르게 할 수 있습니다. O(1)
+해시 테이블은 데이터를 저장할 때 키를 해시 함수를 이용해 해시값으로 변환하고
+해시값을 인덱스로 사용하여 데이터를 저장합니다.
+
+8.1.5.1. 해시 테이블의 구현(map)
+해시 테이블은 데이터를 저장할 때 키를 해시 함수를 이용해 해시값으로 변환하고 해시값을 인덱스로 사용하여 데이터를 저장합니다.
+
+해시 테이블을 구현하기 위해서는 키와 키를 이용하는 해시 함수가 필요합니다.
+해시함수는 해시충돌이 나지 않으면서도 밀집되게 설계되어야 합니다.
+여기서는 자세한 내용을 다루지 않고 만들어진 해시map을 사용하는 방법만 다루겠습니다.
+
+해시 map은 다음과 같이 사용할 수 있습니다.
+
+
+m={}
+m['one'] = 1
+m['two'] = 2
+m['three'] = 3
+m['four'] = 4
+m['five'] = 5
+
+print("키 one 의 값 = %d" % m['one']);
+print("키 four 의 값 = %d" % m['four']);
+print("키 six 의 값 = %d" % m['six']);  # KeyError: 'six'
+
+
+실행 결과는 다음과 같습니다.
+
+
+    키 one 의 값 = 1
+    키 four 의 값 = 4
+    KeyError: 'six'
+
+
+8.1.5.2. 해시 테이블의 구현(set)
+해시 테이블을 이용하여 집합을 구현할 수 있습니다.
+집합은 데이터의 중복을 허용하지 않는 자료구조입니다.
+집합을 구현하기 위해서는 키와 키를 이용하는 해시 함수가 필요합니다.
+여기서는 자세한 내용을 다루지 않고 만들어진 해시set을 사용하는 방법만 다루겠습니다.
+
+해시set은 다음과 같이 사용할 수 있습니다.
+
+
+s = set()
+s.add("one")
+s.add("one")
+s.add("two")
+s.add("three")
+s.add("four")
+s.add("five")
+
+print("키 one 의 값 = %s" % ("one" in s)));
+print("키 four 의 값 = %s" % ('four' in s));
+
+
+set은 데이터를 추가할 때 중복된 데이터가 있으면 추가되지 않습니다.
+python의 set은 순서가 없기 때문에 인덱스를 이용하여 데이터를 가져올 수 없습니다.
+인덱스를 이용하여 데이터를 가져오려면 list로 변환해야 합니다.
+
+
+8.2. 비선형구조
+비선형구조는 데이터들이 일렬로 나열되어 있지 않기 때문에
+데이터의 삽입과 삭제가 선형구조에 비해 느리게 이루어집니다.
+대신 대부분의 비선형구조는 데이터를 찾는데 빠르게 이루어집니다.
+
+8.2.1. 트리
+트리는 데이터들이 부모와 자식의 관계로 이루어진 비선형구조입니다.
+트리는 데이터의 삽입과 삭제가 느리게 이루어지지만 O(log n)
+데이터를 찾는데는 빠르게 이루어집니다. O(log n)
+
+8.2.1.1. 이진트리
+이진트리는 트리의 일종으로 자식 노드가 최대 2개인 트리입니다.
+이진트리는 노드형태의 자료구조로 구현할 수 있지만,
+실전에서는 배열을 이용하여 구현하는 것이 효율적입니다.
+그렇다면 배열은 선형인데 어떻게 하면 비선형구조인 이진트리를 구현할 수 있을까요?
+
+이진트리를 배열로 구현할 때는 다음과 같은 규칙을 따릅니다.
+1. 루트 노드는 배열의 첫 번째 요소입니다.
+2. 부모 노드의 인덱스가 i라면 왼쪽 자식 노드의 인덱스는 2i입니다.
+3. 부모 노드의 인덱스가 i라면 오른쪽 자식 노드의 인덱스는 2i+1입니다.
+4. 자식 노드의 인덱스가 i라면 부모 노드의 인덱스는 i/2입니다.
+
+이를 구현하면 다음과 같습니다.
+
+tree = []
+tree.append('root')
+tree.append('left child')
+tree.append('right child')
+tree.append('left grandchild')
+tree.append('right grandchild')
+
+print('루트 노드:', tree[0]))
+print('왼쪽 자식 노드:', tree[1]))    
+print('오른쪽 자식 노드:', tree[2]))
+print('왼쪽 자식의 왼쪽 자식 노드:', tree[3]))
+print('왼쪽 자식의 오른쪽 자식 노드:', tree[4]))
+
+실행결과는 다음과 같습니다.
+
+루트 노드: root
+왼쪽 자식 노드: left child
+오른쪽 자식 노드: right child
+왼쪽 자식의 왼쪽 자식 노드: left grandchild
+왼쪽 자식의 오른쪽 자식 노드: right grandchild
+
+8.2.1.2. 이진탐색트리 구현
+이진탐색트리는 이진트리의 일종으로 다음과 같은 규칙을 따릅니다.
+1. 노드의 왼쪽 서브트리에는 해당 노드의 값보다 작은 값들이 저장되어 있습니다.
+2. 노드의 오른쪽 서브트리에는 해당 노드의 값보다 큰 값들이 저장되어 있습니다.
+3. 왼쪽과 오른쪽 서브트리도 이진탐색트리입니다.
+
+이를 구현하면 다음과 같습니다.
+
+def inorder (tree, index):
+    if index >= len(tree):
+        return
+    inorder(tree, index*2)
+    print(tree[index])
+    inorder(tree, index*2+1)
+
+tree = []
+tree.append("root")
+tree.append("left child")
+tree.append("right child")
+tree.append("left grandchild")
+tree.append("right grandchild")
+
+inorder(tree, 1)
+
+실행결과는 다음과 같습니다.
+
+left grandchild
+left child
+root
+right child
+right grandchild
+
+순회는 트리의 모든 노드를 한 번씩 방문하는 것을 말합니다.
+순회의 종류로는 전위, 중위, 후위 순회가 있습니다.
+중위순회는 왼쪽끝부터 오른쪽끝까지 좌우 위치순서로 출력하는 것입니다.
+순회에 대한 원리와 구조는 여기서는 깊게 다루지않고
+이진탐색트리를 출력하는데에 사용되는 기법정도만 이해하고 넘어가겠습니다.
+
+8.2.1.3. 힙 구현
+힙은 이진트리의 일종으로 다음과 같은 규칙을 따릅니다.
+1. 노드의 왼쪽 서브트리에는 해당 노드의 값보다 작은 값들이 저장되어 있습니다.
+2. 노드의 오른쪽 서브트리에는 해당 노드의 값보다 큰 값들이 저장되어 있습니다.
+3. 왼쪽과 오른쪽 서브트리도 힙입니다.
+
+힙은 라이브러리가 존재하여 사용하는 예제정도로만 다루겠습니다.
+
+from queue import PriorityQueue
+pq = PriorityQueue()
+
+pq.put(5)  
+pq.put(3)
+pq.put(2)
+pq.put(4)
+pq.put(1)
+
+while not pq.empty():   # 큐가 비어있지 않다면(!pq)
+    print(pq.get())
+
+실행결과는 다음과 같습니다.
+
+1
+2
+3
+4
+5
+
+
+위의 힙을 최소힙이라고도 합니다.
+
+추가로 최대힙은 큰값이 루트쪽으로 오도록 구현한 것입니다.
+python으로 우선순위 큐를 이용하여 최대힙을 구현하면 다음과 같습니다.
+
+from queue import PriorityQueue
+pq = PriorityQueue()
+
+pq.put((-5, 5)) # (우선순위, 값)
+pq.put((-3, 3))
+pq.put((-2, 2))
+pq.put((-4, 4))
+pq.put((-1, 1))
+
+while not pq.empty():   # 큐가 비어있지 않다면(!pq)
+    print(pq.get()[1])
+
+
+우선순위 큐는 큐와 비슷하지만 우선순위가 높은 데이터가 먼저 나오는 큐입니다.
+우선순위 큐는 고급 자료구조에서 자세하게 다룰 예정입니다.
+
+8.2.2. 그래프 구현
+그래프는 데이터들이 정점과 간선으로 이루어진 비선형구조입니다.
+그래프는 2차원 배열의 형태와 2차 링크드 리스트의 형태로 구현할 수 있습니다.
+2차원 배열의 경우 인접행렬이라고 하며 2차 링크드 리스트의 경우 인접리스트라고 합니다.
+
+이번 장에서는 2차원 배열을 이용한 인접행렬을 이용한 그래프만 다루겠습니다.
+2차 또는 1차 링크드 리스트를 이용한 인접리스트는 고급 자료구조에서
+사용하는 이유와 실제 구현을 경험해볼 수 있습니다.
+
+2차원 배열을 이용한 인접행렬은 다음과 같이 구현할 수 있습니다.
+
+INF = 1000000000 # 무한의 비용 선언
+graph = [
+                    [0, 7, 5],
+                    [7, 0, INF],
+                    [5, INF, 0]
+                ];
+
+for i in range(3):
+    for j in range(3):
+        print(graph[i][j], end=' ')
+    print()
+
+실행결과는 다음과 같습니다.
+
+0 7 5
+7 0 1000000000
+5 1000000000 0

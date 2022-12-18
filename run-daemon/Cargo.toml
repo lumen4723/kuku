@@ -9,3 +9,6 @@ edition = "2021"
 tokio = { version = "1", features = ["full"] }
 mysql_async = "*"
 rayon = "*"
+num_cpus = "*"
+bytes = "*"
+trace = "*"

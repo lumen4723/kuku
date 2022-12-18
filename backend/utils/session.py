@@ -65,9 +65,9 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
     def auth_http_exception(self):
         return self._auth_http_exception
 
-    def verify_session(self, model: SessionData) -> bool:
-        """If the session exists, it is valid"""
-        return True
+    # def verify_session(self, model: SessionData) -> bool:
+    #     """If the session exists, it is valid"""
+    #     return True
 
 
 verifier = BasicVerifier(

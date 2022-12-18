@@ -21,7 +21,7 @@
 
   const getanswer = async (article_id) => {
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/list/article/${article_id}`,
+      `//api.eyo.kr/board/qna/list/article/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -41,7 +41,7 @@
   let article = getanswer($page.params.ansid);
 
   const putanswer = async (answer_id) => {
-    const res = await fetch(`//api.eyo.kr:8081/board/qna/answer/${answer_id}`, {
+    const res = await fetch(`//api.eyo.kr/board/qna/answer/${answer_id}`, {
       method: "PUT",
       headers: {
         Aceept: "application/json",

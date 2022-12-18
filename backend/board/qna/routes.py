@@ -16,15 +16,27 @@ router = APIRouter(
 
 
 @router.get("/list")
-async def user(session: Session = Depends(utils.database.get_db)):
+def list(session: Session = Depends(utils.database.get_db)):
     return database.list_article(session, all=True).map_err(throwMsg).unwrap()
+
+
+# get article start ~ end page router
+@router.get("/list/{start_page}")
+def list_article(
+    start_page: int, limit: int = 20, session: Session = Depends(utils.database.get_db)
+):
+    return (
+        database.list_article(session, page=start_page, limit=limit)
+        .map_err(throwMsg)
+        .unwrap()
+    )
 
 
 # create article router
 @router.post(
     "/question", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
 )
-async def create_question(
+def create_question(
     article: Board_qna_question,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -38,8 +50,9 @@ async def create_question(
 
 # get article question router
 @router.get("/list/answer/{parent_id}")
-async def get_answer(
-    parent_id: int, session: Session = Depends(utils.database.get_db),
+def get_answer(
+    parent_id: int,
+    session: Session = Depends(utils.database.get_db),
 ):
     return database.list_article(session, aid=parent_id).map_err(throwMsg).unwrap()
 
@@ -48,7 +61,7 @@ async def get_answer(
 @router.post(
     "/answer", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
 )
-async def create_answer(
+def create_answer(
     article: Board_qna_answer,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -60,21 +73,11 @@ async def create_answer(
     )
 
 
-# get article start ~ end page router
-@router.get("/list/{start_page}")
-async def list_article(
-    start_page: int, limit: int = 20, session: Session = Depends(utils.database.get_db)
-):
-    return (
-        database.list_article(session, page=start_page, limit=limit)
-        .map_err(throwMsg)
-        .unwrap()
-    )
-
-
 # get article by slug
 @router.get("/list/slug/{slug}")
-async def get_article(slug: str, session: Session = Depends(utils.database.get_db)):
+def list_article_with_slug(
+    slug: str, session: Session = Depends(utils.database.get_db)
+):
     return (
         database.list_article_by_slug(session, slug=slug, all=True)
         .map_err(throwMsg)
@@ -84,7 +87,7 @@ async def get_article(slug: str, session: Session = Depends(utils.database.get_d
 
 # get article by slug start_page
 @router.get("/list/slug/{slug}/{start_page}")
-async def get_article(
+def list_article_with_slug_and_page(
     slug: str,
     start_page: int,
     limit: int = 20,
@@ -99,7 +102,7 @@ async def get_article(
 
 # get article by id router
 @router.get("/list/article/{article_id}")
-async def get_article_by_id(
+def get_article_by_id(
     article_id: int, session: Session = Depends(utils.database.get_db)
 ):
     return database.get_article(article_id, session).map_err(throwMsg).unwrap()
@@ -111,7 +114,7 @@ async def get_article_by_id(
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_article_by_id(
+def delete_article_by_id(
     article_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -129,7 +132,7 @@ async def delete_article_by_id(
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def update_article_by_id(
+def update_article_by_id(
     article_id: int,
     article: Board_qna_question,
     session: Session = Depends(utils.database.get_db),
@@ -148,7 +151,7 @@ async def update_article_by_id(
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def update_answer_by_id(
+def update_answer_by_id(
     answer_id: int,
     answer: Board_qna_answer,
     session: Session = Depends(utils.database.get_db),
@@ -167,7 +170,7 @@ async def update_answer_by_id(
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_201_CREATED,
 )
-async def like_article_by_id(
+def like_article_by_id(
     article_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -184,7 +187,7 @@ async def like_article_by_id(
     dependencies=[Depends(cookie)],
     status_code=status.HTTP_201_CREATED,
 )
-async def dislike_article_by_id(
+def dislike_article_by_id(
     article_id: int,
     session: Session = Depends(utils.database.get_db),
     session_data: SessionData = Depends(verifier),
@@ -196,53 +199,45 @@ async def dislike_article_by_id(
     )
 
 
-# get list articles with like router
-@router.get("/list/like/getall")
-async def list_article_with_like(session: Session = Depends(utils.database.get_db)):
-    return (
-        database.list_article(session, all=True, like=True).map_err(throwMsg).unwrap()
-    )
+# @router.get("/list/like/get/{start_page}")
+# def list_article_with_get(
+#     start_page: int, limit: int = 20, session: Session = Depends(utils.database.get_db)
+# ):
+#     return (
+#         database.list_article(session, page=start_page, limit=limit, like=True)
+#         .map_err(throwMsg)
+#         .unwrap()
+#     )
 
 
-@router.get("/list/like/get/{start_page}")
-async def list_article(
-    start_page: int, limit: int = 20, session: Session = Depends(utils.database.get_db)
-):
-    return (
-        database.list_article(session, page=start_page, limit=limit, like=True)
-        .map_err(throwMsg)
-        .unwrap()
-    )
+# @router.get("/list/slug/like/getall/{slug}")
+# def get_article(slug: str, session: Session = Depends(utils.database.get_db)):
+#     return (
+#         database.list_article_by_slug(session, slug=slug, all=True, like=True)
+#         .map_err(throwMsg)
+#         .unwrap()
+#     )
 
 
-@router.get("/list/slug/like/getall/{slug}")
-async def get_article(slug: str, session: Session = Depends(utils.database.get_db)):
-    return (
-        database.list_article_by_slug(session, slug=slug, all=True, like=True)
-        .map_err(throwMsg)
-        .unwrap()
-    )
-
-
-@router.get("/list/slug/like/get/{slug}/{start_page}")
-async def get_article(
-    slug: str,
-    start_page: int,
-    limit: int = 20,
-    session: Session = Depends(utils.database.get_db),
-):
-    return (
-        database.list_article_by_slug(
-            session, slug=slug, page=start_page, limit=limit, like=True
-        )
-        .map_err(throwMsg)
-        .unwrap()
-    )
+# @router.get("/list/slug/like/get/{slug}/{start_page}")
+# def get_article(
+#     slug: str,
+#     start_page: int,
+#     limit: int = 20,
+#     session: Session = Depends(utils.database.get_db),
+# ):
+#     return (
+#         database.list_article_by_slug(
+#             session, slug=slug, page=start_page, limit=limit, like=True
+#         )
+#         .map_err(throwMsg)
+#         .unwrap()
+#     )
 
 
 # get article by title
 @router.get("/search/title/{title}")
-async def search_article_by_title(
+def search_article_by_title(
     title: str,
     page: int,
     limit: int = 20,
@@ -257,7 +252,7 @@ async def search_article_by_title(
 
 # get article by username
 @router.get("/search/username/{username}")
-async def search_article_by_username(
+def search_article_by_username(
     username: str,
     page: int,
     limit: int = 20,
@@ -272,7 +267,7 @@ async def search_article_by_username(
 
 # get article by content
 @router.get("/search/content/{content}")
-async def search_article_by_content(
+def search_article_by_content(
     content: str,
     page: int,
     limit: int = 20,
@@ -283,4 +278,3 @@ async def search_article_by_content(
         .map_err(throwMsg)
         .unwrap()
     )
-

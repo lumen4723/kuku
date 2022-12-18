@@ -24,7 +24,7 @@
   const getArticle = async (article_id) => {
     if (isNaN(article_id)) return false;
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/list/article/${article_id}`,
+      `//api.eyo.kr/board/qna/list/article/${article_id}`,
       {
         mode: "cors",
         credentials: "include",
@@ -46,7 +46,7 @@
   const putArticle = async (article_id) => {
     let tagArr = article_data.tags.map(x=>x.slug);
     const res = await fetch(
-      `//api.eyo.kr:8081/board/qna/article/${article_id}`,
+      `//api.eyo.kr/board/qna/article/${article_id}`,
       {
         method: "PUT",
         headers: {
@@ -74,7 +74,7 @@
       });
   };
   const getTags = async () => {
-    const res = await fetch(`//api.eyo.kr:8081/board/tag/list`, {
+    const res = await fetch(`//api.eyo.kr/board/tag/list`, {
       mode: "cors",
       credentials: "include",
     });
