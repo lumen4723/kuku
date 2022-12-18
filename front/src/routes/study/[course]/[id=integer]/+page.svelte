@@ -98,7 +98,12 @@
 				return Promise.resolve(data);
 			})
 			.then((data) => {
-				if (data.length > 0) {
+				if (
+					data.findIndex(
+						(article) => article.language == selected_language
+					) == -1 &&
+					data.length > 0
+				) {
 					selected_language = data[0].language;
 				}
 

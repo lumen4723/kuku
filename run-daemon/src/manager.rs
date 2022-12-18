@@ -36,10 +36,8 @@ pub async fn main_loop(
 
                 match msg.data {
                     ControlType::Output(output) => {
-                        if let Some(job) = job_controller.get_mut(&msg.job_id) {
-                            job.1.push_str(&output);
-
-                            job_update_queue.push(JobDbUpdate::Output(msg.job_id, job.1.clone(), None));
+                        if let Some(_) = job_controller.get_mut(&msg.job_id) {
+                            job_update_queue.push(JobDbUpdate::Output(msg.job_id, output, None));
                         }
                     },
                     ControlType::Error(error) => {
@@ -70,6 +68,10 @@ pub async fn main_loop(
                         .map(|ctrl| {
                             match job_controller.get(&ctrl.job_id) {
                                 Some((sender, _)) => {
+                                    if let ControlType::Input(_) = ctrl.data.clone() {
+                                        job_update_queue.push(JobDbUpdate::Output(ctrl.job_id, "\n".to_string(), None));
+                                    }
+
                                     sender.send(Control {
                                         cmd_id: ctrl.cmd_id,
                                         job_id: ctrl.job_id,
@@ -179,7 +181,7 @@ async fn update_job_output(mut list: Vec<JobDbUpdateOutput>) {
         }
 
         let insert_result =
-            r"UPDATE code_jobs SET output = :output, error = :error where id = :id;"
+            r"UPDATE code_jobs SET output = CONCAT(IFNULL(output, ''), :output), error = :error where id = :id;"
                 .with(list.drain(..).map(|output| {
                     params! {
                         "id" => output.0,

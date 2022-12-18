@@ -65,34 +65,36 @@
 						);
 					}
 
-					for (let rcv_line of res.output) {
-						let found = false;
-						for (let i = 0; i < output_lines.length; i++) {
-							if (
-								output_lines[i].id != null &&
-								output_lines[i].id == rcv_line.id
-							) {
-								output_lines[i].msg = rcv_line.data;
-								found = true;
-								break;
+					if (res.output != null) {
+						for (let rcv_line of res.output) {
+							let found = false;
+							for (let i = 0; i < output_lines.length; i++) {
+								if (
+									output_lines[i].id != null &&
+									output_lines[i].id == rcv_line.id
+								) {
+									output_lines[i].msg = rcv_line.data;
+									found = true;
+									break;
+								}
 							}
-						}
 
-						if (found) continue;
-						output_lines.push(
-							new OutputLine(
-								rcv_line.data,
-								"white",
-								">>",
-								rcv_line.id
-							)
-						);
+							if (found) continue;
+							output_lines.push(
+								new OutputLine(
+									rcv_line.data,
+									"white",
+									">>",
+									rcv_line.id
+								)
+							);
+						}
 					}
 
-					if (res.error != "") {
+					if (res.error != null && res.error != "") {
 						// find index of error
 						let idx = output_lines.findIndex((line) => {
-							return line.id == res.error;
+							return line.id == "error";
 						});
 
 						if (idx != -1) {
@@ -118,6 +120,7 @@
 						clearInterval(localIntervalToken);
 					}
 
+					console.log(output_lines);
 					return Promise.resolve(output_lines);
 				})
 				.then(printOuput);
@@ -172,9 +175,11 @@
 	}
 
 	function printOuput(outputLines) {
+		if (outputLines == null) outputLines = [];
+
 		let output_html_builder = "";
 		for (let line of outputLines) {
-			output_html_builder += `<div class="output-line"><span class="output-line-direction">${
+			output_html_builder += `<div class="output-line"><span class="output-line-direction pr-1">${
 				line.direction
 			}</span><span class="output-line-msg" style="color: ${
 				line.color

@@ -51,7 +51,7 @@ impl Job {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum ControlType {
     Input(String),
     Output(String),

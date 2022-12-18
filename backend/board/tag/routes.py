@@ -15,7 +15,7 @@ router = APIRouter(
 
 # get all tag
 @router.get("/list")
-async def list_tag(session: Session = Depends(utils.database.get_db)):
+def list_tag(session: Session = Depends(utils.database.get_db)):
     return database.get_all_tags(session).map_err(throwMsg).unwrap()
 
 
@@ -23,17 +23,16 @@ async def list_tag(session: Session = Depends(utils.database.get_db)):
 @router.post(
     "/create", dependencies=[Depends(cookie)], status_code=status.HTTP_201_CREATED
 )
-async def create_tag(
-    tag: Tag_create, session: Session = Depends(utils.database.get_db)
-):
+def create_tag(tag: Tag_create, session: Session = Depends(utils.database.get_db)):
     return database.create_tag(tag, session).map_err(throwMsg).unwrap()
 
 
 # get id by slug
 @router.get("/get_id_by_slug/{slug}")
-async def get_id_by_slug(slug: str, session: Session = Depends(utils.database.get_db)):
+def get_id_by_slug(slug: str, session: Session = Depends(utils.database.get_db)):
     return database.get_id_by_slug(slug, session).map_err(throwMsg).unwrap()
 
+
 @router.get("/get_name_by_slug/{slug}")
-async def get_name_by_slug(slug: str, session: Session = Depends(utils.database.get_db)):
+def get_name_by_slug(slug: str, session: Session = Depends(utils.database.get_db)):
     return database.get_name_by_slug(slug, session).map_err(throwMsg).unwrap()

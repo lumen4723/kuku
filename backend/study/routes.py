@@ -19,12 +19,12 @@ router = APIRouter(
 
 
 @router.get("/")
-async def list_all_course(session: Session = Depends(utils.database.get_db)):
+def list_all_course(session: Session = Depends(utils.database.get_db)):
     return database.list_course(session).map_err(throwMsg).unwrap()
 
 
 @router.get("/head-chapters/")
-async def list_head_chapter(session: Session = Depends(utils.database.get_db)):
+def list_head_chapter(session: Session = Depends(utils.database.get_db)):
     def flatten_course(article: List[database.lecture_chapter]):
         return tuple(
             map(
@@ -64,17 +64,17 @@ async def list_head_chapter(session: Session = Depends(utils.database.get_db)):
 
 
 @router.get("/courses")
-async def list_course(session: Session = Depends(utils.database.get_db)):
+def list_course(session: Session = Depends(utils.database.get_db)):
     return database.list_course(session).map_err(throwMsg).unwrap()
 
 
 @router.get("/categories")
-async def list_category(session: Session = Depends(utils.database.get_db)):
+def list_category(session: Session = Depends(utils.database.get_db)):
     return database.list_category(session).map_err(throwMsg).unwrap()
 
 
 @router.get("/{course_slug}/list")
-async def list_course_chapter(
+def list_course_chapter(
     course_slug: str, session: Session = Depends(utils.database.get_db)
 ):
     class course_tree:
@@ -109,7 +109,7 @@ async def list_course_chapter(
 
 # write new article
 # @router.post("/{course_slug}/write")
-# async def write_course_chapter(
+# def write_course_chapter(
 #     course_slug: str,
 #     article: database.lecture_chapter,
 #     session: Session = Depends(utils.database.get_db),
@@ -120,9 +120,7 @@ async def list_course_chapter(
 
 
 @router.get("/chapter/{chapter}")
-async def get_chapter_info(
-    chapter: int, session: Session = Depends(utils.database.get_db)
-):
+def get_chapter_info(chapter: int, session: Session = Depends(utils.database.get_db)):
     class chapter_info:
         no: int
         title: str
@@ -150,7 +148,7 @@ async def get_chapter_info(
 
 
 @router.get("/{course_slug}/{chapter}/")
-async def list_article(
+def list_article(
     course_slug: str, chapter: int, session: Session = Depends(utils.database.get_db)
 ):
     return (
@@ -160,7 +158,7 @@ async def list_article(
 
 # , dependencies=[Depends(cookie)]
 @router.post("/{course_slug}/")
-async def write_article(
+def write_article(
     course_slug: str,
     article_form: schema.form_article,
     session: Session = Depends(utils.database.get_db),
@@ -238,7 +236,7 @@ async def write_article(
 
 
 @router.put("/{course_slug}/{chapter}/", dependencies=[Depends(cookie)])
-async def update_article(
+def update_article(
     course_slug: str,
     chapter: int,
     article: schema.form_article,

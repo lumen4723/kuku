@@ -29,7 +29,12 @@ async def user(email: str, session: Session = Depends(utils.database.get_db)):
 async def create_user(
     user: createuser, session: Session = Depends(utils.database.get_db)
 ):
-    return database.create_user(user, session).map_err(throwMsg).unwrap()
+    result = database.create_user(user, session)
+    if result.is_ok():
+        utils.send_notification('[KUKU가입]\n' + user.email + ' (' + user.username + ')')
+
+    return result.map_err(throwMsg).unwrap()
+
 
 
 # 모든 user 정보 보여주는 함수
@@ -127,7 +132,7 @@ async def email_confirm(token: str, session: Session = Depends(utils.database.ge
 # username 중복 검사
 @router.get("/check")
 async def user(username: str, session: Session = Depends(utils.database.get_db)):
-    if database.check_username(username, session):
+    if database.check_username(username, session).is_ok():
         return True
     else:
         return False

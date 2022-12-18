@@ -93,14 +93,17 @@ impl Java {
                             spawn.kill().await;
                             return RunResult::error(self.submission.id, "killed".to_string());
                         }
-                        crate::ControlType::Input(s) => {
-                            stdin.write(s.as_bytes());
+                        crate::ControlType::Input(mut s) => {
+                            s.push_str("\n");
+
+                            stdin.write(s.as_bytes()).await;
+                            println!("java --> input: {}", s);
                         }
                         _ => (),
                     }
                 }
                 exit = spawn.wait() => {
-                    println!("cpp -> exit = {:?}", exit);
+                    println!("java -> exit = {:?}", exit);
                     let exit = match exit {
                         Ok(exit) => exit,
                         Err(e) => {
@@ -111,7 +114,7 @@ impl Java {
                     exit_status = Some(exit);
                 }
                 output = stdout.read_buf(&mut read_buf) => {
-                    println!("cpp -> output = {:?}", output);
+                    println!("java -> output = {:?}", output);
                     let output = match output {
                         Ok(output) => output,
                         Err(e) => {

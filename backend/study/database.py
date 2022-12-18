@@ -176,9 +176,11 @@ def list_article(course_slug: int, chapter: int, db: Session):
             .join(lecture_article.chapterRel)
             .join(lecture_chapter.lectureRel)
             .filter(lecture.slug == course_slug)
+            .order_by(lecture_article.language)
             .all()
         )
     except Exception as e:
+        print(e)
         return Err(str(e))
 
 

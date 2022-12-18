@@ -1,5 +1,6 @@
 <script>
 	import { userIsLogged } from "$lib/user.js";
+	import gmttolocal from "$lib/time.js";
 
 	const pageLimits = [
 		{ value: 10, label: "10개씩 보기" },
@@ -133,7 +134,7 @@
 							</a>
 						</td>
 						<td>{free.username}</td>
-						<td>{free.created}</td>
+						<td>{gmttolocal(free.created)}</td>
 						<td>{free.like}</td>
 						<td>{free.views}</td>
 					</tr>
@@ -224,7 +225,7 @@
 		<form method="get" on:submit|preventDefault={changeList}>
 			<div class="field is-horizontal">
 				<div class="field-body">
-					<div class="select">
+					<div class="select mr-1">
 						<select bind:value={currentST}>
 							{#each searchTypes as st}
 								<option value={st.value}>
@@ -233,7 +234,7 @@
 							{/each}
 						</select>
 					</div>
-					<div class="control is-expanded has-icons-left">
+					<div class="control is-expanded has-icons-left mr-1">
 						<input
 							class="input"
 							type="text"

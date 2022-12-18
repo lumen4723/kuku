@@ -17,7 +17,7 @@ run_submit_user = {}
 
 
 @router.post("/")
-async def main(
+def main(
     form: schema.run_request,
     db: Session = Depends(utils.database.get_db),
     # session_id=Depends(cookie)
@@ -34,7 +34,7 @@ async def main(
 
 
 @router.get("/{run_id}/")
-async def get_run(
+def get_run(
     run_id: int,
     db: Session = Depends(utils.database.get_db),
     # session_id=Depends(cookie),
@@ -77,7 +77,7 @@ async def get_run(
 
 
 @router.put("/{run_id}/input", dependencies=[])
-async def pass_input_to_program(
+def pass_input_to_program(
     form: schema.run_input,
     run_id: int,
     db: Session = Depends(utils.database.get_db),

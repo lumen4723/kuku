@@ -39,4 +39,4 @@ if __name__ == "__main__":
     import uvicorn
 
     print("port -> ", Config.HTTP["port"])
-    uvicorn.run("main:app", host="0.0.0.0", port=Config.HTTP["port"], reload=False)
+    uvicorn.run("main:app", host="0.0.0.0", port=Config.HTTP["port"], reload=True)
